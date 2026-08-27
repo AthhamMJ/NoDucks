@@ -46,3 +46,6 @@ APPLY
 GET FEEDBACK
   ↓
 IMPROVE
+```
+# How to use this
+Go to the docs and read the README.md
