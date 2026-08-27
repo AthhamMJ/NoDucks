@@ -1,16 +1,48 @@
-# React + Vite
+# 🦆 NoDucks
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+### Learn. Understand. Apply.
 
-Currently, two official plugins are available:
+NoDucks is an AI-powered learning environment designed to help students move beyond memorization and actually understand, practice, and apply what they learn.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The goal is simple:
 
-## React Compiler
+> **Don't just tell students what to study. Help them understand it, practice it, apply it, and improve.**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 🎯 The Problem
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Students often memorize formulas, theories, and answers without truly understanding how to use them.
+
+A student might memorize:
+
+`F = ma`
+
+but still struggle to explain what force, mass, and acceleration actually mean or how to apply the concept to a completely different problem.
+
+NoDucks focuses on closing the gap between:
+
+**Theory → Understanding → Application**
+
+---
+
+## 💡 The Solution
+
+NoDucks combines student productivity tools with an AI learning tutor.
+
+The learning process follows:
+
+```text
+PLAN
+  ↓
+LEARN
+  ↓
+UNDERSTAND
+  ↓
+PRACTICE
+  ↓
+APPLY
+  ↓
+GET FEEDBACK
+  ↓
+IMPROVE
