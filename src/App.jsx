@@ -30,9 +30,9 @@ const THEME_VARS = `
     --border: rgba(28,28,30,0.08);
     --border-strong: rgba(28,28,30,0.14);
     --shadow: 0 1px 2px rgba(28,28,30,0.04), 0 8px 24px rgba(28,28,30,0.06);
-    --accent: #B8863B;
+    --accent: #3dd62f;
     --accent-soft: rgba(184,134,59,0.12);
-    --accent-fg: #7A5726;
+    --accent-fg: #3dd62f;
     --green: #4C7A5E;
     --green-soft: rgba(76,122,94,0.12);
   }
@@ -47,9 +47,9 @@ const THEME_VARS = `
     --border: rgba(255,255,255,0.09);
     --border-strong: rgba(255,255,255,0.16);
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.45);
-    --accent: #D3A25C;
+    --accent: #3dd62f;
     --accent-soft: rgba(211,162,92,0.14);
-    --accent-fg: #E8C58C;
+    --accent-fg: #3dd62fC;
     --green: #7FB396;
     --green-soft: rgba(127,179,150,0.14);
   }
