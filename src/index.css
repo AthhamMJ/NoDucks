@@ -1,0 +1,21 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: rgb(234, 234, 234);
+    color: #000;
+}
+main {
+    display: flex;
+    min-height: calc(100vh - 60px);
+}
