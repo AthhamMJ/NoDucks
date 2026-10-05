@@ -14,6 +14,24 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+.open {
+    width: 240px;
+}
+
+.closed {
+    width: 60px;
+}
+.closed .sidebarTop h3,
+.closed .navigation,
+.closed .settings {
+    opacity: 0;
+}
+.sidebarToggle {
+  border: none;
+  cursor: pointer;
 }
 .sidebarTop {
   display: flex;
@@ -71,4 +89,13 @@
 }
 .active {
   background-color: #fff;
+}
+.alignSvg {
+  display: flex;
+}
+
+.alignSvg a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
