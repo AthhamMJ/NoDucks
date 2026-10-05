@@ -1,16 +1,39 @@
-# React + Vite
+# NoDucks
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+NoDucks is a student-focused learning platform designed to make learning more practical, understandable, and engaging.
 
-Currently, two official plugins are available:
+Instead of focusing only on memorizing theories and answers, NoDucks helps students move through:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Plan → Learn → Understand → Practice → Apply → Get Feedback → Improve**
 
-## React Compiler
+## Current Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* React
+* Vite
+* JavaScript
+* CSS Modules
 
-## Expanding the Oxlint configuration
+## Development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+The project is currently being rebuilt from the ground up with a focus on:
+
+* Clean and scalable React architecture
+* Simple, elegant UI
+* Responsive design
+* Practical learning experiences
+* AI-assisted learning features
+
+## Project Status
+
+🚧 **Active development**
+
+The current focus is building the core UI and application structure before connecting the full learning and AI functionality.
+
+## Branches
+
+* `main` → Stable version
+* `ui-dev` → UI development and experimentation
+
+## Vision
+
+NoDucks aims to help students go beyond simply knowing an answer and actually understand **how and why something works**.
