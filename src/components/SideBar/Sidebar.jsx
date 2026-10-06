@@ -1,20 +1,21 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import styles from "./Sidebar.module.css";
 
 function Sidebar() {
-  
-    const [isOpen, setIsOpen] = useState(true);
-  
-    return (
+  const [isOpen, setIsOpen] = useState(true);
 
+  return (
     <aside
-        className={`${styles.sidebar} ${
-        isOpen ? styles.open : styles.closed
-    }`}>
+      className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}
+    >
       <div className={styles.upperLayout}>
         <div className={styles.sidebarTop}>
           <h3>NoDucks</h3>
-          <button className={styles.sidebarToggle} onClick={() => setIsOpen(!isOpen)}>
+          <button
+            className={styles.sidebarToggle}
+            onClick={() => setIsOpen(!isOpen)}
+          >
             <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
               <path
                 d="M50.008 56H14.019c-3.309 0-5.995-2.686-5.995-5.995V13.994c0-3.308 2.686-5.995 5.995-5.995h35.989c3.309 0 5.995 2.687 5.995 5.995v36.011c0 3.309-2.686 5.995-5.995 5.995ZM24.024 51.999V12h-9.012c-1.65 0-2.989 1.339-2.989 2.989V49.01c0 1.65 1.339 2.989 2.989 2.989h9.012Zm24.991-39.999H28.024v39.999h20.991c1.65 0 2.989-1.339 2.989-2.989V14.989c0-1.65-1.339-2.989-2.989-2.989Z"
@@ -26,7 +27,12 @@ function Sidebar() {
 
         <nav className={styles.navigation}>
           <div className={styles.alignSvg}>
-            <a href="#" className={styles.active}>
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                isActive ? styles.active : styles.link
+              }
+            >
               <svg
                 width="22px"
                 height="22px"
@@ -63,10 +69,15 @@ function Sidebar() {
                 </g>
               </svg>
               <span>Dashboard</span>
-            </a>
+            </NavLink>
           </div>
           <div className={styles.alignSvg}>
-            <a href="#">
+            <NavLink
+              to="/ai-coaching"
+              className={({ isActive }) =>
+                isActive ? styles.active : styles.link
+              }
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -78,10 +89,15 @@ function Sidebar() {
                 <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.73 1.73 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.73 1.73 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.73 1.73 0 0 0 3.407 2.31zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z" />
               </svg>
               <span> AI Coaching</span>{" "}
-            </a>
+            </NavLink>
           </div>
           <div className={styles.alignSvg}>
-            <a href="#">
+            <NavLink
+              to="/task"
+              className={({ isActive }) =>
+                isActive ? styles.active : styles.link
+              }
+            >
               <svg
                 width="20px"
                 height="20px"
@@ -115,10 +131,15 @@ function Sidebar() {
                 </g>
               </svg>
               <span>Task</span>
-            </a>
+            </NavLink>
           </div>
           <div className={styles.alignSvg}>
-            <a href="#">
+            <NavLink
+              to="/notes"
+              className={({ isActive }) =>
+                isActive ? styles.active : styles.link
+              }
+            >
               <svg
                 width="24px"
                 height="24px"
@@ -161,11 +182,16 @@ function Sidebar() {
                 </g>
               </svg>
               <span>Notes</span>
-            </a>
+            </NavLink>
           </div>
 
           <div className={styles.alignSvg}>
-            <a href="#" className={styles.experimentLab}>
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                isActive ? styles.active : styles.link
+              }
+            >
               <svg
                 fill="#000000"
                 width="18px"
@@ -193,14 +219,19 @@ function Sidebar() {
                 </g>
               </svg>
               <span>Experiment Lab</span>
-            </a>
+            </NavLink>
           </div>
         </nav>
       </div>
 
       <div className={styles.settings}>
         <div className={styles.alignSvg}>
-          <a href="#">
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              isActive ? styles.active : styles.link
+            }
+          >
             <svg
               width="20px"
               height="20px"
@@ -233,7 +264,7 @@ function Sidebar() {
               </g>
             </svg>
             <span>Settings</span>
-          </a>
+          </NavLink>
         </div>
       </div>
     </aside>
