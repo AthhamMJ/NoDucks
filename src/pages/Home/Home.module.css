@@ -1,63 +1,36 @@
 .dashboard {
-    width: 100%;
-    min-height: 100%;
+  display: flex;
 
-    padding: 24px;
-
-
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
-    gap: 20px;
-
-    box-sizing: border-box;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: start;
 }
 
 .mainColumn,
 .sideColumn {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.mainColumn{
+  flex: 4;
+}
+.sideColumn{
+  flex: 2;
+}
+.card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 24px;
 }
 
-.welcomeCard {
-    height: 220px;
-}
-
-.subjectsCard {
-    height: 270px;
-}
-
-.tasksCard {
-    height: 260px;
-}
-
-.streakCard {
-    height: 180px;
-}
-
-.aiCard {
-    height: 300px;
-}
-
-.calendarCard {
-    height: 280px;
-}
-.welcomeCard,
-.subjectsCard,
-.tasksCard,
-.streakCard,
-.aiCard,
-.calendarCard {
-    background: rgba(255, 255, 255, 0.7);
-
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 20px;
-
-    box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.06);
-
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-
-    box-sizing: border-box;
+@media (max-width: 1000px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
 }

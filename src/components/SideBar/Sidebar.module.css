@@ -1,116 +1,64 @@
-.upperLayout {
-  display: flex;
-  flex-direction: column;
-  gap: 50px;
-}
 .sidebar {
-  margin: 10px;
-  width: 240px;
-  min-height: 100%;
-  background: #fff;
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   padding: 24px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  align-self: flex-start;
+  position: sticky;
+  top: 20px;
+  min-height: calc(100vh - 120px);
+}
+.logo {
+  font-weight: 700;
+  font-size: 17px;
+  text-align: right;
+  margin-bottom: 28px;
+}
 
-  border-radius: 1.75rem;
+.nav {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-
-  transition: width 0.3s ease;
-  overflow: hidden;
+  gap: 4px;
+  flex: 1;
 }
-.open {
-    width: 240px;
-}
-.closed {
-    width: 64px;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.closed .sidebarTop {
-    justify-content: center;
-}
-
-.closed .sidebarTop h3 {
-    display: none;
-}
-
-.closed .navigation a,
-.closed .settings a {
-    justify-content: center;
-}
-
-.closed .navigation a span,
-.closed .settings a span {
-    display: none;
-}
-.sidebarToggle {
-  border: none;
-  cursor: pointer;
-}
-.sidebarTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.sidebarToggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 1.5rem;
-
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  cursor: pointer;
-}
-.sidebarToggle:hover {
-  background: rgba(255, 255, 255, 0.8);
-}
-.navigation {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.navigation a {
-  display: block;
-  padding: 10px 12px;
-  color: #000;
-  text-decoration: none;
-  border-radius: 10px;
-}
-.experimentLab {
-  opacity: 0.5;
-}
-
-.settings a {
-  display: block;
-  padding: 10px 12px;
-  color: #000;
-  text-decoration: none;
-  border-radius: 10px;
-}
-.navigation a:hover {
-  background-color: #f3f3f3;
-}
-.settings a:hover {
-  background-color: #f3f3f3;
-}
-.active {
-  background-color: #fff;
-}
-.alignSvg {
-  display: flex;
-}
-
-.alignSvg a {
+.link {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background 0.15s ease;
+}
+.link:hover {
+  background: var(--surface-2);
+}
+.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.disabled {
+  color: var(--text-secondary);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.disabled:hover {
+  background: transparent;
+}
+.icon {
+  width: 16px;
+  text-align: center;
+}
+
+.bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
 }

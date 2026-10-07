@@ -1,82 +1,88 @@
-.topBar {
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    background: #fff;
-    color: #000;
+/* TopBar.module.css */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 32px;
+  margin-bottom: 20px;
+  width: 100%;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
 }
-.brand{
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
 }
-.planDetail {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0.25rem 0.625rem;
-    border-radius: 999px;
-
-    background: #dbeafe;
-    color: #2563eb;
-
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-.logo {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
+.badge {
+  font-size: 14px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
-.account {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.search {
+  margin-left: 500px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 240px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 13px;
 }
 
-.accountRound {
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: #eaeaea;
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.theme {
+  all: unset;
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+}
+.userText {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  line-height: 1.2;
+}
+.userText small {
+  color: var(--text-secondary);
+  font-size: 11px;
 }
 
-.accountInfo {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-}
-
-.userName {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-}
-.accountSettings {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
-
-.accountSettings h5 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.accountSettings svg {
-    display: block;
-}
-
-.accountType {
-    margin: 0;
-    font-size: 11px;
-    font-weight: 400;
-    opacity: 0.65;
+@media (max-width: 800px) {
+  .search,
+  .userText {
+    display: none;
+  }
 }

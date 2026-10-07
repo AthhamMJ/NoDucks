@@ -1,0 +1,52 @@
+.quote {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+.count {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+.count strong {
+  font-size: 40px;
+  color: var(--text-primary);
+  margin-right: 4px;
+}
+.hint {
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.week {
+  display: flex;
+  justify-content: space-between;
+}
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.day small {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: #fff;
+  background: var(--accent-soft);
+}
+.done {
+  background: #6b7280;
+}
+.today {
+  background: var(--accent);
+}

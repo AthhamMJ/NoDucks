@@ -19,6 +19,7 @@
 
 .header button {
     border: none;
+    color: var(--accent);
     background: transparent;
     font-size: 24px;
     cursor: pointer;
