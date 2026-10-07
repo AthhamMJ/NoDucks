@@ -1,4 +1,4 @@
-import styles from "./Home.module.css";
+import styles from "./Dashboard.module.css";
 import Welcome from "./components/Welcome/Welcome";
 import Calendar from "./components/Calendar/Calendar";
 import SubjectsSection from "./components/SubjectsSection/SubjectsSection";
@@ -6,7 +6,7 @@ import StreakSection from "./components/StreakSection/StreakSection";
 import NocusAISection from "./components/NocusAISection/NocusAISection";
 import UpcomingTasksSection from "./components/UpcomingTasksSection/UpcomingTasksSection";
 
-function Home() {
+function Dashboard() {
     return (
         <div className={styles.dashboard}>
 
@@ -42,4 +42,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Dashboard;
