@@ -1,0 +1,115 @@
+.task {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 42px;
+    padding: 12px 14px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+
+    box-sizing: border-box;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.task:hover {
+    background: var(--surface-2);
+    transform: translateY(-1px);
+}
+
+/* Checkbox bel like*/
+
+.check {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+/* Task title be like */
+
+.title {
+    min-width: 0;
+
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    color: var(--text-primary);
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.done {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+}
+
+/* Subject tag */
+
+.tag {
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    background: var(--surface-2);
+    color: var(--text-secondary);
+}
+
+/* Subject-specific colors */
+
+.tag[data-subject="physics"] {
+    background: var(--tag-physics);
+    color: var(--tag-physics-text);
+}
+
+.tag[data-subject="mathematics"] {
+    background: var(--tag-mathematics);
+    color: var(--tag-mathematics-text);
+}
+
+.tag[data-subject="computer-science"] {
+    background: var(--tag-computer-science);
+    color: var(--tag-computer-science-text);
+}
+
+.tag[data-subject="history"] {
+    background: var(--tag-history);
+    color: var(--tag-history-text);
+}
+
+/* Due date */
+
+.due,
+.today {
+    min-width: 52px;
+
+    font-size: 12px;
+    font-weight: 500;
+    text-align: right;
+
+    color: var(--text-secondary);
+}
+
+.today {
+    color: var(--danger);
+    font-weight: 600;
+}

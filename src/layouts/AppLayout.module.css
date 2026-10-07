@@ -1,0 +1,23 @@
+/* AppLayout.module.css */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+.body {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  padding: 0 20px 20px;
+}
+.page {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 800px) {
+  .body {
+    flex-direction: column;
+  }
+}

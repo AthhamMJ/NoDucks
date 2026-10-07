@@ -1,0 +1,233 @@
+.aiSection {
+    position: relative;
+    overflow: hidden;
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent-soft),
+            var(--surface) 65%
+        );
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* Subtle glow */
+
+.aiSection::before {
+    content: "";
+
+    position: absolute;
+    width: 120px;
+    height: 120px;
+
+    top: -60px;
+    right: -40px;
+
+    background: var(--accent-soft);
+    border-radius: 1.8rem;
+
+    filter: blur(25px);
+    pointer-events: none;
+}
+
+/* Heading */
+
+.title {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin: 0 0 6px;
+
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+
+    color: var(--text-primary);
+}
+
+.title span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 26px;
+    height: 26px;
+
+    border-radius: 50%;
+
+    color: var(--accent);
+    background: var(--accent-soft);
+
+    font-size: 18px;
+    font-weight: 400;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.title span:hover {
+    transform: translateX(2px);
+    background: var(--accent-soft);
+}
+
+/* Description of the Ai Card (fs) */
+
+.desc {
+    position: relative;
+
+    max-width: 250px;
+    margin: 0 0 16px;
+
+    font-size: 13px;
+    line-height: 1.5;
+
+    color: var(--text-secondary);
+}
+
+/* Ask input */
+
+.inputRow {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    width: 100%;
+    padding: 6px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.inputRow:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.inputRow input {
+    flex: 1;
+    min-width: 0;
+
+    padding: 9px 8px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    font: inherit;
+    font-size: 13px;
+
+    color: var(--text-primary);
+}
+
+.inputRow input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Send button */
+
+.inputRow button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    flex-shrink: 0;
+
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+
+    background: var(--accent);
+    color: #ffffff;
+
+    font-size: 17px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.inputRow button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--accent-soft);
+}
+
+.inputRow button:active {
+    transform: scale(0.94);
+}
+
+/* Quick actions */
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+.actions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    min-height: 36px;
+    padding: 8px 10px;
+
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+
+    background: var(--surface-2);
+    color: var(--text-primary);
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.actions button:hover {
+    background: var(--surface);
+    border-color: var(--accent-soft);
+    transform: translateY(-1px);
+}
+
+.actions button:active {
+    transform: scale(0.97);
+}

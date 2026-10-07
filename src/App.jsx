@@ -1,17 +1,22 @@
-import TopBar from "./components/TopBar/Topbar";
-import Sidebar from "./components/SideBar/Sidebar";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AppLayout from './layouts/AppLayout';
+import Home from './pages/Home/Home';
+// import AICoaching from './pages/AICoaching/AICoaching';
+// import Tasks from './pages/Tasks/Tasks';
+// import Notes from './pages/Notes/Notes';
+// import Settings from './pages/Settings/Settings';
 
-function App() {
-    return (
-        <>
-            <TopBar />
-
-            <main>
-                <Sidebar />
-
-            </main>
-        </>
-    );
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="dashboard" element={<Home />} />
+        {/* <Route path="ai-coaching" element={<AICoaching />} /> */}
+        {/* <Route path="tasks" element={<Tasks />} />
+        <Route path="notes" element={<Notes />} />
+        <Route path="settings" element={<Settings />} /> */}
+      </Route>
+    </Routes>
+  );
 }
-
-export default App;
