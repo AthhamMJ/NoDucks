@@ -8,6 +8,8 @@ import {
   NotebookPen,
   FlaskConical,
   Settings,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 
 const links = [
@@ -17,13 +19,28 @@ const links = [
   { to: '/notes', label: 'Notes', icon: NotebookPen },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ collapsed, onToggle }) {
   const linkClass = ({ isActive }) =>
     `${styles.link} ${isActive ? styles.active : ''}`;
 
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.logo}>NoDucks</div>
+    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
+      <div className={styles.top}>
+        <div className={styles.logo}>NoDucks</div>
+
+        <button
+          className={styles.toggle}
+          onClick={onToggle}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={collapsed ? 'Expand (Ctrl+B)' : 'Collapse (Ctrl+B)'}
+        >
+          {collapsed ? (
+            <PanelLeftOpen size={17} strokeWidth={1.5} />
+          ) : (
+            <PanelLeftClose size={17} strokeWidth={1.5} />
+          )}
+        </button>
+      </div>
 
       <nav className={styles.nav}>
         {links.map((item) => {
@@ -34,12 +51,13 @@ export default function Sidebar() {
               key={item.to}
               to={item.to}
               className={linkClass}
+              title={collapsed ? item.label : undefined}
             >
               <span className={styles.icon}>
                 <Icon size={17} strokeWidth={1.5} />
               </span>
 
-              {item.label}
+              <span className={styles.label}>{item.label}</span>
             </NavLink>
           );
         })}
@@ -47,22 +65,27 @@ export default function Sidebar() {
         <span
           className={`${styles.link} ${styles.disabled}`}
           aria-disabled="true"
+          title={collapsed ? 'Experiment lab (Soon)' : undefined}
         >
           <span className={styles.icon}>
             <FlaskConical size={17} strokeWidth={1.5} />
           </span>
 
-          Experiment lab (Soon)
+          <span className={styles.label}>Experiment lab (Soon)</span>
         </span>
       </nav>
 
       <div className={styles.bottom}>
-        <NavLink to="/settings" className={linkClass}>
+        <NavLink
+          to="/settings"
+          className={linkClass}
+          title={collapsed ? 'Settings' : undefined}
+        >
           <span className={styles.icon}>
             <Settings size={17} strokeWidth={1.5} />
           </span>
 
-          Settings
+          <span className={styles.label}>Settings</span>
         </NavLink>
       </div>
     </aside>

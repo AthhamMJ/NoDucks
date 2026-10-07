@@ -32,6 +32,12 @@ main {
   --tag-mathematics: #fdf3a7;   --tag-mathematics-text: #713f12;
   --tag-computer-science: #fbc8d8; --tag-computer-science-text: #831843;
   --tag-history: #b8f3ee;       --tag-history-text: #134e4a;
+
+  --glass-bg: rgba(245, 245, 250, 0.65);
+  --glass-bg-hover: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --glass-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="dark"] {
@@ -51,6 +57,12 @@ main {
   --tag-mathematics: rgba(250, 204, 21, 0.2);   --tag-mathematics-text: #fde047;
   --tag-computer-science: rgba(244, 114, 182, 0.2); --tag-computer-science-text: #f9a8d4;
   --tag-history: rgba(45, 212, 191, 0.2);       --tag-history-text: #5eead4;
+
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg-hover: rgba(255, 255, 255, 0.13);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 body {
