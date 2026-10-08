@@ -255,7 +255,10 @@
 .authSubmit:active {
     transform: translateY(1px);
 }
-
+.authSubmit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
 .authSwitch {
     display: flex;
     align-items: center;
