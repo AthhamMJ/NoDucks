@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import styles from "./Home.module.css";
+import AuthModal from "../../components/AuthModal/AuthModal";
 
 function getInitialTheme() {
   try {
@@ -12,6 +13,8 @@ function getInitialTheme() {
 
 export default function Home() {
   const [theme, setTheme] = useState(getInitialTheme);
+
+  const [authMode, setAuthMode] = useState(null);
 
   // Dark is the default. The attribute lives on <html>.
   useEffect(() => {
@@ -28,7 +31,7 @@ export default function Home() {
 
   return (
     <div className={styles.home}>
-      {/* NAVBAR */}
+      {/* navigation bar s */}
       <nav className={styles.navbar}>
         <div className={styles.logo}>NoDucks</div>
 
@@ -51,17 +54,25 @@ export default function Home() {
             )}
           </button>
 
-          <a href="#signin" className={styles.signIn}>
+          <button
+            type="button"
+            className={styles.signIn}
+            onClick={() => setAuthMode("signin")}
+          >
             Sign In
-          </a>
+          </button>
 
-          <a href="#signup" className={styles.signUp}>
+          <button
+            type="button"
+            className={styles.signUp}
+            onClick={() => setAuthMode("signup")}
+          >
             Get Started
-          </a>
+          </button>
         </div>
       </nav>
 
-      {/* HERO SECTION */}
+      {/* hero top */}
       <header className={styles.hero}>
         <div className={styles.heroContent}>
           <p className={styles.eyebrow}>A better way to learn</p>
@@ -73,13 +84,17 @@ export default function Home() {
 
           <p className={styles.heroText}>
             NoDucks helps students turn what they learn into knowledge they can
-            actually understand, practice, and apply.
+            actually understand, practice, and apply in real-world problems.
           </p>
 
           <div className={styles.heroActions}>
-            <a href="#signup" className={styles.primaryButton}>
+            <button
+              type="button"
+              className={styles.primaryButton}
+              onClick={() => setAuthMode("signup")}
+            >
               Start Learning
-            </a>
+            </button>
 
             <a href="#docs" className={styles.secondaryButton}>
               Explore NoDucks
@@ -87,7 +102,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* HERO VISUAL */}
+        {/* hero */}
         <div className={styles.heroVisual}>
           <div className={styles.visualCard}>
             <div className={styles.visualHeader}>
@@ -109,7 +124,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* FEATURES SECTION */}
+      {/* feature */}
       <section className={styles.section} id="features">
         <p className={styles.sectionLabel}>Why NoDucks</p>
 
@@ -183,12 +198,16 @@ export default function Home() {
       <section className={styles.finalCta}>
         <h2>Ready to start learning?</h2>
 
-        <a href="#signup" className={styles.primaryButton}>
+        <button
+          type="button"
+          className={styles.primaryButton}
+          onClick={() => setAuthMode("signup")}
+        >
           Get Started
-        </a>
+        </button>
       </section>
 
-      {/* FOOTER */}
+      {/* dooter side*/}
       <footer className={styles.footer}>
         <div>NoDucks</div>
 
@@ -200,6 +219,18 @@ export default function Home() {
 
         <span>© 2026 NoDucks. All rights reserved.</span>
       </footer>
+
+      {authMode && (
+        <AuthModal
+          mode={authMode}
+          onClose={() => setAuthMode(null)}
+          onSwitch={() =>
+            setAuthMode((current) =>
+              current === "signin" ? "signup" : "signin",
+            )
+          }
+        />
+      )}
     </div>
   );
 }

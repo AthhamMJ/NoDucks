@@ -69,6 +69,13 @@
 .navLinks a {
   color: var(--text);
 }
+.signIn,
+.signUp,
+.primaryButton {
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+}
 
 .signIn,
 .navLinks a {
@@ -81,7 +88,19 @@
 }
 
 .signIn {
-  color: var(--accent-hover);
+    padding: 0;
+    border: 0;
+    background: transparent;
+
+    color: var(--accent);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+    text-decoration: none;
+
+    transition: color 160ms ease, opacity 160ms ease;
 }
 
 .navLinks a:hover,
@@ -153,7 +172,7 @@
 
 
 /* =========================
-   HERO
+   hero top
 ========================= */
 
 .hero {
@@ -270,7 +289,7 @@
 
 
 /* =========================
-   HERO VISUAL
+   hero
 ========================= */
 
 .heroVisual {
@@ -360,7 +379,7 @@
 
 
 /* =========================
-   SHARED SECTIONS
+   shared sections
 ========================= */
 
 .section,
@@ -400,7 +419,7 @@
 
 
 /* =========================
-   FEATURES
+   eaures
 ========================= */
 
 .section {
@@ -455,7 +474,7 @@
 
 
 /* =========================
-   WORKFLOW
+  workflow
 ========================= */
 
 .workflow {
@@ -488,7 +507,7 @@
 
 
 /* =========================
-   ABOUT
+   about
 ========================= */
 
 .about {
@@ -513,7 +532,7 @@
 
 
 /* =========================
-   FINAL CTA
+   cta final
 ========================= */
 
 .finalCta {
@@ -533,7 +552,7 @@
 
 
 /* =========================
-   FOOTER
+   footer
 ========================= */
 
 .footer {
@@ -583,7 +602,7 @@
 
 
 /* =========================
-   TABLET
+   i pad
 ========================= */
 
 @media (max-width: 900px) {
@@ -640,7 +659,7 @@
 
 
 /* =========================
-   MOBILE
+   for mobile
 ========================= */
 
 @media (max-width: 600px) {
