@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import styles from "./AuthModal.module.css";
 import { supabase } from "../../lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthModal({ mode, onClose, onSwitch }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +16,8 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
 
   const isSignUp = mode === "signup";
 
@@ -66,6 +69,8 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
     }
 
     setMessage("Signed in successfully.");
+    onClose?.();
+    navigate("/dashboard", { replace: true });
   };
 
   return (
