@@ -102,24 +102,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* hero */}
         <div className={styles.heroVisual}>
-          <div className={styles.visualCard}>
-            <div className={styles.visualHeader}>
-              <span>Learning Progress</span>
-              <span>01</span>
-            </div>
-
-            <div className={styles.visualShape}>
-              <div className={styles.shapeCircle} />
-              <div className={styles.shapeLine} />
-              <div className={styles.shapeLineSmall} />
-            </div>
-
-            <div className={styles.visualFooter}>
-              <span>Understand</span>
-              <span>→</span>
-            </div>
+          <div className={styles.heroBox}>
+            <p>Hello</p>
           </div>
         </div>
       </header>

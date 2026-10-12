@@ -240,7 +240,12 @@
   align-items: center;
   gap: 12px;
 }
-
+.heroBox{
+  display: flex;
+  width: 450px;
+  height: 375px;
+  background-color: antiquewhite;
+}
 .primaryButton,
 .secondaryButton {
   min-height: 46px;
