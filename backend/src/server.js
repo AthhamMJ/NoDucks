@@ -4,7 +4,7 @@ import app from './app.js';
 
 dotEnv.config();
 
-connectDB();
+await connectDB();
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs"
 
 //JWT gneration
 const generateToken = (userId) => {
@@ -42,7 +43,12 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!User) {
-      return res.status(404).json({ message: "Inalid email or password. " });
+      return res.status(404).json({ message: "Inalid email or password." });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password." })
     }
 
     const token = generateToken(user._id);
