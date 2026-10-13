@@ -1,21 +1,15 @@
-import { createClient } from "@supabase/supabase-js";
+// config the dataBast inside of the db.js rather than bother
+import mongoose from "mongoose";
 
-const { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = process.env;
 
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  throw new Error("Missing Supabase environment variables.");
-}
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    console.log(`MongoDB Atlas Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error Connectiong to MongoDB: ${error.message}`);
+    process.exit(1); // I Think this makes Exit if any failure
+  }
+};
 
-export function createUserClient(accessToken) {
-  return createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  });
-}
+export default connectDB;
