@@ -12,6 +12,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// knowing that the application is running
+app.get("/", (req, res) => {
+  res.send("Backend Server is running...");
+});
+
 //Health Check Route
 app.get("/api/health", (req, res) => {
   const db = getDBStatus();

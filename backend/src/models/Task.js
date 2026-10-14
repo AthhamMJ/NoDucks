@@ -1,17 +1,48 @@
-// import { z } from "zod";
+import mongoose from "mongoose";
+import bycrypt from "bycrypt";
 
-// export const createTaskSchema = z.object({
-//   title: z.string().trim().min(1, "Title is required").max(120, "Title is too long"),
-//   description: z.string().trim().max(500, "Description is too long").nullable().optional(),
-//   due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format").nullable().optional(),
-//   priority: z.enum(["low", "medium", "high"]).default("medium"),
-//   subject_id: z.string().uuid("Invalid subject ID").nullable().optional(),
-// });
+const taskSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      maxLenght: 120,
+    },
+    description: {
+      type: String,
+      trim: true,
+      maxLength: 500,
+      default: "",
+    },
+    dueDate: {
+      type: Date,
+      default: null,
+    },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high"],
+      default: "medium",
+    },
+    isCompleted: {
+      tpye: Boolean,
+      default: false,
+    },
+    subject: {
+      type: ObjectId,
+      ref: "Subject",
+      default: null,
+    },
+    user: {
+      type: ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
-// export const updateTaskSchema = createTaskSchema.partial().extend({
-//   is_completed: z.boolean().optional(),
-// });
-
-// export const toggleTaskSchema = z.object({
-//   is_completed: z.boolean(),
-// });
+export default mongoose.model("Task", taskSchema)
