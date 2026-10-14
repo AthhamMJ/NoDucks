@@ -19,10 +19,6 @@ export const register = async (req, res) => {
         .json({ message: "User Already exists with this email" });
     }
 
-    if (!user.password.length < 6) {
-      return res.status(400).json({ message: "Too small password." });
-    }
-
     const user = await User.create({ name, email, password });
     console.log("Newly created user saved to Database", user);
 
