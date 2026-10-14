@@ -104,7 +104,9 @@ export default function Home() {
 
         <div className={styles.heroVisual}>
           <div className={styles.heroBox}>
-            <p>Hello</p>
+            <div className={styles.ringAround}>
+              <div className={styles.planet}></div>
+            </div>
           </div>
         </div>
       </header>
