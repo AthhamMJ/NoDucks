@@ -36,9 +36,9 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
     try {
       await signUp({ name, email, password });
 
-      setMessage("Account created. Check your email to verify your account.");
-      setTimeout(()=> {
-        onSwitch?.("signin")
+      setMessage("Account created. please login again.");
+      setTimeout(() => {
+        onSwitch?.("signin");
       }, 1200);
     } catch (error) {
       setError(error.message || "Unable to create your account.");
