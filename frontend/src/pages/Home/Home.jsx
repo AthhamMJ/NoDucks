@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import styles from "./Home.module.css";
-import AuthModal from "../../components/AuthModal/AuthModal";
+import AuthForm from "../../components/AuthForm/AuthForm";
 
 function getInitialTheme() {
   try {
@@ -206,7 +206,7 @@ export default function Home() {
       </footer>
 
       {authMode && (
-        <AuthModal
+        <AuthForm
           mode={authMode}
           onClose={() => setAuthMode(null)}
           onSwitch={() =>

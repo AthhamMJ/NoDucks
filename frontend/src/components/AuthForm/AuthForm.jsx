@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import styles from "./AuthModal.module.css";
+import styles from "./AuthForm.module.css";
 import { signUp, signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 
-export default function AuthModal({ mode, onClose, onSwitch }) {
+export default function AuthForm({ mode, onClose, onSwitch }) {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -37,6 +37,9 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
       await signUp({ name, email, password });
 
       setMessage("Account created. Check your email to verify your account.");
+      setTimeout(()=> {
+        onSwitch?.("signin")
+      }, 1200);
     } catch (error) {
       setError(error.message || "Unable to create your account.");
     } finally {
@@ -50,7 +53,9 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
     setMessage("");
 
     try {
+      // Calls your Express backend -> MongoDB authentication & it returns JWT
       const data = await signIn({ email, password });
+      // Updates AuthContext and saves token to localStorage
       login(data);
 
       setMessage("Signed in successfully.");

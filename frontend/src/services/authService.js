@@ -1,35 +1,17 @@
-import { apiRequest } from "./api";
+import { apiCall } from "./api";
 
-export function signUp({ name, email, password }) {
-  return apiRequest("/api/auth/signup", {
+export const signUp = async (userData) => {
+  // Expects { name, email, password }
+  return await apiCall("/auth/register", {
     method: "POST",
-    body: JSON.stringify({
-      name,
-      email,
-      password,
-    }),
+    body: JSON.stringify(userData),
   });
-}
+};
 
-export function signIn({ email, password }) {
-  return apiRequest("/api/auth/signin", {
+export const signIn = async (credentials) => {
+  // Expects { email, password }
+  return await apiCall("/auth/login", {
     method: "POST",
-    body: JSON.stringify({
-      email,
-      password,
-    }),
+    body: JSON.stringify(credentials),
   });
-}
-
-export function getAuthenticatedProfile(accessToken) {
-  return apiRequest("/api/auth/me", {
-    accessToken,
-  });
-}
-
-export function signOut(accessToken) {
-  return apiRequest("/api/auth/signout", {
-    method: "POST",
-    accessToken,
-  });
-}
+};

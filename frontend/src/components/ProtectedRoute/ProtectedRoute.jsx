@@ -1,16 +1,18 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-export default function ProtectedRoute() {
-  const { user, loading } = useAuth();
+export default function ProtectedRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <p>Loading your NoDucks workspace...</p>;
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>Loading...</div>
+    );
   }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
-  return <Outlet />;
+  return children ? children : <Outlet />;
 }

@@ -1,99 +1,52 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { apiRequest } from "../services/api";
+import { createContext, useContext, useState, useEffect } from "react";
+import { apiCall } from "../services/api";
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let active = true;
-
-    async function checkAuth() {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        if (active) {
-          setUser(null);
-          setLoading(false);
-        }
-        return;
-      }
-
-      try {
-        const data = await apiRequest("/api/auth/me", {
-          accessToken: token,
-        });
-
-        if (active) {
-          setUser(data.profile ?? data.user ?? null);
-        }
-      } catch {
-        if (active) {
-          localStorage.removeItem("accessToken");
+    const initializeAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          // fetch the details using the saved token on page refresh
+          const data = await apiCall("/auth/me");
+          setUser(data.user);
+        } catch (error) {
+          localStorage.removeItem("token");
+          setToken(null);
           setUser(null);
         }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
       }
-    }
-
-    checkAuth();
-
-    return () => {
-      active = false;
+      setLoading(false);
     };
+    initializeAuth();
   }, []);
 
-  const login = (authData) => {
-    if (authData?.accessToken) {
-      localStorage.setItem("accessToken", authData.accessToken);
-    }
-    if (authData?.user) {
-      setUser(authData.user);
-    }
+  // Login handler receives data from your Express /backend ({ token, user })
+  const login = (data) => {
+    localStorage.setItem("token", data.token);
+    setToken(data.token);
+    setUser(data.user || null);
   };
 
-  const logout = async () => {
-    const token = localStorage.getItem("accessToken");
-    try {
-      if (token) {
-        await apiRequest("/api/auth/signout", {
-          method: "POST",
-          accessToken: token,
-        });
-      }
-    } catch {
-      // Ignored if session is already expired
-    } finally {
-      localStorage.removeItem("accessToken");
-      setUser(null);
-    }
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setUser(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        setUser,
-        login,
-        logout,
-      }}
+      value={{ user, token, login, logout, isAuthenticated: !!token, loading }}
     >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider");
-  }
-
-  return context;
-}
+export const useAuth = () => useContext(AuthContext);
