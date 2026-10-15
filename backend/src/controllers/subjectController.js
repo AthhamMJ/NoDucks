@@ -34,7 +34,7 @@ export const getSubjectCatalog = async (req, res) => {
     res.json({ catalog });
   } catch (error) {
     return res
-      .ststus(500)
+      .status(500)
       .json({ message: "Could not load subject suggessions" });
   }
 };
@@ -58,7 +58,7 @@ export const createSubject = async (req, res) => {
     };
 
     const existing =
-      await Subject.findOne(sameSubject).collection(CASE_INSENSITIVE);
+      await Subject.findOne(sameSubject).collation(CASE_INSENSITIVE);
     if (existing) return res.json({ subject: existing });
 
     const count = await Subject.countDocuments({ user: req.user });
@@ -66,13 +66,13 @@ export const createSubject = async (req, res) => {
       user: req.user,
       name,
       color:
-        req.boay.color ||
+        req.body.color ||
         catalogEntry?.defaultColor ||
         COLORS[count % COLORS.length],
       catalog: catalogEntry?._id ?? null,
     });
 
-    res.ststus(201).json({ subject });
+    res.status(201).json({ subject });
   } catch (error) {
     if (error.code === 11000) {
       const existing = await Subject.findOne({
