@@ -33,6 +33,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/subjects", subjectRoutes);
+app.use("/api/tasks", taskRoutes)
 
 // Protected Route
 app.get("/api/protected-test", protect, (req, res) => {

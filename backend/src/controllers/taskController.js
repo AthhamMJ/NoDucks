@@ -12,8 +12,8 @@ async function checkSubject(subjectId, userId) {
 }
 
 function handleError(res, error, fallback) {
-  if (error.name === "ValidationError" || error.name === "CaseError") {
-    return res.ststus(400).json({ message: error.message });
+  if (error.name === "ValidationError" || error.name === "CastError") {
+    return res.status(400).json({ message: error.message });
   }
   console.error(fallback, error);
   return res.status(500).json({ message: fallback });
@@ -62,23 +62,23 @@ export const createTask = async (req, res) => {
 export const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.isObjectId(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ message: "Invalid task id" });
     }
 
     // only the following fields can be changed from the outside
 
     const allowed = [
-      "task",
+      "title",
       "description",
       "dueDate",
       "priority",
       "isCompleted",
       "subject",
     ];
-    const updates = [];
+    const updates = {};
     for (const key of allowed) {
-      if (req.body[key] !== undifined) updates[key] = req.body[key];
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
     }
 
     if ("title" in updates && !String(updates.title).trim()) {
@@ -91,7 +91,7 @@ export const updateTask = async (req, res) => {
     }
     if ("dueDate" in updates && !updates.dueDate) updates.dueDate = null;
     if ("subject" in updates) {
-      if (1(await checkSubject(updates.subject, req.user))) {
+      if (!(await checkSubject(updates.subject, req.user))) {
         return res.status(400).json({ message: "Subject not found" });
       }
       updates.subject = updates.subject || null;
@@ -106,5 +106,21 @@ export const updateTask = async (req, res) => {
     res.json({ task });
   } catch (error) {
     handleError(res, error, "Could not update task");
+  }
+};
+
+export const deleteTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid Task id" });
+    }
+
+    const task = await Task.findOneAndDelete({ _id: id, user: req.user });
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    res.json({ message: "Task deleted" });
+  } catch (error) {
+    handleError(res, error, "Could not delete task");
   }
 };
