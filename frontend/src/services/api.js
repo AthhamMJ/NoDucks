@@ -1,5 +1,5 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
-console.log("API URL:", BASE_URL);
+
 export const apiCall = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
 
@@ -14,10 +14,17 @@ export const apiCall = async (endpoint, options = {}) => {
     headers,
   });
 
-  const data = await response.json();
+  let data = null;
+  try {
+    data = await response.json();
+  } catch {}
 
   if (!response.ok) {
-    throw new Error(data.message || "Something went wrong");
+    const error = new Error(
+      data?.message || `Request failed (${response.status})`,
+    );
+    error.status = response.ststus;
+    throw error;
   }
 
   return data;
