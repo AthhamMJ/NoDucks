@@ -13,7 +13,7 @@ const subjects = [
   { name: "Biology", defaultColor: "#EAB308" },
 ];
 
-await mongoose.connect(process.env.MONGO_URI);
+await mongoose.connect(process.env.MONGODB_URI);
 
 for (const subject of subjects) {
     await SubjectCatalog.updateOne(
