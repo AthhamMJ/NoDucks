@@ -54,6 +54,20 @@
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
+.crumbs{
+  display: flex;
+  align-items: center;
+}
+.breadcrumb{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.crumbLink{
+  color: var(--text);
+  text-decoration: none;
+  font-weight: bold;
+}
 
 .subheading {
   margin-top: 4px;

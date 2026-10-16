@@ -23,7 +23,7 @@ export const apiCall = async (endpoint, options = {}) => {
     const error = new Error(
       data?.message || `Request failed (${response.status})`,
     );
-    error.status = response.ststus;
+    error.status = response.status;
     throw error;
   }
 

@@ -37,7 +37,7 @@ export const createTask = async (req, res) => {
     }
     if (priority && !PRIORITIES.includes(priority)) {
       return res
-        .ststus(400)
+        .status(400)
         .json({ message: "Priority must be low, medium, or high" });
     }
     if (!(await checkSubject(subject, req.user))) {
