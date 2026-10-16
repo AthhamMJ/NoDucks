@@ -7,6 +7,15 @@
   padding: 32px clamp(16px, 3vw, 40px) 48px;
 }
 
+.page {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 32px clamp(16px, 3vw, 40px) 48px;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -17,6 +26,26 @@
 
 .headerText {
   min-width: 0;
+}
+.backButton,
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background 0.15s ease;
+}
+
+.backButton:hover,
+.iconButton:hover {
+  background: var(--surface-2);
 }
 
 .heading {
