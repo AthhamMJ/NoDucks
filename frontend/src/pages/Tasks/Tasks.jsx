@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-<<<<<<< HEAD
 import { CircleAlert, CircleCheck, Plus, X, ArrowLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-=======
-import { CircleAlert, CircleCheck, Plus, X , ArrowLeft} from "lucide-react";
->>>>>>> 186cebaafb56aaf87f46b77794c08ecf6d5de967
 import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import {
