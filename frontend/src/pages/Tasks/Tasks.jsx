@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CircleAlert, CircleCheck, Plus, X } from "lucide-react";
+import { CircleAlert, CircleCheck, Plus, X, ArrowLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 import {
   fetchTasks,
   createTask,
@@ -10,7 +12,7 @@ import {
   fetchSubjects,
   fetchSubjectCatalog,
   addSubject,
-} from "../../services/taskService";
+} from "../../services/taskServices";
 import { isMissingTable, sortByName } from "./utils/taskUtils";
 import TaskModal from "./components/TaskModal/TaskModal";
 import TaskItem from "./components/TaskItem/TaskItem";
@@ -18,6 +20,7 @@ import TaskStates from "./components/TaskStates/TaskStates";
 import styles from "./Tasks.module.css";
 
 export default function Tasks() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [status, setStatus] = useState("loading");
   const [tasks, setTasks] = useState([]);
@@ -169,21 +172,8 @@ export default function Tasks() {
     <section className={styles.page}>
       <header className={styles.header}>
         <div className={styles.headerText}>
-          <button
-            type="button"
-            className={styles.backButton}
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-          >
-            <ArrowLeft size={16} />
-          </button>
-          <nav aria-label="Breadcrumb" className={styles.crumbs}>
-            <Link to="/dashboard" className={styles.crumbLink}>
-              Home
-            </Link>
-            <ChevronRight size={14} aria-hidden="true" />
-            <span className={styles.crumbCurrent}>Tasks</span>
-          </nav>
+          <h1 className={styles.heading}>Tasks</h1>
+          <p className={styles.subheading}>Plan your work. Make progress.</p>
         </div>
 
         <div className={styles.headerActions}>

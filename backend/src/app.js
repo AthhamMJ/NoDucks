@@ -3,8 +3,8 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
 import { getDBStatus } from "./config/db.js";
-// import taskRoutes from "./routes/task.routes.js";
-// import subjectRoutes from "./routes/subject.routes.js";
+import taskRoutes from "./routes/taskRoutes.js";
+import subjectRoutes from "./routes/subjectRoutes.js";
 
 const app = express();
 
@@ -31,6 +31,9 @@ app.get("/api/health", (req, res) => {
 
 // route section
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/subjects", subjectRoutes);
+app.use("/api/tasks", taskRoutes)
 
 // Protected Route
 app.get("/api/protected-test", protect, (req, res) => {

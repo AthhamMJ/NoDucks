@@ -1,18 +1,16 @@
 import mongoose from "mongoose";
-import bycrypt from "bycrypt";
-
 const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: [true, "Title is required"],
       trim: true,
-      maxLenght: 120,
+      maxlenght: 120,
     },
     description: {
       type: String,
       trim: true,
-      maxLength: 500,
+      maxlength: 500,
       default: "",
     },
     dueDate: {
@@ -25,16 +23,16 @@ const taskSchema = new mongoose.Schema(
       default: "medium",
     },
     isCompleted: {
-      tpye: Boolean,
+      type: Boolean,
       default: false,
     },
     subject: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Subject",
       default: null,
     },
     user: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
       index: true,
@@ -42,7 +40,10 @@ const taskSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJson: {virtuals: true, versionKey: false},
   },
 );
+
+taskSchema.index({user: 1, createdAt: -1});
 
 export default mongoose.model("Task", taskSchema)

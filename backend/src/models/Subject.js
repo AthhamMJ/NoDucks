@@ -1,7 +1,40 @@
-// import { z } from "zod";
+import mongoose from "mongoose";
 
-// export const createSubjectSchema = z.object({
-//   name: z.string().trim().min(1, "Subject name is required").max(40, "Subject name is too long"),
-//   color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Invalid color format").optional(),
-//   catalog_id: z.string().nullable().optional(),
-// });
+const subjectSchema = new mongoose.Schema(
+  {
+    user: {
+      type: String,
+      ref: "User",
+      required: true,
+    },
+    name: {
+      type: String,
+      required: [true, "Subject name is required"],
+      trim: true,
+      maxlenght: 40,
+    },
+    color: {
+      type: String,
+      trim: true,
+      default: "#64748B",
+      match: [/^#[0-9A-Fa-f]{6}$/, "Color must be a hex value like #6366F1"],
+    },
+    // set caltalog  when the subject was added from the suggestions list
+    catalog: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubjectCatalog",
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true, versionKey: false },
+  },
+);
+
+subjectSchema.index(
+  { user: 1, name: 1 },
+  { unique: true, collection: { locate: "en", strength: 2 } },
+);
+
+export default mongoose.model("Subject", subjectSchema);
