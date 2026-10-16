@@ -169,8 +169,23 @@ export default function Tasks() {
     <section className={styles.page}>
       <header className={styles.header}>
         <div className={styles.headerText}>
-          <h1 className={styles.heading}>Tasks</h1>
-          <p className={styles.subheading}>Plan your work. Make progress.</p>
+          <div className={styles.breadcrumb}>
+          <button
+            type="button"
+            className={styles.backButton}
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <nav aria-label="Breadcrumb" className={styles.crumbs}>
+            <Link to="/dashboard" className={styles.crumbLink}>
+              Home
+            </Link>
+            <ChevronRight size={14} aria-hidden="true" />
+            <span className={styles.crumbCurrent}>Tasks</span>
+          </nav>
+        </div>
         </div>
 
         <div className={styles.headerActions}>
