@@ -5,7 +5,7 @@ const taskSchema = new mongoose.Schema(
       type: String,
       required: [true, "Title is required"],
       trim: true,
-      maxlenght: 120,
+      maxlength: 120,
     },
     description: {
       type: String,
@@ -40,7 +40,7 @@ const taskSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toJson: {virtuals: true, versionKey: false},
+    toJSON: {virtuals: true, versionKey: false},
   },
 );
 

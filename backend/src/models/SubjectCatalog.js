@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
-const subjectCatalogschema = new mongoose.Schema(
+const subjectCatalogSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
       trim: true,
-      maxlenght: 40,
+      maxlength: 40,
       unique: true,
     },
     defaultColor: {
@@ -22,4 +22,4 @@ const subjectCatalogschema = new mongoose.Schema(
   },
 );
 
-export default mongoose.model("SubjectCaltalog", subjectCatalogschema);
+export default mongoose.model("SubjectCatalog", subjectCatalogSchema);

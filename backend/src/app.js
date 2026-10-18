@@ -5,6 +5,7 @@ import { protect } from "./middleware/authMiddleware.js";
 import { getDBStatus } from "./config/db.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import subjectRoutes from "./routes/subjectRoutes.js";
+import noteRoutes from "./routes/noteRoutes.js"
 
 const app = express();
 
@@ -25,15 +26,15 @@ app.get("/api/health", (req, res) => {
     status: db.isConnected ? "UP" : "DOWN",
     server: "Running",
     database: db.status,
-    timstamp: new Date().toISOString(),
+    timestamp: new Date().toISOString(),
   });
 });
 
 // route section
 app.use("/api/auth", authRoutes);
-app.use("/api/tasks", taskRoutes);
 app.use("/api/subjects", subjectRoutes);
 app.use("/api/tasks", taskRoutes)
+app.use("/api/notes/", noteRoutes)
 
 // Protected Route
 app.get("/api/protected-test", protect, (req, res) => {
