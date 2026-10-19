@@ -263,6 +263,20 @@
   border-radius: 100%;
   background-color: blueviolet;
 }
+#lottie-animation {
+  width: 100%;
+  height: clamp(250px, 45vw, 420px);
+  margin: 12px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#lottie-animation svg {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
 .primaryButton,
 .secondaryButton {
   min-height: 46px;
