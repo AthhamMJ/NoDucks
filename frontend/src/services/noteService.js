@@ -49,12 +49,12 @@ export const createNote = async (noteData) => {
 };
 
 export const updateNote = async (id, noteData) => {
-  const note = toBackendNote(noteData);
+  const body = toBackendNote(noteData);
   const data = await apiCall(`/api/notes/${id}`, {
     method: "PATCH",
     body: JSON.stringify(body),
   });
-  return { task: formatNote(data.note) };
+  return { note: formatNote(data.note) };
 };
 
 export const deleteNote = async (id) => {
@@ -68,12 +68,12 @@ export const fetchSubjects = async () => {
   const subjects = Array.isArray(data.subjects)
     ? data.subjects.map(formatSubject)
     : [];
-  return { subject };
+  return { subjects };
 };
 
 export const fetchSubjectCatalog = async () => {
   const data = await apiCall("/api/subjects/catalog");
-  const catalog = Array.isArray(data.catlaog)
+  const catalog = Array.isArray(data.catalog)
     ? data.catalog.map(formatCatalog)
     : [];
   return { catalog };

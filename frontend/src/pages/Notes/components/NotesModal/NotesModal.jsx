@@ -255,7 +255,7 @@ export default function NotesModal({
                       }`}
                       style={{
                         "--subject-color":
-                          subject.color || DEFAULT_SUBJECT_COLOR,
+                          subject.color || CUSTOM_SUBJECT_COLORS,
                       }}
                       onClick={() => update("subjectId", subject.id)}
                     >
