@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CircleAlert, CircleCheck, LoaderCircle, Plus, X } from "lucide-react";
 import {
   TITLE_MAX,
-  CONTENT_MAX,
+  description_MAX,
   SUBJECT_MAX,
   DEFAULT_SUBJECT_COLOR,
 } from "../../constants/notesConstants";
@@ -23,7 +23,7 @@ export default function NotesModal({
   const initial = useMemo(
     () => ({
       title: note?.title ?? "",
-      content: note?.content ?? "",
+      description: note?.description ?? "",
       subjectId: note?.subject_id ?? "",
     }),
     [note],
@@ -43,7 +43,7 @@ export default function NotesModal({
 
   const dirty =
     values.title !== initial.title ||
-    values.content !== initial.content ||
+    values.description !== initial.description ||
     values.subjectId !== initial.subjectId;
 
   const canDismissSoftly = !dirty && !saving;
@@ -141,7 +141,7 @@ export default function NotesModal({
     try {
       await onSave({
         title,
-        content: values.content.trim(),
+        description: values.description.trim(),
         subject_id: values.subjectId || null,
       });
       onClose();
@@ -358,17 +358,17 @@ export default function NotesModal({
           </fieldset>
 
           <div className={styles.field}>
-            <label htmlFor="note-content" className={styles.label}>
-              Content <span className={styles.optional}>(optional)</span>
+            <label htmlFor="note-description" className={styles.label}>
+              description <span className={styles.optional}>(optional)</span>
             </label>
             <textarea
-              id="note-content"
+              id="note-description"
               className={styles.textarea}
               placeholder="Write your note here"
               rows={7}
-              value={values.content}
-              maxLength={CONTENT_MAX}
-              onChange={(event) => update("content", event.target.value)}
+              value={values.description}
+              maxLength={description_MAX}
+              onChange={(event) => update("description", event.target.value)}
               disabled={saving}
             />
           </div>

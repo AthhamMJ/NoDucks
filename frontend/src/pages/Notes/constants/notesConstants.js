@@ -14,3 +14,5 @@ export const CUSTOM_SUBJECT_COLORS = [
 ];
 
 export const SUBJECT_COLUMNS = "id, name, color, catalog_id";
+
+export const description_MAX = 5000

@@ -20,18 +20,17 @@ const toBackendNote = (data) => {
 };
 
 const formatSubject = (subject) => ({
-  id: subject_id || subject._id,
-  _id: subject_id,
+  id: subject.id || subject._id,
+  _id: subject._id,
   name: subject.name,
   color: subject.color,
   catalog_id: subject.catalog || null,
 });
-
-const formatCatalog = (subject) => ({
+const formatCatalog = (item) => ({
   id: item.id || item._id,
   _id: item._id,
   name: item.name,
-  default_color: item.default_color || item.default_color,
+  default_color: item.defaultColor || item.default_color,
 });
 
 export const fetchNotes = async () => {
@@ -49,9 +48,9 @@ export const createNote = async (noteData) => {
   return { note: formatNote(data.note) };
 };
 
-export const updateNote = async (id, isCompleted) => {
+export const updateNote = async (id, noteData) => {
   const note = toBackendNote(noteData);
-  const data = await apiCall(`/api/note/${id}`, {
+  const data = await apiCall(`/api/notes/${id}`, {
     method: "PATCH",
     body: JSON.stringify(body),
   });
@@ -59,7 +58,7 @@ export const updateNote = async (id, isCompleted) => {
 };
 
 export const deleteNote = async (id) => {
-  return await apiCall(`/api/tasks/${id}`, {
+  return await apiCall(`/api/notes/${id}`, {
     method: "DELETE",
   });
 };
