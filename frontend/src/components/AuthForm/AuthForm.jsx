@@ -6,10 +6,12 @@ import { signUp, signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 
 export default function AuthForm({ mode, onClose, onSwitch }) {
+  // To check the login status and data
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // setting the credintials into empty String default
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +23,7 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
 
   const navigate = useNavigate();
 
+  //if not isSignUp sign in
   const isSignUp = mode === "signup";
 
   const handleSignUp = async () => {
@@ -221,6 +224,7 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
             </div>
           )}
 
+          {/* want to upgrade after the otp implemented. because of the security issues */}
           {!isSignUp && (
             <div className={styles.authUtility}>
               <button type="button" className={styles.authForgot}>

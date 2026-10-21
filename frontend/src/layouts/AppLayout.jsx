@@ -19,7 +19,7 @@ export default function AppLayout() {
     localStorage.setItem('sidebarCollapsed', collapsed);
   }, [collapsed]);
 
-  // Ctrl/Cmd + B toggles the sidebar
+  // Ctrl/Cmd + B also toggles the sidebar
   useEffect(() => {
     const onKey = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
