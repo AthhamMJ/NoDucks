@@ -1,4 +1,3 @@
-import { data } from "react-router-dom";
 import { apiCall } from "./api";
 
 //Helping tool for Normalize the MONGODB tasks - UI formating

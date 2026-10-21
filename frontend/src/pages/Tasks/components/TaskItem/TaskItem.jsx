@@ -6,7 +6,10 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { PRIORITIES, DEFAULT_SUBJECT_COLOR } from "../../constants/taskConstants";
+import {
+  PRIORITIES,
+  DEFAULT_SUBJECT_COLOR,
+} from "../../constants/taskConstants";
 import { formatDue, isOverdue } from "../../utils/taskUtils";
 import styles from "../../Tasks.module.css";
 
@@ -41,11 +44,7 @@ export default function TaskItem({
               : `Mark "${task.title}" as completed`
           }
         >
-          {task.is_completed ? (
-            <CircleCheck size={24} />
-          ) : (
-            <Circle size={24} />
-          )}
+          {task.is_completed ? <CircleCheck size={24} /> : <Circle size={24} />}
         </button>
 
         <div className={styles.cardBody}>

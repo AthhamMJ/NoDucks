@@ -13,6 +13,19 @@ const generateToken = (userId) => {
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    if (!name || String(name).trim()) {
+      return res.status(400).json({ message: "Name is required" });
+    }
+
+    if (!email || !String(email.trim())) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    if (!password || password.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Password length must be at least 6 characters" });
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -22,7 +35,7 @@ export const register = async (req, res) => {
     }
 
     const user = await User.create({ name, email, password });
-    console.log("Newly created user saved to Database", user);
+    console.log(`User created: ${user.email} (${user._id})`);
 
     res.status(201).json({
       message: "User registered successfully",
@@ -42,8 +55,8 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "Inalid email or password." });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(404).json({ message: "Invalid email or password." });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Subject from "../models/Subject.js";
 import SubjectCatalog from "../models/SubjectCatalog.js";
 
@@ -48,7 +49,7 @@ export const createSubject = async (req, res) => {
     }
 
     let catalogEntry = null;
-    if (req.body.catalogId) {
+    if (req.body.catalogId && mongoose.isValidObjectId(req.body.catalogId)){
       catalogEntry = await SubjectCatalog.findById(req.body.catalogId);
     }
 

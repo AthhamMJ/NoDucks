@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const subjectSchema = new mongoose.Schema(
   {
     user: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -11,7 +11,7 @@ const subjectSchema = new mongoose.Schema(
       type: String,
       required: [true, "Subject name is required"],
       trim: true,
-      maxlenght: 40,
+      maxlength: 40,
     },
     color: {
       type: String,
@@ -34,7 +34,7 @@ const subjectSchema = new mongoose.Schema(
 
 subjectSchema.index(
   { user: 1, name: 1 },
-  { unique: true, collection: { locate: "en", strength: 2 } },
+  { unique: true, collation: { locale: "en", strength: 2 } },
 );
 
 export default mongoose.model("Subject", subjectSchema);

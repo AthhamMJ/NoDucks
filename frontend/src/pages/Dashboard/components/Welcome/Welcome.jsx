@@ -1,5 +1,4 @@
 import styles from "./Welcome.module.css";
-
 function WelcomeSection() {
   return (
     <div className={styles.welcomeContent}>

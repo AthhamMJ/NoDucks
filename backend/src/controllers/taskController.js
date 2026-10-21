@@ -1,23 +1,8 @@
 import mongoose from "mongoose";
 import Task from "../models/Task.js";
-import Subject from "../models/Subject.js";
+import { checkSubject, handleError } from "../utils/controllerHelpers.js" 
 
 const PRIORITIES = ["low", "medium", "high"];
-
-//A subject id is only allowed if it belongs to the logged-in student
-async function checkSubject(subjectId, userId) {
-  if (!subjectId) return true;
-  if (!mongoose.isValidObjectId(subjectId)) return false;
-  return Boolean(await Subject.exists({ _id: subjectId, user: userId }));
-}
-
-function handleError(res, error, fallback) {
-  if (error.name === "ValidationError" || error.name === "CastError") {
-    return res.status(400).json({ message: error.message });
-  }
-  console.error(fallback, error);
-  return res.status(500).json({ message: fallback });
-}
 
 export const getTasks = async (req, res) => {
   try {
