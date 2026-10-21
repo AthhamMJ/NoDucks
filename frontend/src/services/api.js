@@ -15,6 +15,7 @@ export const apiCall = async (endpoint, options = {}) => {
   });
 
   let data = null;
+  // cleaning the past data
   try {
     data = await response.json();
   } catch {}

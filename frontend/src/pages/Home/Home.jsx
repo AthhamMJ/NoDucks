@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import styles from "./Home.module.css";
 import AuthForm from "../../components/AuthForm/AuthForm";
+import Animation from "./animation/Animation";
 
 function getInitialTheme() {
   try {
@@ -10,6 +11,8 @@ function getInitialTheme() {
     return "dark";
   }
 }
+
+
 
 export default function Home() {
   const [theme, setTheme] = useState(getInitialTheme);
@@ -104,8 +107,10 @@ export default function Home() {
 
         <div className={styles.heroVisual}>
           <div className={styles.heroBox}>
-            <div className={styles.ringAround}>
-              <div className={styles.planet}></div>
+            <div>
+              <div>
+              <Animation />
+              </div>
             </div>
           </div>
         </div>

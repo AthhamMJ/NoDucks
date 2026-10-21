@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CircleAlert, CircleCheck, LoaderCircle, Plus, X } from "lucide-react";
 import {
   TITLE_MAX,
-  CONTENT_MAX,
+  description_MAX,
   SUBJECT_MAX,
   DEFAULT_SUBJECT_COLOR,
 } from "../../constants/notesConstants";
@@ -23,7 +23,7 @@ export default function NotesModal({
   const initial = useMemo(
     () => ({
       title: note?.title ?? "",
-      content: note?.content ?? "",
+      description: note?.description ?? "",
       subjectId: note?.subject_id ?? "",
     }),
     [note],
@@ -43,7 +43,7 @@ export default function NotesModal({
 
   const dirty =
     values.title !== initial.title ||
-    values.content !== initial.content ||
+    values.description !== initial.description ||
     values.subjectId !== initial.subjectId;
 
   const canDismissSoftly = !dirty && !saving;
@@ -141,7 +141,7 @@ export default function NotesModal({
     try {
       await onSave({
         title,
-        content: values.content.trim(),
+        description: values.description.trim(),
         subject_id: values.subjectId || null,
       });
       onClose();
@@ -215,8 +215,8 @@ export default function NotesModal({
             )}
           </div>
 
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>Subject</legend>
+          <fieldset className={styles.field}>
+            <legend className={styles.label}>Subject <span className={styles.optional}>(optional)</span></legend>
 
             {subjectsLoading && (
               <p className={styles.fieldHint}>Loading your subjects...</p>
@@ -229,38 +229,37 @@ export default function NotesModal({
             )}
 
             {subjectsReady && (
-              <div className={styles.subjectGroup}>
-                <button
-                  type="button"
-                  className={`${styles.subjectChip} ${
-                    !values.subjectId ? styles.subjectChipActive : ""
-                  }`}
-                  style={{ "--subject-color": DEFAULT_SUBJECT_COLOR }}
-                  onClick={() => update("subjectId", "")}
-                >
-                  {!values.subjectId && (
-                    <CircleCheck size={14} aria-hidden="true" />
-                  )}
-                  No Subject
-                </button>
-
+              <div
+                className={styles.subjectGroup}
+                role="group"
+                aria-label="Your subjects"
+              >
                 {subjects.map((subject) => {
                   const active = values.subjectId === subject.id;
                   return (
                     <button
                       key={subject.id}
                       type="button"
-                      className={`${styles.subjectChip} ${
-                        active ? styles.subjectChipActive : ""
+                      className={`${styles.subjectOption} ${
+                        active ? styles.subjectOptionActive : ""
                       }`}
                       style={{
-                        "--subject-color":
-                          subject.color || DEFAULT_SUBJECT_COLOR,
+                        "--subject-color": subject.color || DEFAULT_SUBJECT_COLOR,
+                        "--subject-soft": `${subject.color || DEFAULT_SUBJECT_COLOR}20`,
                       }}
-                      onClick={() => update("subjectId", subject.id)}
+                      onClick={() =>
+                        update(
+                          "subjectId",
+                          values.subjectId === subject.id ? "" : subject.id,
+                        )
+                      }
+                      aria-pressed={values.subjectId === subject.id}
                     >
-                      {active && <CircleCheck size={14} aria-hidden="true" />}
+                      <span className={styles.subjectDot} />
                       {subject.name}
+                      {values.subjectId === subject.id && (
+                        <CircleCheck size={15} aria-hidden="true" />
+                      )}
                     </button>
                   );
                 })}
@@ -270,7 +269,7 @@ export default function NotesModal({
             {subjectsReady && suggestions.length > 0 && (
               <div className={styles.suggestions}>
                 <span className={styles.suggestionsLabel}>
-                  Add from catalog:
+                  Suggestions
                 </span>
                 <div className={styles.subjectGroup}>
                   {suggestions.map((entry) => (
@@ -358,17 +357,17 @@ export default function NotesModal({
           </fieldset>
 
           <div className={styles.field}>
-            <label htmlFor="note-content" className={styles.label}>
-              Content <span className={styles.optional}>(optional)</span>
+            <label htmlFor="note-description" className={styles.label}>
+              description <span className={styles.optional}>(optional)</span>
             </label>
             <textarea
-              id="note-content"
+              id="note-description"
               className={styles.textarea}
               placeholder="Write your note here"
               rows={7}
-              value={values.content}
-              maxLength={CONTENT_MAX}
-              onChange={(event) => update("content", event.target.value)}
+              value={values.description}
+              maxLength={description_MAX}
+              onChange={(event) => update("description", event.target.value)}
               disabled={saving}
             />
           </div>

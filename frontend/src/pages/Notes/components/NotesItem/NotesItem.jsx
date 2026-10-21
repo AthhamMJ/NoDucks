@@ -20,7 +20,7 @@ export default function NotesItem({ note, subject, onSelect }) {
           <span className={styles.subjectPill}>{subjectName}</span>
         )}
         <h2 className={styles.cardTitle}>{note.title}</h2>
-        <p className={styles.cardPreview}>{note.content}</p>
+        <p className={styles.cardPreview}>{note.description}</p>
         <span className={styles.cardMeta}>
           <Clock size={12} aria-hidden="true" />
           Edited {timeAgo(note.updated_at ?? note.created_at)}

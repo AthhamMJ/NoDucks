@@ -17,6 +17,7 @@ export default function ProtectedRoute() {
     );
   }
 
+  //if the user Token just failed, automatically go to the Home page
   if (!isAuthenticated) {
     return <Navigate to="/" replace state={{ from: location }} />;
   }

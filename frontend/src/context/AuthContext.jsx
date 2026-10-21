@@ -5,9 +5,13 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  // why because if we let to get the token only , it will crash if the token doesn't exist
   const [token, setToken] = useState(localStorage.getItem("token") || null);
+
+  
   const [loading, setLoading] = useState(true);
 
+  // prevent the page from refresh
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem("token");

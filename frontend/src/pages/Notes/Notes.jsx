@@ -1,12 +1,26 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronRight, LayoutGrid, List, Plus } from "lucide-react";
-import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
+import {
+  fetchNotes,
+  createNote,
+  updateNote,
+  deleteNote,
+  fetchSubjects,
+  fetchSubjectCatalog,
+  addSubject,
+} from "../../services/noteService";
 import {
   CUSTOM_SUBJECT_COLORS,
   SUBJECT_COLUMNS,
 } from "./constants/notesConstants";
-import { cleanName, sortByName, sortByRecent } from "./utils/notesUtils";
+import {
+  cleanName,
+  isMissingTable,
+  sortByName,
+  sortByRecent,
+} from "./utils/notesUtils";
 import NotesStates from "./components/NotesStates/NotesStates";
 import NotesItem from "./components/NotesItem/NotesItem";
 import NotesModal from "./components/NotesModal/NotesModal";
@@ -15,171 +29,101 @@ import styles from "./Notes.module.css";
 export default function Notes() {
   const navigate = useNavigate();
 
+  const { user } = useAuth();
+
   const [status, setStatus] = useState("loading");
   const [notes, setNotes] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [subjectCatalog, setSubjectCatalog] = useState([]);
   const [subjectsLoading, setSubjectsLoading] = useState(true);
   const [subjectsError, setSubjectsError] = useState(false);
-  const [userId, setUserId] = useState(null);
-  const [view, setView] = useState("grid");
   const [modal, setModal] = useState(null);
+  const [pendingIds, setPendingIds] = useState(() => new Set());
+  const [confirmingId, setConfirmingId] = useState(null);
+
 
   const loadNotes = useCallback(async () => {
-    setStatus("loading");
-    setSubjectsLoading(true);
-    setSubjectsError(false);
-
-    const {
-      data: { user },
-      error: userError,
-    } = await mongoose.auth.getUser();
-
-    if (userError || !user) {
-      setUserId(null);
+    if (!user) {
       setNotes([]);
       setSubjects([]);
       setSubjectCatalog([]);
       setSubjectsLoading(false);
-      setStatus("signed-out");
+      setStatus("sign-out");
       return;
     }
 
-    setUserId(user.id);
+    setStatus("loading");
+    setSubjectsLoading(true);
+    setSubjectsError(false);
 
-    const [notesResult, subjectsResult, catalogResult] = await Promise.all([
-      supabase.from("notes").select("*").eq("user_id", user.id),
-      supabase
-        .from("subjects")
-        .select(SUBJECT_COLUMNS)
-        .eq("user_id", user.id)
-        .order("name", { ascending: true }),
-      supabase
-        .from("subject_catalog")
-        .select("id, name, default_color")
-        .order("name", { ascending: true }),
-    ]);
+    try {
+      const [NoteRes, subjectsRes, catalogRes] = await Promise.all([
+        fetchNotes(),
+        fetchSubjects().catch(() => ({ subjects: [] })),
+        fetchSubjectCatalog().catch(() => ({ catalog: [] })),
+      ]);
 
-    setSubjects(subjectsResult.error ? [] : (subjectsResult.data ?? []));
-    setSubjectCatalog(catalogResult.error ? [] : (catalogResult.data ?? []));
-    setSubjectsError(Boolean(subjectsResult.error));
-    setSubjectsLoading(false);
-
-    if (notesResult.error) {
+      setNotes(NoteRes.notes ?? []);
+      setSubjects(subjectsRes.subjects ?? []);
+      setSubjectCatalog(catalogRes.catalog ?? []);
+      setSubjectsError(false);
+      setSubjectsLoading(false);
+      setStatus("ready");
+    } catch (error) {
+      console.error("Failed to load Notes:", error);
       setNotes([]);
+      setSubjectsLoading(false);
       setStatus("error");
-      return;
     }
-
-    setNotes(sortByRecent(notesResult.data ?? []));
-    setStatus("ready");
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     loadNotes();
   }, [loadNotes]);
 
-  const subjectsById = useMemo(
-    () => new Map(subjects.map((subject) => [subject.id, subject])),
-    [subjects],
-  );
-
   async function handleAddSubject({ name, catalogId = null, color }) {
-    const clean = cleanName(name);
-    if (!clean) throw new Error("Subject name is required.");
-    const key = clean.toLowerCase();
-
-    let linkedCatalogId = catalogId;
-    let chosenColor = color;
-    if (!linkedCatalogId) {
-      const match = subjectCatalog.find((e) => e.name.toLowerCase() === key);
-      if (match) {
-        linkedCatalogId = match.id;
-        chosenColor = chosenColor || match.default_color;
-      }
-    }
-
-    const sameSubject = (s) =>
-      s.name.toLowerCase() === key ||
-      (linkedCatalogId && s.catalog_id === linkedCatalogId);
-
-    const existing = subjects.find(sameSubject);
-    if (existing) return existing;
-
-    const { data, error } = await supabase
-      .from("subjects")
-      .insert({
-        user_id: userId,
-        name: clean,
-        color:
-          chosenColor ||
-          CUSTOM_SUBJECT_COLORS[subjects.length % CUSTOM_SUBJECT_COLORS.length],
-        catalog_id: linkedCatalogId,
-      })
-      .select(SUBJECT_COLUMNS)
-      .single();
-
-    if (!error) {
-      setSubjects((current) => sortByName([...current, data]));
-      return data;
-    }
-
-    if (error.code === "23505") {
-      const { data: fresh } = await supabase
-        .from("subjects")
-        .select(SUBJECT_COLUMNS)
-        .eq("user_id", userId)
-        .order("name", { ascending: true });
-      const match = fresh?.find(sameSubject);
-      if (match) {
-        setSubjects(fresh);
-        return match;
-      }
-    }
-
-    throw error;
+    const data = await addSubject({ name, catalogId: catalogId, color });
+    const newSubject = data.subject ?? data;
+    setSubjects((current) => sortByName([...current, newSubject]));
+    return newSubject;
   }
 
   async function handleSave(values) {
-    const payload = {
-      ...values,
-      updated_at: new Date().toISOString(),
-    };
-
     if (modal?.note) {
-      const { data, error } = await supabase
-        .from("notes")
-        .update(payload)
-        .eq("id", modal.note.id)
-        .eq("user_id", userId)
-        .select()
-        .single();
-
-      if (error) throw error;
-
+      const data = await updateNote(modal.note.id, values);
+      const updated = data.note ?? data;
       setNotes((current) =>
-        sortByRecent(
-          current.map((note) => (note.id === data.id ? data : note)),
-        ),
+        current.map((note) => (note.id === updated.id ? updated : note))
       );
     } else {
-      const { data, error } = await supabase
-        .from("notes")
-        .insert({
-          ...payload,
-          user_id: userId,
-        })
-        .select()
-        .single();
+      const data = await createNote(values);
+      const created = data.note ?? data;
+      setNotes((current) => [created, ...current]);
+    }
+  }
 
-      if (error) throw error;
-
-      setNotes((current) => sortByRecent([data, ...current]));
+  async function handleDelete(noteId) {
+    try{
+      await deleteNote(noteId);
+      //remove the deleted note from the state
+      setNotes((current) => current.filter((note) => note.id !== noteId));
+      setModal(null)
+    }catch(error){
+      console.error("Failed to delete Notes", error);
+      alert("Could not delete the note. please try again later")
     }
   }
 
   const canAdd = status === "ready";
   const openCreate = () => setModal({ note: null });
+
+  const [view, setView] = useState("grid");
+  
+  // Map for fast subject color & name lookup (Memo, Memories)
+  const subjectsById = useMemo(
+    () => new Map(subjects.map((subject) => [subject.id, subject])),
+    [subjects],
+  );
 
   function renderContent() {
     if (status !== "ready") {
@@ -275,6 +219,7 @@ export default function Notes() {
           onAddSubject={handleAddSubject}
           onClose={() => setModal(null)}
           onSave={handleSave}
+          onDelete={handleDelete}
         />
       )}
     </div>

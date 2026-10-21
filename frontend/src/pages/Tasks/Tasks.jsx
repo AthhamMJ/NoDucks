@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CircleAlert, CircleCheck, Plus, X, ArrowLeft, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
 import {
   fetchTasks,
   createTask,
@@ -34,6 +33,8 @@ export default function Tasks() {
   const [actionError, setActionError] = useState("");
 
   const loadTasks = useCallback(async () => {
+
+    //weather the user credintials not founded the setters would have the empty arrays
     if (!user) {
       setTasks([]);
       setSubjects([]);
