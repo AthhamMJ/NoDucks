@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import styles from "./Home.module.css";
 import AuthForm from "../../components/AuthForm/AuthForm";
-import Animation from "./animation/Animation";
+import Animation from "./Animation/Animation";
 
 function getInitialTheme() {
   try {
