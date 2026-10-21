@@ -215,8 +215,8 @@ export default function NotesModal({
             )}
           </div>
 
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>Subject</legend>
+          <fieldset className={styles.field}>
+            <legend className={styles.label}>Subject <span className={styles.optional}>(optional)</span></legend>
 
             {subjectsLoading && (
               <p className={styles.fieldHint}>Loading your subjects...</p>
@@ -229,38 +229,37 @@ export default function NotesModal({
             )}
 
             {subjectsReady && (
-              <div className={styles.subjectGroup}>
-                <button
-                  type="button"
-                  className={`${styles.subjectChip} ${
-                    !values.subjectId ? styles.subjectChipActive : ""
-                  }`}
-                  style={{ "--subject-color": DEFAULT_SUBJECT_COLOR }}
-                  onClick={() => update("subjectId", "")}
-                >
-                  {!values.subjectId && (
-                    <CircleCheck size={14} aria-hidden="true" />
-                  )}
-                  No Subject
-                </button>
-
+              <div
+                className={styles.subjectGroup}
+                role="group"
+                aria-label="Your subjects"
+              >
                 {subjects.map((subject) => {
                   const active = values.subjectId === subject.id;
                   return (
                     <button
                       key={subject.id}
                       type="button"
-                      className={`${styles.subjectChip} ${
-                        active ? styles.subjectChipActive : ""
+                      className={`${styles.subjectOption} ${
+                        active ? styles.subjectOptionActive : ""
                       }`}
                       style={{
-                        "--subject-color":
-                          subject.color || CUSTOM_SUBJECT_COLORS,
+                        "--subject-color": subject.color || DEFAULT_SUBJECT_COLOR,
+                        "--subject-soft": `${subject.color || DEFAULT_SUBJECT_COLOR}20`,
                       }}
-                      onClick={() => update("subjectId", subject.id)}
+                      onClick={() =>
+                        update(
+                          "subjectId",
+                          values.subjectId === subject.id ? "" : subject.id,
+                        )
+                      }
+                      aria-pressed={values.subjectId === subject.id}
                     >
-                      {active && <CircleCheck size={14} aria-hidden="true" />}
+                      <span className={styles.subjectDot} />
                       {subject.name}
+                      {values.subjectId === subject.id && (
+                        <CircleCheck size={15} aria-hidden="true" />
+                      )}
                     </button>
                   );
                 })}
@@ -270,7 +269,7 @@ export default function NotesModal({
             {subjectsReady && suggestions.length > 0 && (
               <div className={styles.suggestions}>
                 <span className={styles.suggestionsLabel}>
-                  Add from catalog:
+                  Suggestions
                 </span>
                 <div className={styles.subjectGroup}>
                   {suggestions.map((entry) => (

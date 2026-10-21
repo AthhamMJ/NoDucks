@@ -4,7 +4,7 @@ import { checkSubject, handleError } from "../utils/controllerHelpers.js";
 
 export const getNotes = async (req, res) => {
   try {
-    const notes = await Note.find({ user: req, user }).sort({ updatedAt: -1 });
+    const notes = await Note.find({ user: req.user }).sort({ updatedAt: -1 });
     res.json({ notes });
   } catch (error) {
     handleError(res, error, "Could not load notes");
