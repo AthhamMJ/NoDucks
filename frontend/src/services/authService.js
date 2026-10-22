@@ -1,17 +1,16 @@
-import { apiCall } from "./api";
+import api from "./api";
+
+// Program updated with the axios so it uses the direct and simplified method
+// to post
 
 export const signUp = async (userData) => {
   // Expects { name, email, password }
-  return await apiCall("/api/auth/register", {
-    method: "POST",
-    body: JSON.stringify(userData),
-  });
+  const { data } = await api.post("/api/auth/register", userData);
+  return data;
 };
 
 export const signIn = async (credentials) => {
   // Expects { email, password }
-  return await apiCall("/api/auth/login", {
-    method: "POST",
-    body: JSON.stringify(credentials),
-  });
+  const { data } = await api.post("/api/auth/login", credentials);
+  return data;
 };

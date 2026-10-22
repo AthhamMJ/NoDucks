@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { apiCall } from "../services/api";
+import api from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           // fetch the details using the saved token on page refresh
-          const data = await apiCall("/api/auth/me");
+          const { data } = await api.get("/api/auth/me");
           setUser(data.user);
         } catch (error) {
           localStorage.removeItem("token");

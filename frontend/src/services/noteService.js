@@ -1,4 +1,4 @@
-import { apiCall } from "./api";
+import api from "./api";
 
 const formatNote = (note) => ({
   id: note.id || note._id,
@@ -34,37 +34,30 @@ const formatCatalog = (item) => ({
 });
 
 export const fetchNotes = async () => {
-  const data = await apiCall("/api/notes");
+  const { data } = await api.get("/api/notes");
   const notes = Array.isArray(data.notes) ? data.notes.map(formatNote) : [];
   return { notes };
 };
 
 export const createNote = async (noteData) => {
   const body = toBackendNote(noteData);
-  const data = await apiCall("/api/notes", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  const { data } = await api.post("/api/notes", body);
   return { note: formatNote(data.note) };
 };
 
 export const updateNote = async (id, noteData) => {
   const body = toBackendNote(noteData);
-  const data = await apiCall(`/api/notes/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(body),
-  });
+  const { data } = await api.patch(`/api/notes/${id}`, body);
   return { note: formatNote(data.note) };
 };
 
 export const deleteNote = async (id) => {
-  return await apiCall(`/api/notes/${id}`, {
-    method: "DELETE",
-  });
+  const { data } =await api.delete(`/api/notes/${id}`);
+  return data
 };
 
 export const fetchSubjects = async () => {
-  const data = await apiCall("/api/subjects");
+  const { data } = await api.get("/api/subjects");
   const subjects = Array.isArray(data.subjects)
     ? data.subjects.map(formatSubject)
     : [];
@@ -72,7 +65,7 @@ export const fetchSubjects = async () => {
 };
 
 export const fetchSubjectCatalog = async () => {
-  const data = await apiCall("/api/subjects/catalog");
+  const { data } = await api.get("/api/subjects/catalog");
   const catalog = Array.isArray(data.catalog)
     ? data.catalog.map(formatCatalog)
     : [];
@@ -82,12 +75,9 @@ export const fetchSubjectCatalog = async () => {
 export const addSubject = async ({ name, catalog_id, catalogId, color }) => {
   const body = {
     name,
-    catlaogId: catalogId || catalog_id || null,
+    catalogId: catalogId || catalog_id || null,
     color,
   };
-  const data = await apiCall("/api/subjects", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  const { data } = await api.post("/api/subjects", body);
   return { subject: formatSubject(data.subject) };
 };

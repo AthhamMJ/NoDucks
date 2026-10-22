@@ -1,4 +1,7 @@
-import { apiCall } from "./api";
+import api from "./api";
+
+// Program updated with the axios so it uses the direct and simplified method
+// to post
 
 //Helping tool for Normalize the MONGODB tasks - UI formating
 const formatTask = (task) => ({
@@ -50,26 +53,20 @@ const formatCatalog = (item) => ({
 // Tasks API
 
 export const fetchTasks = async () => {
-  const data = await apiCall("/api/tasks"); //backend will answer for this /tasks api
+  const { data } = await api.get("/api/tasks"); //backend will answer for this /tasks api
   const tasks = Array.isArray(data.tasks) ? data.tasks.map(formatTask) : [];
   return { tasks };
 };
 
 export const createTask = async (taskData) => {
   const body = toBackendTask(taskData);
-  const data = await apiCall("/api/tasks", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  const { data } = await api.post("/api/tasks", body);
   return { task: formatTask(data.task) };
 };
 
 export const updateTask = async (id, taskData) => {
   const body = toBackendTask(taskData);
-  const data = await apiCall(`/api/tasks/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(body),
-  });
+  const { data } = await api.patch(`/api/tasks/${id}`, body);
   return { task: formatTask(data.task) };
 };
 
@@ -78,15 +75,14 @@ export const toggleTask = async (id, isCompleted) => {
 };
 
 export const deleteTask = async (id) => {
-  return await apiCall(`/api/tasks/${id}`, {
-    method: "DELETE",
-  });
+  const { data } = await api.delete(`/api/tasks/${id}`);
+  return data;
 };
 
 //subject API
 
 export const fetchSubjects = async () => {
-  const data = await apiCall("/api/subjects");
+  const { data } = await api.get("/api/subjects");
   const subjects = Array.isArray(data.subjects)
     ? data.subjects.map(formatSubject)
     : [];
@@ -94,7 +90,7 @@ export const fetchSubjects = async () => {
 };
 
 export const fetchSubjectCatalog = async () => {
-  const data = await apiCall("/api/subjects/catalog");
+  const { data } = await api.get("/api/subjects/catalog");
   const catalog = Array.isArray(data.catalog)
     ? data.catalog.map(formatCatalog)
     : [];
@@ -107,9 +103,6 @@ export const addSubject = async ({ name, catalog_id, catalogId, color }) => {
     catalogId: catalogId || catalog_id || null,
     color,
   };
-  const data = await apiCall("/api/subjects", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  const { data } = await api.post("/api/subjects/", body);
   return { subject: formatSubject(data.subject) };
 };
