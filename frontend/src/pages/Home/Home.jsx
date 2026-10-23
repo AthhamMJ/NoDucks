@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import styles from "./Home.module.css";
 import AuthForm from "../../components/AuthForm/AuthForm";
-import Animation from "./Animation/Animation";
+import  { Animation, Cradle } from "./Animation/Animation";
+
 
 function getInitialTheme() {
   try {
@@ -42,6 +43,7 @@ export default function Home() {
           <a href="#features">Features</a>
           <a href="#workflow">How It Works</a>
           <a href="#about">About</a>
+          <a href="#about">Docs</a>
         </div>
 
         <div className={styles.navActions}>
@@ -108,9 +110,7 @@ export default function Home() {
         <div className={styles.heroVisual}>
           <div className={styles.heroBox}>
             <div>
-              <div>
               <Animation />
-              </div>
             </div>
           </div>
         </div>
@@ -121,6 +121,8 @@ export default function Home() {
         <p className={styles.sectionLabel}>Why NoDucks</p>
 
         <h2>Learning should lead somewhere.</h2>
+
+        <div className={styles.cradle}><Cradle /></div>
 
         <div className={styles.featureGrid}>
           <div className={styles.featureCard}>
