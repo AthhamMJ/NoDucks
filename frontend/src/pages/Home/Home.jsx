@@ -214,6 +214,8 @@ export default function Home() {
         <span>© 2026 NoDucks. All rights reserved.</span>
       </footer>
 
+
+      {/*passing the auth mode as a prop*/}
       {authMode && (
         <AuthForm
           mode={authMode}
