@@ -9,6 +9,14 @@ const generateToken = (userId) => {
   });
 };
 
+const toSafeUser = (user) => ({
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  plan: user.plan,
+  preferences: user.preferences,
+});
+
 //Register or SignUp
 export const register = async (req, res) => {
   try {
@@ -84,6 +92,55 @@ export const getMe = async (req, res) => {
     const user = await User.findById(req.user).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json({ user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateMe = async (req, res) => {
+  try {
+    const updates = {};
+    if (req.body.name !== undefined) {
+      const name = String(req.boby.name).trim();
+      if (!name) {
+        return res.status(400).json({ message: "Name connot be empty" });
+      }
+      updates.name = name;
+    }
+
+    //Only these preference keys can be changed
+    const allowedPreferences = ["darkMode", "notifications", "language"];
+    if (req.body.preferences) {
+      for (const key of allowedPreferences) {
+        if (req.body.preferences[key] !== undefined) {
+          updates[`preferences.$[key]`] = req.body.preferences[key];
+        }
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "Nothing to update" });
+    }
+
+    const user = await User.findByIdAndDelete(
+      req.user,
+      { $set: updates },
+      { new: true, runValidators: true },
+    );
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ user: toSafeUser(user) });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Delete the current user
+export const deleteMe = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.user);
+    if (!user) return res.status(404).json({ message: "User not Found" });
+    res.json({ message: "Account Deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
