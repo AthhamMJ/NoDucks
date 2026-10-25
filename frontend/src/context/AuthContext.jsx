@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   // why because if we let to get the token only , it will crash if the token doesn't exist
   const [token, setToken] = useState(localStorage.getItem("token") || null);
 
-  
   const [loading, setLoading] = useState(true);
 
   // prevent the page from refresh
@@ -44,10 +43,13 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateUser = (updates) => {
+    setUser((prev) => ({ ...prev, ...updates }));
+  };
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, isAuthenticated: !!token, loading }}
+      value={{ user, token, login, logout, updateUser, isAuthenticated: !!token, loading }}
     >
       {children}
     </AuthContext.Provider>

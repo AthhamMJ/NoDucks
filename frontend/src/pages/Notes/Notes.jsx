@@ -12,14 +12,7 @@ import {
   addSubject,
 } from "../../services/noteService";
 import {
-  CUSTOM_SUBJECT_COLORS,
-  SUBJECT_COLUMNS,
-} from "./constants/notesConstants";
-import {
-  cleanName,
-  isMissingTable,
-  sortByName,
-  sortByRecent,
+  sortByName
 } from "./utils/notesUtils";
 import NotesStates from "./components/NotesStates/NotesStates";
 import NotesItem from "./components/NotesItem/NotesItem";
