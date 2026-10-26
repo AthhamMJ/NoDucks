@@ -1,11 +1,22 @@
 import styles from "./Welcome.module.css";
+import { useAuth } from "../../../../context/AuthContext";
+
 function WelcomeSection() {
+  //destructuring the important data from the hook ^
+  const { user } = useAuth();
+
+  const formattedDateToday = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
   return (
     <div className={styles.welcomeContent}>
-      <p>6 October 2026</p>
+      <p>{formattedDateToday}</p>
 
-      <h1>Welcome Back Athham</h1>
-    {/* division for making the distance between focusContent and the Start Button */}
+      <h1>Welcome Back, {user?.name || "User"}!</h1>
+      {/* division for making the distance between focusContent and the Start Button */}
       <div className={styles.focusSection}>
         <div className={styles.focusContent}>
           <div>

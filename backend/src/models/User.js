@@ -17,6 +17,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    plan: {
+      type: String,
+      enum: ["free", "pro"],
+      default: "free",
+    },
+    preferences: {
+      darkMode: { type: Boolean, default: false },
+      notifications: { type: Boolean, default: true },
+      language: { type: String, default: "en-US" },
+    },
   },
   {
     timestamps: true,

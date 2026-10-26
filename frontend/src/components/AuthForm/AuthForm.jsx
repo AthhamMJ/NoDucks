@@ -5,6 +5,8 @@ import styles from "./AuthForm.module.css";
 import { signUp, signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 
+//definition of hte parameters:- mode(SignIn or SignUp), onSwitch(Switching between up, in), onClose(Close popup)
+
 export default function AuthForm({ mode, onClose, onSwitch }) {
   // To check the login status and data
   const { login } = useAuth();
@@ -76,6 +78,7 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
       <div
         className={styles.authModal}
         onMouseDown={(event) => event.stopPropagation()}
+        // prevent the mouseclicks in the popup
         role="dialog"
         aria-modal="true"
         aria-labelledby="auth-title"
@@ -94,7 +97,7 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
           </div>
 
           <h2 id="auth-title">
-            {isSignUp ? "Start learning with NoDucks." : "Welcome back."}
+            {isSignUp ? "Create your Free Noducks Account" : "Welcome back."}
           </h2>
 
           <p>
@@ -103,7 +106,7 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
               : "Sign in to continue building your learning journey."}
           </p>
         </div>
-
+        {/*when submit the page*/}
         <form
           className={styles.authForm}
           onSubmit={(event) => {
