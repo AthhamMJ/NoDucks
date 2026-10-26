@@ -30,6 +30,12 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
+  // Apply the saved theme to the whole app whenever the user changes
+  useEffect(() => {
+    const isDark = user?.preferences?.darkMode ?? false;
+    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  }, [user]);
+
   // Login handler receives data from your Express /backend ({ token, user })
   const login = (data) => {
     localStorage.setItem("token", data.token);
@@ -49,7 +55,15 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, updateUser, isAuthenticated: !!token, loading }}
+      value={{
+        user,
+        token,
+        login,
+        logout,
+        updateUser,
+        isAuthenticated: !!token,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

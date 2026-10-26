@@ -21,7 +21,7 @@ const toSafeUser = (user) => ({
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || String(name).trim()) {
+    if (!name || !String(name).trim()) {
       return res.status(400).json({ message: "Name is required" });
     }
 
@@ -101,7 +101,7 @@ export const updateMe = async (req, res) => {
   try {
     const updates = {};
     if (req.body.name !== undefined) {
-      const name = String(req.boby.name).trim();
+      const name = String(req.body.name).trim();
       if (!name) {
         return res.status(400).json({ message: "Name connot be empty" });
       }
@@ -113,7 +113,7 @@ export const updateMe = async (req, res) => {
     if (req.body.preferences) {
       for (const key of allowedPreferences) {
         if (req.body.preferences[key] !== undefined) {
-          updates[`preferences.$[key]`] = req.body.preferences[key];
+          updates[`preferences.${key}`] = req.body.preferences[key];
         }
       }
     }
@@ -122,7 +122,7 @@ export const updateMe = async (req, res) => {
       return res.status(400).json({ message: "Nothing to update" });
     }
 
-    const user = await User.findByIdAndDelete(
+    const user = await User.findByIdAndUpdate(
       req.user,
       { $set: updates },
       { new: true, runValidators: true },

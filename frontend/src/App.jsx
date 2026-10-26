@@ -8,7 +8,7 @@ import Tasks from "./pages/Tasks/Tasks";
 
 // import AICoaching from './pages/AICoaching/AICoaching';
 import Notes from './pages/Notes/Notes';
-import Settings from './pages/Settings/Settings';
+import Setting from './pages/Setting/Setting';
 
 function AppRoutes() {
   return (
@@ -20,7 +20,7 @@ function AppRoutes() {
           {/* <Route path="ai-coaching" element={<AICoaching />} /> */}
           <Route path="tasks" element={<Tasks />} />
           <Route path="notes" element={<Notes />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<Setting />} />
         </Route>
       </Route>
 

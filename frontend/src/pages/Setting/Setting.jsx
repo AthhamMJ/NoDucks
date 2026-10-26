@@ -9,7 +9,7 @@ import PreferencesSection from "./components/PreferencesSection/PreferencesSecti
 import SecuritySection from "./components/SecuritySection/SecuritySection";
 import SubscriptionSection from "./components/SubscriptionSection/SubscriptionSection";
 import DangerZone from "./components/DangerZone/DangerZone";
-import styles from "./Settings.module.css";
+import styles from "./Setting.module.css";
 
 const DEFAULT_PREFERENCES = {
   darkMode: false,
@@ -24,18 +24,18 @@ export default function Settings() {
   // Read straight from the user, so there's one source of truth.
   const preferences = user?.preferences ?? DEFAULT_PREFERENCES;
 
-  // Apply the theme whenever Dark Mode changes.
-  useEffect(() => {
-    document.documentElement.dataset.theme = preferences.darkMode
-      ? "dark"
-      : "light";
-  }, [preferences.darkMode]);
+  // // Apply the theme whenever Dark Mode changes.
+  // useEffect(() => {
+  //   document.documentElement.dataset.theme = preferences.darkMode
+  //     ? "dark"
+  //     : "light";
+  // }, [preferences.darkMode]);
 
   if (loading || !user) {
     return <div className={styles.page}>Loading...</div>;
   }
 
-  // ---------- Profile ----------
+  // Profile
   const profile = {
     fullName: user.name,
     email: user.email,
@@ -53,7 +53,7 @@ export default function Settings() {
     }
   }
 
-  // ---------- Preferences ----------
+  // Preferences
   async function handlePreferenceChange(key, value) {
     const previous = preferences;
     const next = { ...preferences, [key]: value };
@@ -70,7 +70,7 @@ export default function Settings() {
     }
   }
 
-  // ---------- Security (placeholder until 2FA and sessions exist) ----------
+  // Security (placeholder until 2FA and sessions exist)
   const security = {
     passwordUpdatedText: "Last updated 3 months ago (Strong 16-character cipher)",
     twoFactorEnabled: true,
@@ -78,7 +78,7 @@ export default function Settings() {
     devicesDescription: "3 active sessions in London, UK & Tokyo, Japan",
   };
 
-  // ---------- Subscription (placeholder until billing exists) ----------
+  //Subscription (placeholder until billing exists
   const subscription = {
     isActive: user.plan === "pro",
     name: "NoDucks Scholar Pro",
@@ -91,7 +91,7 @@ export default function Settings() {
     ],
   };
 
-  // ---------- Danger zone ----------
+  //Danger zone
   function handleLogOut() {
     logout();
     navigate("/");

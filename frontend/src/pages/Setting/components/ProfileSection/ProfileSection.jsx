@@ -4,6 +4,7 @@ import SettingsCard from "../SettingsCard/SettingsCard";
 import styles from "./ProfileSection.module.css";
 
 function getInitials(name) {
+  if (!name || typeof name !== "String") return "?";
   return name
     .split(" ")
     .filter(Boolean)
@@ -14,12 +15,11 @@ function getInitials(name) {
 
 export default function ProfileSection({ profile, onSave }) {
   const [form, setForm] = useState({
-    fullName: profile.fullName
+    fullName: profile.fullName,
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  const isChanged =
-    form.fullName !== profile.fullName;
+  const isChanged = form.fullName !== profile.fullName;
 
   function handleChange(e) {
     const { name, value } = e.target;
