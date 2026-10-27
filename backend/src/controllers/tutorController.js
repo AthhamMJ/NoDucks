@@ -1,5 +1,7 @@
 import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 import Lesson from "../models/Lesson.js";
+import Chat from "../models/Chat.js";
+import { recordUsage } from "../services/aiUsageService.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -26,7 +28,15 @@ async function callGemini(contents, config = {}) {
         contents,
         config: modelConfig,
       });
-      if (response?.text) return response.text;
+      if (response?.text) {
+        return {
+          text: response.text,
+          usage: {
+            inputTokens: response.usageMetadata?.promptTokenCount || 0,
+            outputTokens: response.usageMetadata?.candidatesTokenCount || 0,
+          },
+        };
+      }
     } catch (err) {
       console.warn(`Model ${model} failed, trying next fallback:`, err.message);
     }
@@ -50,7 +60,7 @@ Maintain strict scientific accuracy, delineate where the analogy ends, and avoid
 
     const userPrompt = `Create a structured lesson on "${topic}" using analogies from "${interest}".`;
 
-    const rawJson = await callGemini(userPrompt, {
+    const { text: rawJson, usage } = await callGemini(userPrompt, {
       systemInstruction,
       responseMimeType: "application/json",
       responseSchema: {
@@ -145,6 +155,8 @@ Maintain strict scientific accuracy, delineate where the analogy ends, and avoid
       },
     });
 
+    await recordUsage(req.user._id, "lesson", usage);
+
     const parsedData = JSON.parse(rawJson);
 
     // Save to Mongo if user is logged in
@@ -172,7 +184,18 @@ Maintain strict scientific accuracy, delineate where the analogy ends, and avoid
 // 2. Chat Follow-up
 export const chatFollowUp = async (req, res, next) => {
   try {
-    const { topic, interest, lessonContext, history, message, mode } = req.body;
+    const { lessonId, topic, interest, lessonContext, history, message, mode } = req.body;
+
+    if (!lessonId || !message) {
+      return res
+        .status(400)
+        .json({ error: "lessonId and message are required." });
+    }
+    //Students only can chat on lessons they own
+    const owns = await Lesson.exists({ _id: lessonId, userId: req.user._id });
+    if (!owns) {
+      return res.status(404).json({ error: "Lesson not found" });
+    }
 
     let modeInstruction =
       "Answer directly and concisely in 2-3 short paragraphs.";
@@ -199,7 +222,28 @@ Instruction: ${modeInstruction}`;
     }
     contents.push({ role: "user", parts: [{ text: message }] });
 
-    const reply = await callGemini(contents, { systemInstruction });
+    const { text: reply, usage } = await callGemini(contents, {
+      systemInstruction,
+    });
+
+    await recordUsage(req.user._id, "chat", usage);
+
+    // Save both sides of the exchange; upsert creates the Chat the first time
+    await Chat.updateOne(
+      { userId: req.user._id, lessonId },
+      {
+        $push: {
+          messages: {
+            $each: [
+              { role: "user", content: message, mode },
+              { role: "assistant", content: reply, mode },
+            ],
+          },
+        },
+      },
+      { upsert: true },
+    );
+
     res.status(200).json({ reply });
   } catch (err) {
     next(err);
@@ -218,7 +262,7 @@ correctAnswerIndex must be 0, 1, 2, or 3.`;
 
     const userPrompt = `Topic: "${topic}", Interest: "${interest}", Summary: "${lessonSummary}"`;
 
-    const rawJson = await callGemini(userPrompt, {
+    const { text: rawJson, usage } = await callGemini(userPrompt, {
       systemInstruction,
       responseMimeType: "application/json",
       responseSchema: {
@@ -248,6 +292,8 @@ correctAnswerIndex must be 0, 1, 2, or 3.`;
         required: ["questions"],
       },
     });
+
+    await recordUsage(req.user._id, "quiz", usage);
 
     const parsed = JSON.parse(rawJson);
     res.status(200).json({

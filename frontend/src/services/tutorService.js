@@ -18,4 +18,28 @@ export const tutorService = {
     const res = await api.post("/api/tutor/generate-quiz", payload);
     return res.data.quiz;
   },
+
+  getLessons: async () => {
+    const res = await api.get("/api/lessons");
+    return res.data.lessons;
+  },
+
+  getLesson: async (id) => {
+    const res = await api.get(`/api/lessons/${id}`);
+    return res.data.lesson;
+  },
+
+  getLessonChat: async (id) => {
+    const res = await api.get(`/api/lessons/${id}/chat`);
+    return res.data.messages;
+  },
+
+  deleteLesson: async (id) => {
+    await api.delete(`/api/lessons/${id}`);
+  },
+
+  getUsage: async () => {
+    const res = await api.get("/api/tutor/usage");
+    return res.data;
+  },
 };

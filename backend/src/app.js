@@ -7,6 +7,7 @@ import taskRoutes from "./routes/taskRoutes.js";
 import subjectRoutes from "./routes/subjectRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js"
 import tutorRoutes from "./routes/tutorRoutes.js"
+import lessonRoutes from "./routes/lessonRoutes.js"
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/subjects", subjectRoutes);
 app.use("/api/tutor", tutorRoutes)
+app.use("/api/lessons", lessonRoutes)
 app.use("/api/tasks", taskRoutes)
 app.use("/api/notes/", noteRoutes)
 
