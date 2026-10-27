@@ -1,8 +1,8 @@
-import dotEnv from 'dotenv';
+import dotEnv from 'dotenv/config';
 import connectDB from './config/db.js';
 import app from './app.js';
 
-dotEnv.config();
+// dotEnv.config();
 
 await connectDB();
 

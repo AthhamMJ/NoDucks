@@ -6,7 +6,7 @@ import Home from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Tasks from "./pages/Tasks/Tasks";
 
-// import AICoaching from './pages/AICoaching/AICoaching';
+import AITutor from './pages/AITutor/AITutor';
 import Notes from './pages/Notes/Notes';
 import Setting from './pages/Setting/Setting';
 
@@ -17,7 +17,7 @@ function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
-          {/* <Route path="ai-coaching" element={<AICoaching />} /> */}
+          <Route path="ai-coaching" element={<AITutor />} />
           <Route path="tasks" element={<Tasks />} />
           <Route path="notes" element={<Notes />} />
           <Route path="settings" element={<Setting />} />

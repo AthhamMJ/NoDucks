@@ -6,6 +6,7 @@ import { getDBStatus } from "./config/db.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import subjectRoutes from "./routes/subjectRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js"
+import tutorRoutes from "./routes/tutorRoutes.js"
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.get("/api/health", (req, res) => {
 // route section
 app.use("/api/auth", authRoutes);
 app.use("/api/subjects", subjectRoutes);
+app.use("/api/tutor", tutorRoutes)
 app.use("/api/tasks", taskRoutes)
 app.use("/api/notes/", noteRoutes)
 
