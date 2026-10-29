@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import styles from './AppLayout.module.css';
 
 export default function AppLayout() {
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [collapsed, setCollapsed] = useState(
     localStorage.getItem('sidebarCollapsed') === 'true'
   );

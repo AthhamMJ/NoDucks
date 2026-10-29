@@ -20,12 +20,12 @@ const toSafeUser = (user) => ({
 //Register or SignUp
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role = "student" } = req.body;
     if (!name || !String(name).trim()) {
       return res.status(400).json({ message: "Name is required" });
     }
 
-    if (!email || !String(email.trim())) {
+    if (!email || !String(email).trim()) {
       return res.status(400).json({ message: "Email is required" });
     }
 
@@ -35,7 +35,9 @@ export const register = async (req, res) => {
         .json({ message: "Password length must be at least 6 characters" });
     }
 
-    const existingUser = await User.findOne({ email });
+    const normalizedEmail = String(email).toLowerCase();
+
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res
         .status(400)

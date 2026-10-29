@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom';
-import styles from './Sidebar.module.css';
+import { NavLink } from "react-router-dom";
+import styles from "./Sidebar.module.css";
+import { useAuth } from "../../context/AuthContext";
 
 import {
   LayoutDashboard,
@@ -10,29 +11,33 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
-} from 'lucide-react';
+  ShieldCheck,
+} from "lucide-react";
 
 const links = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/ai-coaching', label: 'AI Coaching', icon: Sparkles },
-  { to: '/tasks', label: 'Task Lists', icon: ListTodo },
-  { to: '/notes', label: 'Notes', icon: NotebookPen },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/ai-coaching", label: "AI Coaching", icon: Sparkles },
+  { to: "/tasks", label: "Task Lists", icon: ListTodo },
+  { to: "/notes", label: "Notes", icon: NotebookPen },
 ];
 
 export default function Sidebar({ collapsed, onToggle }) {
   const linkClass = ({ isActive }) =>
-    `${styles.link} ${isActive ? styles.active : ''}`;
+    `${styles.link} ${isActive ? styles.active : ""}`;
+
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
 
   return (
-    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
+    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
       <div className={styles.top}>
         <div className={styles.logo}>NoDucks</div>
 
         <button
           className={styles.toggle}
           onClick={onToggle}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          title={collapsed ? 'Expand (Ctrl+B)' : 'Collapse (Ctrl+B)'}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand (Ctrl+B)" : "Collapse (Ctrl+B)"}
         >
           {collapsed ? (
             <PanelLeftOpen size={17} strokeWidth={1.5} />
@@ -62,10 +67,24 @@ export default function Sidebar({ collapsed, onToggle }) {
           );
         })}
 
+        {isAdmin && (
+          <NavLink
+            to="/admin"
+            className={linkClass}
+            title={collapsed ? "Admin" : undefined}
+          >
+            <span className={styles.icon}>
+              <ShieldCheck size={17} strokeWidth={1.5} />
+            </span>
+
+            <span className={styles.label}>Admin</span>
+          </NavLink>
+        )}
+
         <span
           className={`${styles.link} ${styles.disabled}`}
           aria-disabled="true"
-          title={collapsed ? 'Experiment lab (Soon)' : undefined}
+          title={collapsed ? "Experiment lab (Soon)" : undefined}
         >
           <span className={styles.icon}>
             <FlaskConical size={17} strokeWidth={1.5} />
@@ -79,7 +98,7 @@ export default function Sidebar({ collapsed, onToggle }) {
         <NavLink
           to="/settings"
           className={linkClass}
-          title={collapsed ? 'Settings' : undefined}
+          title={collapsed ? "Settings" : undefined}
         >
           <span className={styles.icon}>
             <Settings size={17} strokeWidth={1.5} />

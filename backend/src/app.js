@@ -5,9 +5,10 @@ import { protect } from "./middleware/authMiddleware.js";
 import { getDBStatus } from "./config/db.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import subjectRoutes from "./routes/subjectRoutes.js";
-import noteRoutes from "./routes/noteRoutes.js"
-import tutorRoutes from "./routes/tutorRoutes.js"
-import lessonRoutes from "./routes/lessonRoutes.js"
+import noteRoutes from "./routes/noteRoutes.js";
+import tutorRoutes from "./routes/tutorRoutes.js";
+import lessonRoutes from "./routes/lessonRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 const app = express();
 
@@ -34,11 +35,12 @@ app.get("/api/health", (req, res) => {
 
 // route section
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/subjects", subjectRoutes);
-app.use("/api/tutor", tutorRoutes)
-app.use("/api/lessons", lessonRoutes)
-app.use("/api/tasks", taskRoutes)
-app.use("/api/notes/", noteRoutes)
+app.use("/api/tutor", tutorRoutes);
+app.use("/api/lessons", lessonRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/notes/", noteRoutes);
 
 // Protected Route
 app.get("/api/protected-test", protect, (req, res) => {

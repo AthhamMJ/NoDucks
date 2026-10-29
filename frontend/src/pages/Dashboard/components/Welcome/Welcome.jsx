@@ -1,9 +1,15 @@
 import styles from "./Welcome.module.css";
 import { useAuth } from "../../../../context/AuthContext";
+import { fetchTasks } from "../../../../services/taskServices";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function WelcomeSection() {
-  //destructuring the important data from the hook ^
+  const navigate = useNavigate();
+  //destructuring the important data from the hook
   const { user } = useAuth();
+  const [focusTask, setFocusTask] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const formattedDateToday = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -11,6 +17,29 @@ function WelcomeSection() {
     day: "numeric",
     year: "numeric",
   });
+
+  //Show the real subjects rather than Mock Data
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadFocusTask() {
+      try {
+        const { tasks } = await fetchTasks();
+        const nextTask = tasks.find((task) => !task.is_completed);
+        if (!ignore) setFocusTask(nextTask ?? null);
+      } catch (error) {
+        console.error("Failed to load the focus Task", error);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+
+    loadFocusTask();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <div className={styles.welcomeContent}>
       <p>{formattedDateToday}</p>
@@ -60,17 +89,29 @@ function WelcomeSection() {
 
           <div>
             <p>Today's Focus</p>
-            <h3>Newton's Second Law</h3>
-            <p>
-              Understand the concept
-              <br />
-              Doing some practices are enough today
-            </p>
+            {loading ? (
+              <p>loading...</p>
+            ) : focusTask ? (
+              <>
+                <h3>{focusTask.title}</h3>
+                {focusTask.description && <p>{focusTask.description}</p>}
+              </>
+            ) : (
+              <>
+                <h3>No Tasks yet</h3>
+                <p>Add a task to see it here.</p>
+              </>
+            )}
           </div>
         </div>
 
         <div className={styles.startButtonContainer}>
-          <button className={styles.startButton}>Start</button>
+          <button
+            className={styles.startButton}
+            onClick={() => navigate("/ai-coaching")}
+          >
+            Start
+          </button>
         </div>
       </div>
     </div>

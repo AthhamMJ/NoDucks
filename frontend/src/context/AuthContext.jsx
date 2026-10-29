@@ -32,8 +32,15 @@ export const AuthProvider = ({ children }) => {
 
   // Apply the saved theme to the whole app whenever the user changes
   useEffect(() => {
-    const isDark = user?.preferences?.darkMode ?? false;
-    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+    if (user?.preferences?.darkMode !== undefined) {
+      const theme = user.preferences.darkMode ? "dark" : "light";
+
+      document.documentElement.dataset.theme = theme;
+      localStorage.setItem("theme", theme);
+    } else {
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      document.documentElement.dataset.theme = savedTheme;
+    }
   }, [user]);
 
   // Login handler receives data from your Express /backend ({ token, user })

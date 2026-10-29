@@ -5,7 +5,7 @@ const LessonSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: false, // Set to true if login is required
+      required: true,
     },
     topic: { type: String, required: true },
     interest: { type: String, required: true },

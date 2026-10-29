@@ -5,10 +5,10 @@ import AppLayout from "./layouts/AppLayout";
 import Home from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Tasks from "./pages/Tasks/Tasks";
-
-import AITutor from './pages/AITutor/AITutor';
-import Notes from './pages/Notes/Notes';
-import Setting from './pages/Setting/Setting';
+import Admin from "./pages/Admin/Admin";
+import AITutor from "./pages/AITutor/AITutor";
+import Notes from "./pages/Notes/Notes";
+import Setting from "./pages/Setting/Setting";
 
 function AppRoutes() {
   return (
@@ -16,6 +16,7 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
+          <Route path="/admin" element={<Admin />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="ai-coaching" element={<AITutor />} />
           <Route path="tasks" element={<Tasks />} />
