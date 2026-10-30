@@ -1,3 +1,4 @@
+import mongoose, { mongo } from "mongoose";
 import User from "../models/User.js";
 import Task from "../models/Task.js";
 
@@ -26,7 +27,7 @@ export const getOverview = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
-    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const limit = Math.max(1, Math.min(parseInt(req.query.limit) || 20, 100));
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([
@@ -56,6 +57,9 @@ export const getUsers = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid uer ID" })
+    }
     const { id } = req.params;
     const { plan, role } = req.body;
 
@@ -71,7 +75,9 @@ export const updateUser = async (req, res) => {
       if(!["user", "admin"]. includes(role)){
         return res.status(400).json({message: "Invalid role"})
       }
-      if (id === String(req.user) && role !== "admin") {
+      //Changing the Object into a String
+      const currentUserId = req.user?._id ? String(req.user._id) : String(req.user)
+      if (id === currentUserId && role !== "admin") {
         return res
           .status(400)
           .json({ message: "You can't remove your Own admin Role" });

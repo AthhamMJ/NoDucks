@@ -14,6 +14,7 @@ const toSafeUser = (user) => ({
   name: user.name,
   email: user.email,
   plan: user.plan,
+  role: user.role,
   preferences: user.preferences,
 });
 
@@ -79,7 +80,7 @@ export const login = async (req, res) => {
     res.json({
       message: "Logged in Successfully",
       token,
-      user: { id: user._id, name: user.name, email: user.email },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, plan: user.plan },
     });
   } catch (error) {
     res.status(500).json({
