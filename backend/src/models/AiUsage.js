@@ -11,11 +11,13 @@ const aiUsageSchema = new mongoose.Schema(
     lessons: { type: Number, default: 0 },
     chats: { type: Number, default: 0 },
     quizzes: { type: Number, default: 0 },
+    failures: { type: Number, default: 0 },
     inputTokens: { type: Number, default: 0 },
     outputTokens: { type: Number, default: 0 },
   },
   {
     timestamps: true,
+    suppressReservedKeysWarning: true,
   },
 );
 

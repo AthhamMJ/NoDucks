@@ -1,25 +1,52 @@
 import mongoose, { mongo } from "mongoose";
 import User from "../models/User.js";
 import Task from "../models/Task.js";
+import AiUsage from "../models/AiUsage.js";
+import { currentPeriod } from "../config/aiQuotas.js";
 
 export const getOverview = async (req, res) => {
   try {
+    const period = currentPeriod();
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const [totalUsers, newUsers, totalTasks] = await Promise.all([
+    const [totalUsers, newUsers, totalTasks, aiTotals] = await Promise.all([
       User.countDocuments(),
       User.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
       Task.countDocuments(),
+      AiUsage.aggregate([
+        { $match: { period } },
+        {
+          $group: {
+            _id: null,
+            aiUsers: { $sum: 1 },
+            aiRequests: {
+              $sum: {
+                $add: [
+                  { $ifNull: ["$lessons", 0] },
+                  { $ifNull: ["$chats", 0] },
+                  { $ifNull: ["$quizzes", 0] },
+                ],
+              },
+            },
+            aiErrors: { $sum: { $ifNull: ["$failures", 0] } },
+          },
+        },
+      ]),
     ]);
+
+    const ai = aiTotals[0] || { aiUsers: 0, reRequests: 0, aiError: 0 }
 
     res.json({
       stats: {
         totalUsers,
         newUsers7d: newUsers,
         totalTasks,
+        aiUsersThisMonth: ai.aiUsers,
+        aiRequestsThisMonth: ai.aiRequests,
+        aiErrorsThisMonth: ai.aiErrors,
       },
     });
   } catch (error) {
-    console.error("getOverview error found", error)
+    console.error("getOverview error found", error);
     res.status(500).json({ message: "Failed to load the overview" });
   }
 };
@@ -57,10 +84,12 @@ export const getUsers = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid uer ID" })
-    }
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid uer ID" });
+    }
+
     const { plan, role } = req.body;
 
     const allowed = {};
@@ -70,13 +99,15 @@ export const updateUser = async (req, res) => {
       }
 
       allowed.plan = plan;
-    }  
-    if(role !== undefined){
-      if(!["user", "admin"]. includes(role)){
-        return res.status(400).json({message: "Invalid role"})
+    }
+    if (role !== undefined) {
+      if (!["user", "admin"].includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
       }
       //Changing the Object into a String
-      const currentUserId = req.user?._id ? String(req.user._id) : String(req.user)
+      const currentUserId = req.user?._id
+        ? String(req.user._id)
+        : String(req.user);
       if (id === currentUserId && role !== "admin") {
         return res
           .status(400)

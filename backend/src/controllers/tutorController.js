@@ -177,6 +177,7 @@ Maintain strict scientific accuracy, delineate where the analogy ends, and avoid
         : { id: `temp-${Date.now()}`, topic, interest, ...parsedData },
     });
   } catch (err) {
+    if (req.user) await recordError(req.user._id).catch(() => {});
     next(err);
   }
 };
@@ -246,6 +247,7 @@ Instruction: ${modeInstruction}`;
 
     res.status(200).json({ reply });
   } catch (err) {
+    if (req.user) await recordError(req.user._id).catch(() => {});
     next(err);
   }
 };
@@ -304,6 +306,7 @@ correctAnswerIndex must be 0, 1, 2, or 3.`;
       },
     });
   } catch (err) {
+    if (req.user) await recordError(req.user._id).catch(() => {});
     next(err);
   }
 };

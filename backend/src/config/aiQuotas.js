@@ -8,6 +8,7 @@ export const COUNTER_FIELD = {
     lesson: "lessons",
     chat: "chats",
     quiz:"quizzes",
+    errors:"failures",
 }
 
 export const currentPeriod = () => new Date().toISOString().slice(0, 7)
