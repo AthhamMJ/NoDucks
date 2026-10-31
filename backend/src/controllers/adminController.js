@@ -2,6 +2,10 @@ import mongoose, { mongo } from "mongoose";
 import User from "../models/User.js";
 import Task from "../models/Task.js";
 import AiUsage from "../models/AiUsage.js";
+import Lesson from "../models/Lesson.js";
+import Chat from "../models/Chat.js";
+import Note from "../models/Note.js";
+import Subject from "../models/Subject.js";
 import { currentPeriod } from "../config/aiQuotas.js";
 
 export const getOverview = async (req, res) => {
@@ -33,7 +37,7 @@ export const getOverview = async (req, res) => {
       ]),
     ]);
 
-    const ai = aiTotals[0] || { aiUsers: 0, reRequests: 0, aiError: 0 }
+    const ai = aiTotals[0] || { aiUsers: 0, reRequests: 0, aiError: 0 };
 
     res.json({
       stats: {
@@ -87,7 +91,7 @@ export const updateUser = async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid uer ID" });
+      return res.status(400).json({ message: "Invalid user ID" });
     }
 
     const { plan, role } = req.body;
@@ -136,5 +140,41 @@ export const updateUser = async (req, res) => {
   } catch (error) {
     console.error("updateUser error found", error);
     res.status(500).json({ message: "Failed to update the user" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    //Prevent [object] : [object] problem. Because req.user is { _id: "..." }, String(req.user) returns "[object Object]"
+    const currentUserId = req.user?._id
+      ? String(req.user._id)
+      : String(req.user);
+
+    if (id === String(req.user)) {
+      return res
+        .status(400)
+        .json({
+          message: "You can't destruct your own Admin account yourself",
+        });
+    }
+
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await Promise.all([
+      Task.deleteMany({ userId: id }),
+      Note.deleteMany({user: id}),
+      Subject.deleteMany({user: id}),
+      Lesson.deleteMany({ userId: id }),
+      Chat.deleteMany({ userId: id }),
+      AiUsage.deleteMany({ userId: id }),
+    ]);
+    res.json({ message: "User deleted" });
+  } catch (error) {
+    console.error("deleteUser error:", error);
+    res.status(500).json({ message: "Failed to delete the user" });
   }
 };

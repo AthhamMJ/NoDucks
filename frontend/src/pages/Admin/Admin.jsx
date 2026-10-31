@@ -14,6 +14,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { fetchAdminOverview } from "../../services/adminService";
 import styles from "./Admin.module.css";
+import UserControl from "./components/UserControl/UserControl";
 
 const TABS = ["Overview", "User Control", "Feature Updates", "Admin Settings"];
 
@@ -56,10 +57,22 @@ export default function Admin() {
     { label: "Total Users", value: stats?.totalUsers, icon: Users },
     { label: "New Users (7 days)", value: stats?.newUsers7d, icon: UserPlus },
     { label: "Tasks Created", value: stats?.totalTasks, icon: ListTodo },
-    { label: "Active Users", icon: Activity, pending: true },
-    { label: "Sessions", icon: Sparkles, pending: true },
-    { label: "AI Requests", icon: Sparkles, pending: true },
-    { label: "AI Errors", icon: TriangleAlert, pending: true },
+    {
+      label: "AI Users (this month)",
+      value: stats?.aiUsersThisMonth,
+      icon: Sparkles,
+    },
+    {
+      label: "AI Requests (this month)",
+      value: stats?.aiRequestsThisMonth,
+      icon: Activity,
+    },
+    {
+      label: "AI Errors (this month)",
+      value: stats?.aiErrorsThisMonth,
+      icon: TriangleAlert,
+    },
+    { label: "Sessions", icon: Users, pending: true },
     { label: "Storage", icon: HardDrive, pending: true },
   ];
 
@@ -112,13 +125,19 @@ export default function Admin() {
                   <span className={styles.cardLabel}>{card.label}</span>
                   <strong className={styles.cardValue}>
                     {loading && !card.pending ? (
-                      <LoaderCircle size={20} strokeWidth={1.5} className={styles.spin} />
+                      <LoaderCircle
+                        size={20}
+                        strokeWidth={1.5}
+                        className={styles.spin}
+                      />
                     ) : (
                       renderValue(card)
                     )}
                   </strong>
                   {card.pending && (
-                    <small className={styles.hint}>Tracking not set up yet</small>
+                    <small className={styles.hint}>
+                      Tracking not set up yet
+                    </small>
                   )}
                 </div>
               );
@@ -126,8 +145,9 @@ export default function Admin() {
           </div>
         </>
       )}
-
-      {activeTab !== "Overview" && (
+      {activeTab === "User Control" && <UserControl />}
+      
+      {activeTab !== "Overview" && activeTab !== "User Control" && (
         <div className={styles.placeholder}>
           <h2>{activeTab}</h2>
           <p>This section is coming soon.</p>

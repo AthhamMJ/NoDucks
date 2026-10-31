@@ -10,3 +10,13 @@ export async function fetchAdminUsers(page = 1, limit = 20) {
   });
   return data;
 }
+
+export async function updateAdminUser(id, changes) {
+  const { data } = await api.patch(`/api/admin/users/${id}`, changes);
+  return data.user;
+}
+
+export async function deleteAdminUser(id) {
+  const { data } = await api.delete(`/api/admin/users/${id}`);
+  return data;
+}
