@@ -74,13 +74,22 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password." });
     }
+    if (user.isActive === false) {
+      return res.status(403).json({ message: "This account is disabled" });
+    }
 
     const token = generateToken(user._id);
 
     res.json({
       message: "Logged in Successfully",
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role, plan: user.plan },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        plan: user.plan,
+      },
     });
   } catch (error) {
     res.status(500).json({

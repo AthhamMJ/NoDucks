@@ -4,12 +4,12 @@ import {
   ChevronRight,
   LoaderCircle,
   CircleAlert,
-  Trash2,
+  UserX,
+  UserCheck,
 } from "lucide-react";
 import {
   fetchAdminUsers,
   updateAdminUser,
-  deleteAdminUser,
 } from "../../../../services/adminService";
 import { useAuth } from "../../../../context/AuthContext";
 import styles from "../../Admin.module.css";
@@ -64,26 +64,6 @@ export default function UserControl() {
     }
   }
 
-  async function handleDelete(id, name) {
-    // confirmed would
-    const confirmed = window.confirm(
-      `Delete ${name}? This removes their tasks, lessons, and chats too. It can't be undone. `,
-    );
-    if (!confirmed) return;
-
-    setSavingId(id);
-    setError("");
-    try {
-      await deleteAdminUser(id);
-      // Reload the surrent page so pagination stays correct
-      await loadUsers(pagination.page);
-    } catch (error) {
-      setError(error.message || "Failed to delete User");
-    } finally {
-      setSavingId(null);
-    }
-  }
-
   return (
     <div className={styles.wrapper}>
       {error && (
@@ -108,7 +88,7 @@ export default function UserControl() {
                   <th>Plan</th>
                   <th>Role</th>
                   <th>Joined</th>
-                  <th>Actions</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,12 +140,21 @@ export default function UserControl() {
                       </td>
                       <td>
                         <button
-                        className={styles.deleteBtn}
-                        disabled= {saving || isMe}
-                        onClick = {()=> handleDelete(u._id, u.name)}
-                        title ={isMe ? "You can't delete your own account" : "Delete user"}
-                        aria-label = "Delete user">
-                          <Trash2 size={16} strokeWidth={1.5}></Trash2>
+                          className={
+                            u.isActive ? styles.disableBtn : styles.enableBtn
+                          }
+                          disabled={saving || isMe}
+                          onClick={() =>
+                            handleChange(u._id, "isActive", !u.isActive)
+                          }
+                          title={
+                            isMe
+                              ? "You can't disable your own account"
+                              : undefined
+                          }
+                        >
+                          {u.isActive ? <UserX size={14} strokeWidth={1.5} /> : <UserCheck size={14} strokeWidth={1.5} />}
+                          {u.isActive ? "Disable" : "Enable"}
                         </button>
                       </td>
                     </tr>

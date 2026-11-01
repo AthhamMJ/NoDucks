@@ -15,6 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 import { fetchAdminOverview } from "../../services/adminService";
 import styles from "./Admin.module.css";
 import UserControl from "./components/UserControl/UserControl";
+import AdminSettings from "./components/AdminSettings/AdminSettings";
 
 const TABS = ["Overview", "User Control", "Feature Updates", "Admin Settings"];
 
@@ -146,13 +147,17 @@ export default function Admin() {
         </>
       )}
       {activeTab === "User Control" && <UserControl />}
-      
-      {activeTab !== "Overview" && activeTab !== "User Control" && (
-        <div className={styles.placeholder}>
-          <h2>{activeTab}</h2>
-          <p>This section is coming soon.</p>
-        </div>
-      )}
+
+      {activeTab === "Admin Settings" && <AdminSettings />}
+
+      {activeTab !== "Overview" &&
+        activeTab !== "User Control" &&
+        activeTab !== "Admin Settings" && (
+          <div className={styles.placeholder}>
+            <h2>{activeTab}</h2>
+            <p>This section is coming soon.</p>
+          </div>
+        )}
     </div>
   );
 }

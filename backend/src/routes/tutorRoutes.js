@@ -3,8 +3,8 @@ import {
   generateLesson,
   chatFollowUp,
   generateQuiz,
-} from "../controllers/tutorController.js";
-import { getUsage } from "../controllers/usageController.js";
+} from "../controllers/tutor/tutorController.js";
+import { getUsage } from "../controllers/tutor/usageController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { aiLimit } from "../middleware/aiLimit.js";
 

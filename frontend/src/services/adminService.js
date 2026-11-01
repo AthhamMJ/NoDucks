@@ -20,3 +20,13 @@ export async function deleteAdminUser(id) {
   const { data } = await api.delete(`/api/admin/users/${id}`);
   return data;
 }
+
+export async function fetchAdminSettings() {
+  const { data } = await api.get("/api/admin/settings");
+  return data;
+}
+
+export async function updateAdminQuotas(quotas) {
+  const { data } = await api.patch("/api/admin/settings/quotas", quotas);
+  return data.quotas;
+}

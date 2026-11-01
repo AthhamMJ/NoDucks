@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
-import Lesson from "../models/Lesson.js";
-import Chat from "../models/Chat.js";
-import { recordUsage } from "../services/aiUsageService.js";
+import Lesson from "../../models/Lesson.js";
+import Chat from "../../models/Chat.js";
+import { recordUsage } from "../../services/aiUsageService.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,

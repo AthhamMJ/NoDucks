@@ -1,4 +1,4 @@
-import AiUsage from "../models/AiUsage.js";
+import AiUsage from "../models/admin/AiUsage.js";
 import { COUNTER_FIELD, currentPeriod } from "../config/aiQuotas.js";
 
 export const recordUsage = (userId, action, usage = {}) => {
