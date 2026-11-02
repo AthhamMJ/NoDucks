@@ -40,3 +40,17 @@ export async function fetchAdminList() {
   const {data} = await api.get("/api/admin/settings/admins");
   return data.admins;
 }
+export async function fetchFeatureUpdates() {
+  const { data } = await api.get("/api/admin/updates");
+  return data.updates;
+}
+
+export async function createFeatureUpdate(payload) {
+  const { data } = await api.post("/api/admin/updates", payload);
+  return data.update;
+}
+
+export async function deleteFeatureUpdate(id) {
+  const { data } = await api.delete(`/api/admin/updates/${id}`);
+  return data;
+}

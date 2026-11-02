@@ -17,6 +17,7 @@ import styles from "./Admin.module.css";
 import UserControl from "./components/UserControl/UserControl";
 import AdminSettings from "./components/AdminSettings/AdminSettings";
 import Overview from "./components/Overview/Overview";
+import FeatureUpdates from "./components/FeatureUpdates/FeatureUpdates";
 
 const TABS = ["Overview", "User Control", "Feature Updates", "Admin Settings"];
 
@@ -93,11 +94,14 @@ export default function Admin() {
 
       {activeTab === "User Control" && <UserControl />}
 
+      {activeTab === "Feature Updates" && <FeatureUpdates  />}
+
       {activeTab === "Admin Settings" && <AdminSettings />}
 
       {activeTab !== "Overview" &&
         activeTab !== "User Control" &&
-        activeTab !== "Admin Settings" && (
+        activeTab !== "Admin Settings" &&
+        activeTab !== "Feature Updates" && (
           <div className={styles.placeholder}>
             <h2>{activeTab}</h2>
             <p>This section is coming soon.</p>

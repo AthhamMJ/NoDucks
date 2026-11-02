@@ -83,6 +83,7 @@ export default function GeneralSettings() {
             <input
               type="checkbox"
               checked={general?.maintenanceMode ?? false}
+              className={styles.check}
               disabled={saving}
               onChange={(e) => save({ maintenanceMode: e.target.checked })}
             />
