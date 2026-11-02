@@ -1,22 +1,40 @@
-.title {
-  font-size: 18px;
-  margin: 0 0 16px;
+.container {
+  width: 100%;
+  padding: 10px 20px;
 }
 
+/* Section Header */
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 16px;
+  opacity: 0.95;
+}
+
+.title svg {
+  opacity: 0.7;
+}
+
+/* Card Grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
-.grid svg{
-  opacity: 70%;
+.grid svg {
+  opacity: 0.7;
 }
 
+/* Individual Subject Item */
 .item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-align: left;
   padding: 12px 14px;
   cursor: pointer;
@@ -24,38 +42,90 @@
   color: var(--text-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
+  outline: none;
   transition:
     transform 0.15s ease,
-    box-shadow 0.15s ease;
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 
 .item:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow);
+  border-color: var(--accent);
+  background: var(--surface-3, var(--surface-2));
 }
 
+.item:active {
+  transform: translateY(0);
+}
+
+/* Icon Container */
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: calc(var(--radius-md) - 4px);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+/* Subject Metadata */
 .info {
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 2px;
   font-size: 13px;
   min-width: 0;
 }
 
+.subjectName {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .info small {
   color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .info small.active {
   color: var(--accent);
+  font-weight: 500;
 }
 
+/* Action Arrow */
 .arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text-secondary);
+  transition: transform 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
 }
 
-@media (max-width: 700px) {
+.item:hover .arrow {
+  color: var(--text-primary);
+  transform: translateX(2px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 900px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }

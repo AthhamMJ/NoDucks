@@ -2,33 +2,86 @@
   padding: 10px 20px;
 }
 
+.dateLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
 .welcomeContent h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 20px 0;
   opacity: 0.95;
 }
 
-.welcomeContent p {
-  font-size: smaller;
-  opacity: 0.85;
-  padding: 10px 0;
-}
-
-.welcomeContent h3 {
-  opacity: 0.85;
-}
-
+/* Main Focus Flex Layout */
 .focusSection {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
 }
 
 .focusContent {
   display: flex;
   align-items: center;
-  gap: 30px;
-  margin: 10px 0px;
+  gap: 18px;
+  margin: 10px 0;
 }
 
+.focusIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.focusTextDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Typography Hierarchy */
+.focusSubheading {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin: 0;
+  opacity: 0.85;
+}
+
+.taskTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+  opacity: 0.95;
+}
+
+.taskDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.loadingState {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Action Button & Container */
 .startButtonContainer {
   display: flex;
   align-items: center;
@@ -37,38 +90,37 @@
 
 .startButton {
   padding: 11px 28px;
-
-  border: 1px solid #712ae2;
-  border-radius: 1.5rem;
-
-  background: rgba(115, 0, 255, 0.826);
+  border: 1px solid var(--accent-border, #712ae2);
+  border-radius: var(--radius-lg, 1.5rem);
+  background: var(--accent, rgba(115, 0, 255, 0.826));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
-  color: white;
+  color: var(--text-on-accent, #ffffff);
   font-size: 14px;
-  font-weight: 400;
-
+  font-weight: 500;
   box-shadow:
     0 6px 18px rgba(40, 100, 255, 0.2),
     inset 0 1px 1px rgba(255, 255, 255, 0.35);
-
   cursor: pointer;
-
   transition:
-    transform 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
+    transform 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.startButton:hover {
+.startButton:hover:not(:disabled) {
   box-shadow:
     0 8px 22px rgba(40, 100, 255, 0.28),
     inset 0 1px 1px rgba(255, 255, 255, 0.45);
-
   transform: translateY(-1px);
 }
 
-.startButton:active {
+.startButton:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.startButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
 }
