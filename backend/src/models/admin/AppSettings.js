@@ -22,6 +22,14 @@ const appSettingsSchema = new mongoose.Schema(
         quiz: quotaField(PLAN_QUOTAS.student.quiz),
       },
     },
+    maintenanceMode: {
+      type: Boolean,
+      default: false,
+    },
+    defaultPlan:{
+      type: String,
+      enum: ["free", "student"], default: "free"
+    }
   },
   { timestamps: true },
 );

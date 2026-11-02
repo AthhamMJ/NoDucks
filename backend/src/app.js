@@ -9,6 +9,7 @@ import noteRoutes from "./routes/noteRoutes.js";
 import tutorRoutes from "./routes/tutorRoutes.js";
 import lessonRoutes from "./routes/lessonRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import { maintenanceMode } from "./middleware/maintenanceMode.js";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/tutor", tutorRoutes);
 app.use("/api/lessons", lessonRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes/", noteRoutes);
+app.use("/api", maintenanceMode)
 
 // Protected Route
 app.get("/api/protected-test", protect, (req, res) => {

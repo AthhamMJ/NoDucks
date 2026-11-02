@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { getDefaultPlan } from "../services/settingsService.js";
 
 //JWT gneration
 const generateToken = (userId) => {
@@ -44,8 +45,9 @@ export const register = async (req, res) => {
         .status(400)
         .json({ message: "User Already exists with this email" });
     }
+    const plan = await getDefaultPlan();
 
-    const user = await User.create({ name, email, password });
+    const user = await User.create({ name, email, password, plan });
     console.log(`User created: ${user.email} (${user._id})`);
 
     res.status(201).json({
