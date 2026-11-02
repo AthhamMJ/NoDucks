@@ -12,6 +12,7 @@ import {
   fetchAdminSettings,
   updateAdminQuotas,
 } from "../../../../services/adminService";
+import GeneralSettings from "./GeneralSettings";
 import styles from "../../Admin.module.css";
 
 const PLANS = [
@@ -164,6 +165,8 @@ export default function AdminSettings() {
           <span>{success}</span>
         </div>
       )}
+      
+      <GeneralSettings />
 
       {quotas && (
         <form onSubmit={handleSave} className={styles.wrapper}>

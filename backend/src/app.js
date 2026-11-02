@@ -35,6 +35,7 @@ app.get("/api/health", (req, res) => {
 });
 
 // route section
+app.use("/api", maintenanceMode)
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/subjects", subjectRoutes);
@@ -42,7 +43,7 @@ app.use("/api/tutor", tutorRoutes);
 app.use("/api/lessons", lessonRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes/", noteRoutes);
-app.use("/api", maintenanceMode)
+
 
 // Protected Route
 app.get("/api/protected-test", protect, (req, res) => {

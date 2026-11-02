@@ -24,16 +24,15 @@ export const getQuotasForPlan = async (plan) => {
     settings?.quotas?.free ||
     PLAN_QUOTAS[plan] ||
     PLAN_QUOTAS.free
-  )
+  );
 };
 
-export const updateGeneral = (changes) => {
+export const updateGeneral = (changes) =>
   AppSettings.findOneAndUpdate(
-    {key: "global"},
+    { key: "global" },
     { $set: changes },
-    { upsert: true, returnDocument: "after", runValidators: true },
-  ).lean()
-}
+    { upsert: true, new: true, runValidators: true },
+  ).lean();
 
 export const getDefaultPlan = async () => {
   const settings = await AppSettings.findOne({ key: "global" })

@@ -1,5 +1,5 @@
 import { getDBStatus } from "../../config/db.js";
-import { maintenanceMode } from "../../middleware/maintenanceMode.js";
+import User from "../../models/User.js";
 import {
   getSettings,
   updateQuotas,
@@ -18,10 +18,8 @@ export const getAdminSettings = async (req, res) => {
     res.json({
       quotas: settings.quotas,
       general: {
-        quotas: {
-          maintenanceMode: settings.maintenanceMode,
-          defaultPlan: settings.defaultPlan,
-        },
+        maintenanceMode: settings.maintenanceMode ?? false,
+        defaultPlan: settings.defaultPlan ?? "free",
       },
       system: {
         database: db.status,
@@ -105,8 +103,8 @@ export const updateAdminGeneral = async (req, res) => {
 
 export const getAdminList = async (req, res) => {
   try {
-    const admin = await User.find({ role: "admin" })
-      .select("name emain createdAt")
+    const admins = await User.find({ role: "admin" })
+      .select("name email createdAt")
       .sort({ createdAt: 1 })
       .lean();
     res.json({ admins });

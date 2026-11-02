@@ -30,3 +30,13 @@ export async function updateAdminQuotas(quotas) {
   const { data } = await api.patch("/api/admin/settings/quotas", quotas);
   return data.quotas;
 }
+
+export async function updateGeneralSettings(changes) {
+  const { data } = await api.patch("/api/admin/settings/general", changes)
+  return data.general;
+}
+
+export async function fetchAdminList() {
+  const {data} = await api.get("/api/admin/settings/admins");
+  return data.admins;
+}
