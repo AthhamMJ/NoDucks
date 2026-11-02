@@ -10,6 +10,7 @@ import tutorRoutes from "./routes/tutorRoutes.js";
 import lessonRoutes from "./routes/lessonRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import { maintenanceMode } from "./middleware/maintenanceMode.js";
+import updateRoutes from "./routes/updateRoutes.js"
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api", maintenanceMode)
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/updates", updateRoutes)
 app.use("/api/subjects", subjectRoutes);
 app.use("/api/tutor", tutorRoutes);
 app.use("/api/lessons", lessonRoutes);

@@ -9,6 +9,11 @@ import {
   updateAdminGeneral,
   getAdminList,
 } from "../controllers/admin/settingsController.js";
+import {
+  listUpdates,
+  createUpdate,
+  deleteUpdate,
+} from "../controllers/admin/featureUpdateController.js";
 
 const router = express.Router();
 
@@ -19,5 +24,8 @@ router.get("/settings", protect, adminOnly, getAdminSettings);
 router.patch("/settings/quotas", protect, adminOnly, updateAdminQuotas);
 router.patch("/settings/general", protect, adminOnly, updateAdminGeneral);
 router.get("/settings/admins", protect, adminOnly, getAdminList);
+router.get("/updates", protect, adminOnly, listUpdates);
+router.post("/updates", protect, adminOnly, createUpdate);
+router.delete("/updates/:id", protect, adminOnly, deleteUpdate);
 
 export default router;
