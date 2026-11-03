@@ -126,7 +126,6 @@ export default function Home() {
 
         <div className={styles.featureGrid}>
           <div className={styles.featureCard}>
-            <span>01</span>
             <h3>Plan</h3>
             <p>
               Organize what you need to learn and turn your goals into clear
@@ -135,7 +134,6 @@ export default function Home() {
           </div>
 
           <div className={styles.featureCard}>
-            <span>02</span>
             <h3>Practice</h3>
             <p>
               Turn understanding into practical exercises and real
@@ -144,7 +142,6 @@ export default function Home() {
           </div>
 
           <div className={styles.featureCard}>
-            <span>03</span>
             <h3>Improve</h3>
             <p>
               Use feedback and progress to understand what works and keep
