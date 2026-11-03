@@ -1,0 +1,3 @@
+$kind: collection
+name: NoDucks API Tests
+description: 'Complete HTTP endpoint tests for the NoDucks backend. Covers Health, Auth, Admin, Subjects, Tasks, Notes, Lessons, Tutor, and Updates. Run in order — Auth requests auto-capture tokens into environment variables.'

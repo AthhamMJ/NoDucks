@@ -1,0 +1,42 @@
+$kind: http-request
+name: 'Create Note'
+method: POST
+url: '{{baseUrl}}/api/notes'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "My First Note",
+      "description": "This is a test note created by Postman."
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains note object", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("note");
+        pm.expect(json.note).to.have.property("_id");
+        pm.expect(json.note).to.have.property("title");
+      });
+
+      pm.test("Note title matches request", function () {
+        const json = pm.response.json();
+        pm.expect(json.note.title).to.eql("My First Note");
+      });
+
+      // Save noteId for update/delete tests
+      const json = pm.response.json();
+      if (json.note && json.note._id) {
+        pm.environment.set("noteId", json.note._id);
+      }

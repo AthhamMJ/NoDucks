@@ -1,0 +1,27 @@
+$kind: http-request
+name: 'List Lessons'
+method: GET
+url: '{{baseUrl}}/api/lessons'
+order: 1000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains lessons array", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("lessons");
+        pm.expect(json.lessons).to.be.an("array");
+      });
+
+      // Save first lessonId if available
+      const json = pm.response.json();
+      if (json.lessons && json.lessons.length > 0) {
+        pm.environment.set("lessonId", json.lessons[0]._id);
+      }

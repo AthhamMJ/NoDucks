@@ -1,0 +1,21 @@
+$kind: http-request
+name: 'Get Lesson - Invalid ID'
+method: GET
+url: '{{baseUrl}}/api/lessons/invalid-id-123'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 400 Bad Request for invalid ID", function () {
+        pm.response.to.have.status(400);
+      });
+
+      pm.test("Response has error message", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("message");
+        pm.expect(json.message.toLowerCase()).to.include("invalid");
+      });

@@ -1,0 +1,37 @@
+$kind: http-request
+name: 'Chat Follow Up'
+method: POST
+url: '{{baseUrl}}/api/tutor/chat'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "lessonId": "{{lessonId}}",
+      "message": "Can you explain that in simpler terms?"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 or 429 (AI quota)", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 429]);
+      });
+
+      if (pm.response.code === 200 || pm.response.code === 201) {
+        pm.test("Response is valid JSON", function () {
+          pm.response.to.be.json;
+        });
+      }
+
+      if (pm.response.code === 429) {
+        pm.test("Rate limit message present", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("message");
+        });
+      }

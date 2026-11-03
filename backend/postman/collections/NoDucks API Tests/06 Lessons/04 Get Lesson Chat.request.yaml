@@ -1,0 +1,23 @@
+$kind: http-request
+name: 'Get Lesson Chat'
+method: GET
+url: '{{baseUrl}}/api/lessons/{{lessonId}}/chat'
+order: 4000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 or 404", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 404]);
+      });
+
+      if (pm.response.code === 200) {
+        pm.test("Response contains messages array", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("messages");
+          pm.expect(json.messages).to.be.an("array");
+        });
+      }
