@@ -1,0 +1,29 @@
+name: New Environment
+values:
+  - key: baseUrl
+    value: 'http://localhost:5000'
+    enabled: true
+  - key: authToken
+    value: ''
+    enabled: true
+  - key: adminToken
+    value: ''
+    enabled: true
+  - key: userId
+    value: ''
+    enabled: true
+  - key: subjectId
+    value: ''
+    enabled: true
+  - key: taskId
+    value: ''
+    enabled: true
+  - key: noteId
+    value: ''
+    enabled: true
+  - key: lessonId
+    value: ''
+    enabled: true
+  - key: updateId
+    value: ''
+    enabled: true

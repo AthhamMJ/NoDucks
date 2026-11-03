@@ -1,0 +1,24 @@
+$kind: http-request
+name: 'Delete Me'
+method: DELETE
+url: '{{baseUrl}}/api/auth/me'
+order: 8000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response confirms account deletion", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("message");
+      });
+
+      // Clear auth token after account deletion
+      pm.environment.set("authToken", "");
+      pm.environment.set("userId", "");

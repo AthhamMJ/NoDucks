@@ -1,0 +1,26 @@
+$kind: http-request
+name: 'Create Subject - Missing Name'
+method: POST
+url: '{{baseUrl}}/api/subjects'
+order: 4000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {}
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 400 Bad Request", function () {
+        pm.response.to.have.status(400);
+      });
+
+      pm.test("Response has error message", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("message");
+      });

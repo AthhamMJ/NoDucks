@@ -1,0 +1,36 @@
+$kind: http-request
+name: 'Create Subject'
+method: POST
+url: '{{baseUrl}}/api/subjects'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Mathematics"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 201 or 200 (existing subject returned)", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+
+      pm.test("Response contains subject object", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("subject");
+        pm.expect(json.subject).to.have.property("_id");
+        pm.expect(json.subject).to.have.property("name");
+      });
+
+      // Save subjectId for use in Tasks and Notes
+      const json = pm.response.json();
+      if (json.subject && json.subject._id) {
+        pm.environment.set("subjectId", json.subject._id);
+      }

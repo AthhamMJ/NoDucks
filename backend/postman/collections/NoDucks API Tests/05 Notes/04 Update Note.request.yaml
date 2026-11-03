@@ -1,0 +1,35 @@
+$kind: http-request
+name: 'Update Note'
+method: PATCH
+url: '{{baseUrl}}/api/notes/{{noteId}}'
+order: 4000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "My Updated Note",
+      "description": "Updated description via Postman."
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains updated note", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("note");
+        pm.expect(json.note).to.have.property("_id");
+      });
+
+      pm.test("Note title was updated", function () {
+        const json = pm.response.json();
+        pm.expect(json.note.title).to.eql("My Updated Note");
+      });

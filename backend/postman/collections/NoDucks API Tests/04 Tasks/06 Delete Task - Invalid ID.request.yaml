@@ -1,0 +1,20 @@
+$kind: http-request
+name: 'Delete Task - Invalid ID'
+method: DELETE
+url: '{{baseUrl}}/api/tasks/invalid-id-123'
+order: 6000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 400 Bad Request for invalid ID", function () {
+        pm.response.to.have.status(400);
+      });
+
+      pm.test("Response has error message", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("message");
+      });

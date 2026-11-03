@@ -1,0 +1,45 @@
+$kind: http-request
+name: 'Create Task'
+method: POST
+url: '{{baseUrl}}/api/tasks'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Study for exam",
+      "description": "Review chapters 1-5",
+      "priority": "high",
+      "dueDate": "2027-01-15T00:00:00.000Z"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 201 Created", function () {
+        pm.response.to.have.status(201);
+      });
+
+      pm.test("Response contains task object", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("task");
+        pm.expect(json.task).to.have.property("_id");
+        pm.expect(json.task).to.have.property("title");
+        pm.expect(json.task).to.have.property("priority");
+      });
+
+      pm.test("Task priority is valid", function () {
+        const json = pm.response.json();
+        pm.expect(["low", "medium", "high"]).to.include(json.task.priority);
+      });
+
+      // Save taskId for update/delete tests
+      const json = pm.response.json();
+      if (json.task && json.task._id) {
+        pm.environment.set("taskId", json.task._id);
+      }

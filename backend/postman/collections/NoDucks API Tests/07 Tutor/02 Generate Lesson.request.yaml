@@ -1,0 +1,45 @@
+$kind: http-request
+name: 'Generate Lesson'
+method: POST
+url: '{{baseUrl}}/api/tutor/generate-lesson'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "topic": "Introduction to Algebra",
+      "interest": "sports"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 or 429 (AI quota)", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201, 429]);
+      });
+
+      if (pm.response.code === 200 || pm.response.code === 201) {
+        pm.test("Response contains lesson data", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.be.an("object");
+        });
+
+        // Save lessonId if returned
+        const json = pm.response.json();
+        const id = json.lesson?._id || json._id;
+        if (id) {
+          pm.environment.set("lessonId", id);
+        }
+      }
+
+      if (pm.response.code === 429) {
+        pm.test("Rate limit message present", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("message");
+        });
+      }

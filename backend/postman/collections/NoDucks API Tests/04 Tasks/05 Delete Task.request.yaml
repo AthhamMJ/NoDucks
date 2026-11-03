@@ -1,0 +1,21 @@
+$kind: http-request
+name: 'Delete Task'
+method: DELETE
+url: '{{baseUrl}}/api/tasks/{{taskId}}'
+order: 5000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response confirms deletion", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("message");
+        pm.expect(json.message.toLowerCase()).to.include("deleted");
+      });

@@ -1,0 +1,19 @@
+$kind: http-request
+name: 'Get Latest Update'
+method: GET
+url: '{{baseUrl}}/api/updates/latest'
+order: 1000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 or 404", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 404]);
+      });
+
+      pm.test("Response is valid JSON", function () {
+        pm.response.to.be.json;
+      });

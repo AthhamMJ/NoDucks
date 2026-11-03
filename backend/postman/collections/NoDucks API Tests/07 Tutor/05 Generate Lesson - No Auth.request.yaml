@@ -1,0 +1,22 @@
+$kind: http-request
+name: 'Generate Lesson - No Auth'
+method: POST
+url: '{{baseUrl}}/api/tutor/generate-lesson'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "topic": "Algebra",
+      "interest": "music"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 401 Unauthorized without token", function () {
+        pm.response.to.have.status(401);
+      });
