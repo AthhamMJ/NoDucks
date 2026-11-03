@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./AuthForm.module.css";
 import { signUp, signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
+import UserAgreementModal from "../UserAgreementModal/UserAgreementModal";
 
 //definition of hte parameters:- mode(SignIn or SignUp), onSwitch(Switching between up, in), onClose(Close popup)
 
@@ -22,6 +23,8 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const navigate = useNavigate();
 
@@ -227,7 +230,6 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
             </div>
           )}
 
-          {/* want to upgrade after the otp implemented. because of the security issues */}
           {!isSignUp && (
             <div className={styles.authUtility}>
               <button type="button" className={styles.authForgot}>
@@ -236,26 +238,52 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
             </div>
           )}
           {error && <p className={styles.authError}>{error}</p>}
-
           {message && <p className={styles.authMessage}>{message}</p>}
 
-          <button
-            type="submit"
-            className={styles.authSubmit}
-            disabled={loading}
-          >
-            <span>
-              {loading
-                ? isSignUp
-                  ? "Creating Account..."
-                  : "Signing In..."
-                : isSignUp
-                  ? "Create Account"
-                  : "Sign In"}
-            </span>
+          {/* want to upgrade after the otp implemented. because of the security issues */}
+          {isSignUp && (
+            <label className={styles.authCheckbox}>
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(event) => setAgreedToTerms(event.target.checked)}
+              />
+              <span>
+                I agree to the NoDucks terms and{" "}
+                <button
+                  type="button"
+                  className={styles.authTermsLink}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setShowPrivacy(true);
+                  }}
+                >
+                  privacy policy
+                </button>
+              </span>
+            </label>
+          )}
 
-            {!loading && <ArrowRight size={17} strokeWidth={1.8} />}
-          </button>
+          {(!isSignUp || agreedToTerms) && (
+            <button
+              type="submit"
+              className={styles.authSubmit}
+              disabled={loading || (isSignUp && !agreedToTerms)}
+            >
+              <span>
+                {loading
+                  ? isSignUp
+                    ? "Creating Account..."
+                    : "Signing In..."
+                  : isSignUp
+                    ? "Create Account"
+                    : "Sign In"}
+              </span>
+
+              {!loading && <ArrowRight size={17} strokeWidth={1.8} />}
+            </button>
+          )}
         </form>
 
         <div className={styles.authSwitch}>
@@ -267,12 +295,22 @@ export default function AuthForm({ mode, onClose, onSwitch }) {
             {isSignUp ? "Sign In" : "Create one"}
           </button>
         </div>
-
         {isSignUp && (
           <p className={styles.authTerms}>
-            By creating an account, you agree to the NoDucks terms and privacy
-            policy.
+            By creating an account, you agree to the NoDucks terms and{" "}
+            <button
+              type="button"
+              className={styles.authTermsLink}
+              onClick={() => setShowPrivacy(true)}
+            >
+              privacy policy
+            </button>
+            .
           </p>
+        )}
+
+        {showPrivacy && (
+          <UserAgreementModal onClose={() => setShowPrivacy(false)} />
         )}
       </div>
     </div>
