@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema(
       type:Boolean,
       default: true,
     },
+    isVerified:{
+      type: Boolean,
+      default: false,
+    },
     plan: {
       type: String,
       enum: ["free", "student"],

@@ -2,18 +2,22 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FORM_ADDRESS =
+const FROM_ADDRESS =
   process.env.EMAIL_FROM || "NoDucks <onboarding@resend.dev>";
 
-export const sendOtpEmail = async (to, code) => {
+export const sendVerificationEmail = async (to, link) => {
   const { data, error } = await resend.emails.send({
-    from: FORM_ADDRESS,
+    from: FROM_ADDRESS,
     to,
-    subject: "Your NoDucks verification code",
+    subject: "Verify your NoDucks account",
     html: `
-        <p>Your Noducks Verification code is:</p>
-        <p style="fonst-size: 24px; font-weight: bold; letter-spacing: 4px;">${code}</p>
-        <p>This code expires in 10 minutes, If you didn't request it, you can ignore this email.</p>
+      <p>Welcome to NoDucks. Click the button below to verify your email:</p>
+      <p>
+        <a href="${link}" style="display:inline-block;padding:12px 20px;background:#111;color:#fff;text-decoration:none;border-radius:6px;">
+          Verify my email
+        </a>
+      </p>
+      <p>This link expires in 30 minutes. If you didn't sign up, you can ignore this email.</p>
     `,
   });
 
