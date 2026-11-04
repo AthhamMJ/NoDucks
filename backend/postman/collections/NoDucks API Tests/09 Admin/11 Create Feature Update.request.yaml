@@ -1,0 +1,36 @@
+$kind: http-request
+name: 'Create Feature Update'
+method: POST
+url: '{{baseUrl}}/api/admin/updates'
+order: 11000
+headers:
+  - key: Authorization
+    value: 'Bearer {{adminToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "New Feature Released",
+      "description": "We have added quiz generation support.",
+      "version": "1.2.0"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 or 201", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+
+      pm.test("Response is valid JSON", function () {
+        pm.response.to.be.json;
+      });
+
+      // Save updateId for delete test
+      const json = pm.response.json();
+      const id = json.update?._id || json._id;
+      if (id) {
+        pm.environment.set("updateId", id);
+      }

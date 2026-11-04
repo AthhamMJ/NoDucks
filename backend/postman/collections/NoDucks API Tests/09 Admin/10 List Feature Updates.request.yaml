@@ -1,0 +1,19 @@
+$kind: http-request
+name: 'List Feature Updates'
+method: GET
+url: '{{baseUrl}}/api/admin/updates'
+order: 10000
+headers:
+  - key: Authorization
+    value: 'Bearer {{adminToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response is valid JSON", function () {
+        pm.response.to.be.json;
+      });

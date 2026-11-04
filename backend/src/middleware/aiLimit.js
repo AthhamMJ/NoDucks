@@ -1,16 +1,17 @@
 import User from "../models/User.js";
-import AiUsage from "../models/AiUsage.js";
+import AiUsage from "../models/admin/AiUsage.js";
 import {
   PLAN_QUOTAS,
   COUNTER_FIELD,
   currentPeriod,
 } from "../config/aiQuotas.js";
+import { getQuotasForPlan } from "../services/settingsService.js";
 
 export const aiLimit = (action) => async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).select("plan");
     const plan = user?.plan || "free";
-    const quotas = PLAN_QUOTAS[plan] || PLAN_QUOTAS.free;
+    const quotas = await getQuotasForPlan(plan);
     const limit = quotas[action];
 
     const usage = await AiUsage.findOne({

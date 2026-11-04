@@ -1,10 +1,11 @@
-import User from "../models/User.js";
-import AiUsage from "../models/AiUsage.js";
+import User from "../../models/User.js";
+import AiUsage from "../../models/admin/AiUsage.js";
 import {
   PLAN_QUOTAS,
   COUNTER_FIELD,
   currentPeriod,
-} from "../config/aiQuotas.js";
+} from "../../config/aiQuotas.js";
+import { getQuotasForPlan } from "../../services/settingsService.js";
 
 //Get this month's used and limit counts for each action
 export const getUsage = async (req, res, next) => {
@@ -17,7 +18,7 @@ export const getUsage = async (req, res, next) => {
       period,
     }).lean();
 
-    const quotas = PLAN_QUOTAS[plan];
+    const quotas = await getQuotasForPlan(plan);
 
     const meter = (action) => ({
       used: usage?.[COUNTER_FIELD[action]] || 0,

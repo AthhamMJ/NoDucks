@@ -1,0 +1,47 @@
+$kind: collection
+name: NoDucks API Tests
+description: 'Complete HTTP endpoint tests for the NoDucks backend. Covers Health, Auth, Admin, Subjects, Tasks, Notes, Lessons, Tutor, and Updates. Run in order — Auth requests auto-capture tokens into environment variables.'
+scripts:
+  - type: http:beforeRequest
+    language: text/javascript
+    code: |-
+      // Auto-login: if authToken is missing, log in and set it before any request runs.
+      // Skip for the auth requests themselves to avoid infinite loops.
+      const skipPaths = [
+        '/api/auth/register',
+        '/api/auth/login',
+        '/api/health',
+      ];
+      const url = pm.request.url.toString();
+      const needsAuth = !skipPaths.some(p => url.includes(p));
+      const hasToken = pm.environment.get('authToken');
+
+      // Helper to login and set tokens
+      const doLogin = function(callback) {
+        pm.sendRequest({
+          url: pm.environment.get('baseUrl') + '/api/auth/login',
+          method: 'POST',
+          header: { 'Content-Type': 'application/json' },
+          body: {
+            mode: 'raw',
+            raw: JSON.stringify({
+              email: 'postman.test@noducks.com',
+              password: 'TestPass123!'
+            })
+          }
+        }, function (err, res) {
+          if (!err && res.code === 200) {
+            const json = res.json();
+            pm.environment.set('authToken', json.token);
+            pm.environment.set('adminToken', json.token);
+            if (json.user && json.user.id) {
+              pm.environment.set('userId', json.user.id);
+            }
+          }
+          if (callback) callback();
+        });
+      };
+
+      if (needsAuth && !hasToken) {
+        doLogin();
+      }

@@ -1,0 +1,37 @@
+$kind: http-request
+name: 'Update Me'
+method: PATCH
+url: '{{baseUrl}}/api/auth/me'
+order: 7000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Updated Test User",
+      "preferences": {
+        "darkMode": true,
+        "notifications": false
+      }
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains updated user", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("user");
+      });
+
+      pm.test("Name was updated", function () {
+        const json = pm.response.json();
+        pm.expect(json.user.name).to.eql("Updated Test User");
+      });

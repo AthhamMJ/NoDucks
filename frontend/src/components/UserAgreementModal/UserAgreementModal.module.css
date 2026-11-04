@@ -1,0 +1,68 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100; /* Must be higher than AuthOverlay (which is 1000) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dialog {
+  position: relative;
+  width: min(100%, 640px);
+  max-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border-radius: var(--radius-lg, 16px);
+  background: var(--surface, #1e1e24);
+  color: var(--text-primary);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  outline: none;
+}
+
+.close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.header h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.content {
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: var(--border, rgba(255, 255, 255, 0.1));
+  margin: 24px 0;
+}
+
+h1,
+h2,
+h3 {
+  margin: 20px 0 8px;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+}

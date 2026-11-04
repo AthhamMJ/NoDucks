@@ -1,0 +1,21 @@
+$kind: http-request
+name: 'Get Subject Catalog'
+method: GET
+url: '{{baseUrl}}/api/subjects/catalog'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains catalog array", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("catalog");
+        pm.expect(json.catalog).to.be.an("array");
+      });

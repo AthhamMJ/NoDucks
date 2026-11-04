@@ -1,0 +1,21 @@
+$kind: http-request
+name: 'Get Subjects'
+method: GET
+url: '{{baseUrl}}/api/subjects'
+order: 1000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains subjects array", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("subjects");
+        pm.expect(json.subjects).to.be.an("array");
+      });

@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { getDefaultPlan } from "../services/settingsService.js";
 
 //JWT gneration
 const generateToken = (userId) => {
@@ -44,8 +45,9 @@ export const register = async (req, res) => {
         .status(400)
         .json({ message: "User Already exists with this email" });
     }
+    const plan = await getDefaultPlan();
 
-    const user = await User.create({ name, email, password });
+    const user = await User.create({ name, email, password, plan });
     console.log(`User created: ${user.email} (${user._id})`);
 
     res.status(201).json({
@@ -74,13 +76,22 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password." });
     }
+    if (user.isActive === false) {
+      return res.status(403).json({ message: "This account is disabled" });
+    }
 
     const token = generateToken(user._id);
 
     res.json({
       message: "Logged in Successfully",
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role, plan: user.plan },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        plan: user.plan,
+      },
     });
   } catch (error) {
     res.status(500).json({

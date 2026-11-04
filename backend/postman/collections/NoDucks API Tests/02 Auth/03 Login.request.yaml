@@ -1,0 +1,46 @@
+$kind: http-request
+name: Login
+method: POST
+url: '{{baseUrl}}/api/auth/login'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "postman.test@noducks.com",
+      "password": "TestPass123!"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains token", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("token");
+        pm.expect(json.token).to.be.a("string").and.not.empty;
+      });
+
+      pm.test("Response contains user object", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("user");
+        pm.expect(json.user).to.have.property("id");
+        pm.expect(json.user).to.have.property("email");
+        pm.expect(json.user).to.have.property("role");
+        pm.expect(json.user).to.have.property("plan");
+      });
+
+      // Save token and userId for subsequent requests
+      const json = pm.response.json();
+      if (json.token) {
+        pm.environment.set("authToken", json.token);
+      }
+      if (json.user && json.user.id) {
+        pm.environment.set("userId", json.user.id);
+      }

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Search, Sun, Moon, LogOut } from "lucide-react";
+import { Search, Sun, Moon, LogOut,  } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import FeatureUpdateBell from "../FeatureUpdateBell/FeatureUpdateBell";
 import styles from "./Topbar.module.css";
 
 export default function TopBar({ theme, onToggleTheme }) {
@@ -46,6 +47,8 @@ export default function TopBar({ theme, onToggleTheme }) {
       </div>
 
       <div className={styles.right}>
+          <FeatureUpdateBell />
+
         <button
           className={styles.theme}
           onClick={onToggleTheme}

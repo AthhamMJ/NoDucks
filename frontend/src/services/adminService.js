@@ -20,3 +20,37 @@ export async function deleteAdminUser(id) {
   const { data } = await api.delete(`/api/admin/users/${id}`);
   return data;
 }
+
+export async function fetchAdminSettings() {
+  const { data } = await api.get("/api/admin/settings");
+  return data;
+}
+
+export async function updateAdminQuotas(quotas) {
+  const { data } = await api.patch("/api/admin/settings/quotas", quotas);
+  return data.quotas;
+}
+
+export async function updateGeneralSettings(changes) {
+  const { data } = await api.patch("/api/admin/settings/general", changes)
+  return data.general;
+}
+
+export async function fetchAdminList() {
+  const {data} = await api.get("/api/admin/settings/admins");
+  return data.admins;
+}
+export async function fetchFeatureUpdates() {
+  const { data } = await api.get("/api/admin/updates");
+  return data.updates;
+}
+
+export async function createFeatureUpdate(payload) {
+  const { data } = await api.post("/api/admin/updates", payload);
+  return data.update;
+}
+
+export async function deleteFeatureUpdate(id) {
+  const { data } = await api.delete(`/api/admin/updates/${id}`);
+  return data;
+}

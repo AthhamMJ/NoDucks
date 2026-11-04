@@ -1,0 +1,12 @@
+$kind: http-request
+name: 'Get Me - No Token'
+method: GET
+url: '{{baseUrl}}/api/auth/me'
+order: 6000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 401 Unauthorized without token", function () {
+        pm.response.to.have.status(401);
+      });

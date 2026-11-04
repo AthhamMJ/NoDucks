@@ -1,0 +1,38 @@
+$kind: http-request
+name: 'Admin Login'
+method: POST
+url: '{{baseUrl}}/api/auth/login'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "testuser@noducks.com",
+      "password": "password123"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains token", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("token");
+      });
+
+      pm.test("User role is admin", function () {
+        const json = pm.response.json();
+        pm.expect(json.user.role).to.eql("admin");
+      });
+
+      // Save admin token for subsequent admin requests
+      const json = pm.response.json();
+      if (json.token) {
+        pm.environment.set("adminToken", json.token);
+      }

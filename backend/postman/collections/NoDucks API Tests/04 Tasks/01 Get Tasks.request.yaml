@@ -1,0 +1,21 @@
+$kind: http-request
+name: 'Get Tasks'
+method: GET
+url: '{{baseUrl}}/api/tasks'
+order: 1000
+headers:
+  - key: Authorization
+    value: 'Bearer {{authToken}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response contains tasks array", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property("tasks");
+        pm.expect(json.tasks).to.be.an("array");
+      });

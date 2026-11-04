@@ -1,0 +1,20 @@
+name: New Environment
+values:
+  - key: baseUrl
+    value: 'http://localhost:5000'
+  - key: authToken
+    value: ''
+  - key: adminToken
+    value: ''
+  - key: userId
+    value: ''
+  - key: subjectId
+    value: ''
+  - key: taskId
+    value: ''
+  - key: noteId
+    value: ''
+  - key: lessonId
+    value: ''
+  - key: updateId
+    value: ''

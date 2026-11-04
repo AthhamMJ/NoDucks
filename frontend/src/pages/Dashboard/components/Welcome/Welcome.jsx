@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 function WelcomeSection() {
   const navigate = useNavigate();
-  //destructuring the important data from the hook
   const { user } = useAuth();
   const [focusTask, setFocusTask] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +17,6 @@ function WelcomeSection() {
     year: "numeric",
   });
 
-  //Show the real subjects rather than Mock Data
   useEffect(() => {
     let ignore = false;
 
@@ -28,7 +26,7 @@ function WelcomeSection() {
         const nextTask = tasks.find((task) => !task.is_completed);
         if (!ignore) setFocusTask(nextTask ?? null);
       } catch (error) {
-        console.error("Failed to load the focus Task", error);
+        console.error("Failed to load the focus task:", error);
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -42,64 +40,44 @@ function WelcomeSection() {
 
   return (
     <div className={styles.welcomeContent}>
-      <p>{formattedDateToday}</p>
+      <p className={styles.dateLabel}>{formattedDateToday}</p>
 
       <h1>Welcome Back, {user?.name || "User"}!</h1>
-      {/* division for making the distance between focusContent and the Start Button */}
+
       <div className={styles.focusSection}>
         <div className={styles.focusContent}>
-          <div>
+          <div className={styles.focusIconWrapper}>
             <svg
-              width="35px"
-              height="35px"
-              viewBox="0 0 24.00 24.00"
+              width="35"
+              height="35"
+              viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              fill="#ffffff"
-              stroke="#ffffff"
-              strokeWidth="0.00024000000000000003"
+              fill="none"
+              aria-hidden="true"
             >
-              <g id="SVGRepo_bgCarrier" strokeWidth="0">
-                <rect
-                  x="0"
-                  y="0"
-                  width="24.00"
-                  height="24.00"
-                  rx="12"
-                  fill="#7438ff"
-                  strokeWidth="0"
-                ></rect>
-              </g>
-
-              <g
-                id="SVGRepo_tracerCarrier"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                stroke="#CCCCCC"
-                strokeWidth="0.4800000000000001"
-              ></g>
-
-              <g id="SVGRepo_iconCarrier">
-                <g>
-                  <path fill="none" d="M0 0h24v24H0z"></path>
-                  <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0 2C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"></path>
-                </g>
-              </g>
+              <rect width="24" height="24" rx="12" fill="#7438FF" />
+              <path
+                d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0 2C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+                fill="#FFFFFF"
+              />
             </svg>
           </div>
 
-          <div>
-            <p>Today's Focus</p>
+          <div className={styles.focusTextDetails}>
+            <p className={styles.focusSubheading}>Today's Focus</p>
             {loading ? (
-              <p>loading...</p>
+              <p className={styles.loadingState}>Loading focus task...</p>
             ) : focusTask ? (
               <>
-                <h3>{focusTask.title}</h3>
-                {focusTask.description && <p>{focusTask.description}</p>}
+                <h3 className={styles.taskTitle}>{focusTask.title}</h3>
+                {focusTask.description && (
+                  <p className={styles.taskDescription}>{focusTask.description}</p>
+                )}
               </>
             ) : (
               <>
-                <h3>No Tasks yet</h3>
-                <p>Add a task to see it here.</p>
+                <h3 className={styles.taskTitle}>No Tasks Yet</h3>
+                <p className={styles.taskDescription}>Add a task to set your focus target.</p>
               </>
             )}
           </div>
@@ -109,6 +87,7 @@ function WelcomeSection() {
           <button
             className={styles.startButton}
             onClick={() => navigate("/ai-coaching")}
+            disabled={loading}
           >
             Start
           </button>
