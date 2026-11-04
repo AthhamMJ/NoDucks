@@ -7,6 +7,13 @@ headers:
   - key: Authorization
     value: 'Bearer {{authToken}}'
 scripts:
+  - type: beforeRequest
+    language: text/javascript
+    code: |-
+      // SKIP this request during automated collection runs.
+      // It deletes the test account and breaks all subsequent requests.
+      // Run manually only when you want to test account deletion.
+      pm.execution.skipRequest();
   - type: afterResponse
     language: text/javascript
     code: |-
