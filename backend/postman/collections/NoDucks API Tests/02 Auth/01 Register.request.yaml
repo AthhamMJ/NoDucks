@@ -10,28 +10,38 @@ body:
   type: json
   content: |-
     {
-      "name": "Test User",
-      "email": "testuser@noducks.com",
-      "password": "password123"
+      "name": "Postman Test User",
+      "email": "postman.test@noducks.com",
+      "password": "TestPass123!"
     }
 scripts:
   - type: afterResponse
     language: text/javascript
     code: |-
-      pm.test("Status is 201 Created", function () {
-        pm.response.to.have.status(201);
+      // 201 = new registration, 400 = user already exists (expected on re-runs)
+      pm.test("Status is 201 (new) or 400 (already exists)", function () {
+        pm.expect(pm.response.code).to.be.oneOf([201, 400]);
       });
 
-      pm.test("Response has success message", function () {
-        const json = pm.response.json();
-        pm.expect(json).to.have.property("message");
-        pm.expect(json.message).to.include("registered");
-      });
+      if (pm.response.code === 201) {
+        pm.test("Response has success message", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("message");
+          pm.expect(json.message).to.include("registered");
+        });
 
-      pm.test("Response contains user object", function () {
-        const json = pm.response.json();
-        pm.expect(json).to.have.property("user");
-        pm.expect(json.user).to.have.property("id");
-        pm.expect(json.user).to.have.property("name");
-        pm.expect(json.user).to.have.property("email");
-      });
+        pm.test("Response contains user object", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("user");
+          pm.expect(json.user).to.have.property("id");
+          pm.expect(json.user).to.have.property("name");
+          pm.expect(json.user).to.have.property("email");
+        });
+      }
+
+      if (pm.response.code === 400) {
+        pm.test("400 means user already exists (idempotent)", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("message");
+        });
+      }

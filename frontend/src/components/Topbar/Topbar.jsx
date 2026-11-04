@@ -2,11 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { Search, Sun, Moon, LogOut,  } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import FeatureUpdateBell from "../FeatureUpdateBell/FeatureUpdateBell";
+import ProfileMenu from "../ProfileMenu/ProfileMenu";
 import styles from "./Topbar.module.css";
 
 export default function TopBar({ theme, onToggleTheme }) {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user} = useAuth();
 
   const name =
     user?.user_metadata?.full_name?.trim() ||
@@ -16,21 +16,12 @@ export default function TopBar({ theme, onToggleTheme }) {
 
   const initials =
     name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase() || "S";
-
-  async function handleSignOut() {
-    try {
-      await logout();
-      navigate("/", { replace: true });
-    } catch (error) {
-      console.error("Sign-out failed:", error.message);
-    }
-  }
+      .split(/\s+/) // "Create arrays from spaces of a sentence"
+      .filter(Boolean) // drop any empty strings from extra spaces
+      .slice(0, 2) // keep at most two words
+      .map((part) => part[0]) // take the first letter of each array elements(words)
+      .join("") //Join those selected letters
+      .toUpperCase() || "S"; // Uppercase those letters
 
   return (
     <header className={styles.topbar}>
@@ -61,24 +52,7 @@ export default function TopBar({ theme, onToggleTheme }) {
           )}
         </button>
 
-        <div className={styles.user}>
-          <div className={styles.avatar}>{initials}</div>
-
-          <div className={styles.userText}>
-            <strong>{name}</strong>
-            <small>{user?.email ?? ""}</small>
-          </div>
-
-          <button
-            type="button"
-            className={styles.theme}
-            onClick={handleSignOut}
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <LogOut size={18} strokeWidth={1.5} />
-          </button>
-        </div>
+        <ProfileMenu name={name} email={user?.email ?? ""} initials={initials} />
       </div>
     </header>
   );

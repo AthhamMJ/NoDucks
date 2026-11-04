@@ -336,3 +336,38 @@
         font-size: 24px;
     }
 }
+.authTermsLink {
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    color: var(--accent);
+
+    font: inherit;
+    text-decoration: underline;
+
+    cursor: pointer;
+}
+.authCheckbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    line-height: 1.5;
+
+    cursor: pointer;
+}
+
+.authCheckbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    flex-shrink: 0;
+
+    accent-color: var(--accent);
+    cursor: pointer;
+}
