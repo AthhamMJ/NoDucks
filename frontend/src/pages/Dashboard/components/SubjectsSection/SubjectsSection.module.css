@@ -3,129 +3,150 @@
   padding: 10px 20px;
 }
 
-/* Section Header */
 .title {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 16px;
+  margin: 0 0 8px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 16px;
-  opacity: 0.95;
 }
 
-.title svg {
-  opacity: 0.7;
-}
-
-/* Card Grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.grid svg {
-  opacity: 0.7;
-}
-
-/* Individual Subject Item */
-.item {
+.stack {
   display: flex;
   align-items: center;
-  gap: 12px;
-  text-align: left;
-  padding: 12px 14px;
-  cursor: pointer;
-  background: var(--surface-2);
+  padding: 16px 8px 20px;
+  gap: 12px; /* Provides consistent spacing between cards */
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.stack::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smaller size with no overlap and clean margin */
+.tile {
+  position: relative;
+  flex: 0 0 80px;
+  height: 100px;
+  margin-left: 0; /* Removes the overlap */
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md, 10px);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: var(--glass-shadow);
   color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  text-align: left;
+  cursor: pointer;
   outline: none;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    border-color 0.15s ease,
-    background 0.15s ease;
+  scroll-snap-align: start;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.item:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-  border-color: var(--accent);
-  background: var(--surface-3, var(--surface-2));
+.tile:first-child {
+  margin-left: 0;
 }
 
-.item:active {
-  transform: translateY(0);
+.tile:hover,
+.tile:focus-visible {
+  z-index: 50;
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
 }
 
-/* Icon Container */
-.iconWrapper {
+.tile:active {
+  transform: translateY(-4px);
+}
+
+.iconCenter {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: calc(var(--radius-md) - 4px);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-primary);
-  flex-shrink: 0;
+  opacity: 0.85;
 }
 
-/* Subject Metadata */
-.info {
-  flex: 1;
+.footer {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  font-size: 13px;
+  gap: 1px;
   min-width: 0;
 }
 
-.subjectName {
-  font-weight: 500;
-  color: var(--text-primary);
+.name {
+  font-size: 12px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.info small {
+.count {
+  font-size: 11px;
   color: var(--text-secondary);
-  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
-.info small.active {
-  color: var(--accent);
-  font-weight: 500;
+.tile:hover .count,
+.tile:focus-visible .count {
+  opacity: 1;
 }
 
-/* Action Arrow */
-.arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  transition: transform 0.15s ease, color 0.15s ease;
-  flex-shrink: 0;
-}
-
-.item:hover .arrow {
-  color: var(--text-primary);
-  transform: translateX(2px);
-}
-
-/* Responsive Adjustments */
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 600px) {
+  .tile {
+    flex-basis: 104px;
+    height: 124px;
+    margin-left: -36px;
   }
 }
 
-@media (max-width: 500px) {
-  .grid {
-    grid-template-columns: 1fr;
+.iconCenter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.tile:hover .count,
+.tile:focus-visible .count {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .tile {
+    flex-basis: 130px;
+    height: 150px;
+    margin-left: -48px;
   }
 }

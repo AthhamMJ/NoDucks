@@ -6,10 +6,9 @@ import Home from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Tasks from "./pages/Tasks/Tasks";
 
-import Notes from './pages/Notes/Notes';
-// import AICoaching from './pages/AICoaching/AICoaching';
-
-// import Settings from './pages/Settings/Settings';
+import Notes from "./pages/Notes/Notes";
+import Pricing from "./pages/Pricing/Pricing";
+import Checkout from "./pages/Checkout/Checkout";
 
 import Admin from "./pages/Admin/Admin";
 import AITutor from "./pages/AITutor/AITutor";
@@ -25,7 +24,8 @@ function AppRoutes() {
           <Route path="ai-coaching" element={<AITutor />} />
           <Route path="tasks" element={<Tasks />} />
           <Route path="notes" element={<Notes />} />
-            {/* <Route path="settings" element={<Settings />} /> */}
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="settings" element={<Setting />} />
         </Route>
       </Route>
