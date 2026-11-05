@@ -319,9 +319,26 @@
   max-width: 100%;
   max-height: 100%;
 }
-.cradle{
-  padding: 200px;
-  margin: 0px;
+
+.cradleContainer {
+  margin: 50px 0 70px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.cradle {
+  width: min(700px, 100%);
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  background: var(--card);
+  
+  box-shadow: 0 20px 40px var(--shadow);
 }
 .primaryButton,
 .secondaryButton {
@@ -809,5 +826,224 @@
     gap: 14px;
 
     text-align: center;
+  }
+}
+.pricing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 48px 0;
+}
+
+.pricingHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.pricingHeader p {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.cycleToggle {
+  display: inline-flex;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.cycleToggle button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cycleActive {
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
+}
+
+.pricingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1000px;
+}
+/* Feature section refinements */
+.cradle {
+  padding: 40px 0; /* Reduced from 200px to fix excessive whitespace */
+  margin: 0;
+}
+
+.featureNumber {
+  color: var(--text-4);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.featureIcon {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+/* Workflow step grid */
+.workflowGrid {
+  margin-top: 50px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.workflowCard {
+  padding: 24px;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.stepBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.workflowCard h4 {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 18px;
+}
+
+.workflowCard p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* About & Stats section */
+.aboutSubhead {
+  margin-top: 16px;
+  color: var(--text-2);
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.statGroup {
+  margin-top: 32px;
+  display: flex;
+  gap: 32px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+
+.statItem strong {
+  display: block;
+  font-size: 32px;
+  color: var(--text);
+}
+
+.statItem span {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* Final CTA subtext */
+.finalCtaSubtext {
+  color: var(--text-2);
+  font-size: 18px;
+  margin: -20px 0 32px;
+  max-width: 500px;
+}
+/* Section Header Layout */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.sectionHeaderSub {
+  max-width: 420px;
+  margin: 0;
+  color: var(--text-2);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Feature Showcase Split Grid */
+.featureShowcase {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.8fr) minmax(0, 1.2fr);
+  gap: 32px;
+  align-items: stretch;
+}
+
+.cradleWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: 0 20px 40px var(--shadow);
+  height: 100%;
+}
+
+/* Adjust feature grid inside the showcase */
+.featureShowcase .featureGrid {
+  margin-top: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.featureShowcase .featureCard {
+  min-height: auto;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.featureNumber {
+  color: var(--text-4);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+}
+
+/* Responsive adjustments for mobile/iPad */
+@media (max-width: 900px) {
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .featureShowcase {
+    grid-template-columns: 1fr;
   }
 }
