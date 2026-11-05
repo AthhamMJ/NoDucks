@@ -9,6 +9,7 @@ import Admin from "./pages/Admin/Admin";
 import AITutor from "./pages/AITutor/AITutor";
 import Notes from "./pages/Notes/Notes";
 import Setting from "./pages/Setting/Setting";
+import Pricing from "./pages/Pricing/Pricing"
 
 function AppRoutes() {
   return (
@@ -22,6 +23,7 @@ function AppRoutes() {
           <Route path="tasks" element={<Tasks />} />
           <Route path="notes" element={<Notes />} />
           <Route path="settings" element={<Setting />} />
+          <Route path="pricing" element={<Pricing />} />
         </Route>
       </Route>
 
