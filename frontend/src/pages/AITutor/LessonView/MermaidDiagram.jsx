@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useId, useMemo } from 'react';
+import React, { useEffect, useState, useId, useMemo, useRef } from 'react';
 import mermaid from 'mermaid';
 import { Workflow, Code, Copy, Check, AlertCircle, Eye, LoaderCircle } from 'lucide-react';
+import '../../../styles/AiTutor.css';
 import styles from './MermaidDiagram.module.css';
 
 export const MermaidDiagram = ({ diagram }) => {
@@ -9,6 +10,8 @@ export const MermaidDiagram = ({ diagram }) => {
   const [renderError, setRenderError] = useState(null);
   const [showCode, setShowCode] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isInView, setIsInView] = useState(() => typeof IntersectionObserver === 'undefined');
+  const viewportRef = useRef(null);
   const reactId = useId();
 
   const [theme, setTheme] = useState(() => {
@@ -34,6 +37,27 @@ export const MermaidDiagram = ({ diagram }) => {
 
     return () => observer.disconnect();
   }, []);
+
+  // Smooth IntersectionObserver trigger (activates once and stays settled)
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px 60px 0px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [svgContent]);
 
   const rawCode = diagram?.mermaidCode;
   const cleanCode = useMemo(() => {
@@ -84,13 +108,13 @@ export const MermaidDiagram = ({ diagram }) => {
                 darkMode: false,
                 background: '#ffffff',
                 mainBkg: '#f4f4f8',
-                nodeBorder: '#6366f1',
+                nodeBorder: '#0071e3',
                 nodeTextColor: '#1a1a1a',
                 textColor: '#1a1a1a',
-                lineColor: '#6366f1',
+                lineColor: '#0071e3',
                 primaryColor: '#f4f4f8',
                 primaryTextColor: '#1a1a1a',
-                primaryBorderColor: '#6366f1',
+                primaryBorderColor: '#0071e3',
                 secondaryColor: '#ffffff',
                 tertiaryColor: '#f4f4f8',
               },
@@ -132,7 +156,6 @@ export const MermaidDiagram = ({ diagram }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback
       setCopied(false);
     }
   };
@@ -140,7 +163,10 @@ export const MermaidDiagram = ({ diagram }) => {
   if (!diagram || !diagram.mermaidCode) return null;
 
   return (
-    <section className={styles.card} aria-label="Conceptual Flowchart">
+    <section className={`tutor-diagram-card ${styles.card}`} aria-label="Conceptual Flowchart">
+      {/* Ambient subtle background radial glow */}
+      <div className="tutor-diagram-glow" aria-hidden="true" />
+
       <div className={styles.header}>
         <div className={styles.titleArea}>
           <span className={styles.badge}>
@@ -183,7 +209,10 @@ export const MermaidDiagram = ({ diagram }) => {
         </div>
       </div>
 
-      <div className={styles.diagramContainer}>
+      <div
+        ref={viewportRef}
+        className={`tutor-diagram-viewport ${isInView ? 'in-view' : ''} ${styles.diagramContainer}`}
+      >
         {showCode ? (
           <pre className={styles.codeBlock}>
             <code>{cleanCode}</code>

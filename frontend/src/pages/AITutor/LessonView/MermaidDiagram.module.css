@@ -1,15 +1,13 @@
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .header {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -28,21 +26,22 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 0.7rem;
+  background: var(--accent-soft, rgba(0, 113, 227, 0.12));
+  color: var(--accent, #0071e3);
+  font-size: 0.72rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
   width: fit-content;
 }
 
 .title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 .controls {
@@ -55,42 +54,35 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--radius-md);
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius-md, 10px);
   border: 1px solid var(--border);
-  background: var(--surface-2);
+  background: var(--surface-2, rgba(0, 0, 0, 0.04));
   color: var(--text-secondary);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn:hover {
   background: var(--surface);
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--accent, #0071e3);
+  color: var(--accent, #0071e3);
+  transform: translateY(-1px);
 }
 
 .btnActive {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--accent-soft, rgba(0, 113, 227, 0.12));
+  border-color: var(--accent, #0071e3);
+  color: var(--accent, #0071e3);
 }
 
 .diagramContainer {
   position: relative;
   width: 100%;
   min-height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 1.5rem 1rem;
-  overflow-x: auto;
 }
 
 .diagramSvg {
@@ -161,19 +153,21 @@
 }
 
 .captionBox {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.85rem 1rem;
-  border-radius: var(--radius-md);
-  background: var(--accent-soft);
+  gap: 0.55rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  background: var(--accent-soft, rgba(0, 113, 227, 0.08));
   color: var(--text-primary);
   font-size: 0.88rem;
   line-height: 1.5;
 }
 
 .captionIcon {
-  color: var(--accent);
+  color: var(--accent, #0071e3);
   flex-shrink: 0;
   margin-top: 0.15rem;
 }
@@ -183,15 +177,11 @@
 }
 
 .captionText strong {
-  color: var(--accent);
+  color: var(--accent, #0071e3);
   font-weight: 600;
 }
 
 @media (max-width: 640px) {
-  .card {
-    padding: 1.1rem;
-  }
-
   .header {
     flex-direction: column;
     align-items: stretch;
@@ -201,4 +191,3 @@
     justify-content: flex-start;
   }
 }
-
