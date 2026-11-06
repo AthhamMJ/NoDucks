@@ -8,9 +8,9 @@ Instead of focusing only on memorizing theories and answers, NoDucks helps stude
 
 ## Current Stack
 
-* React
-* Vite
-* JavaScript
+* React + Vite (Serverless Frontend functions)
+* JavaScript (Base language)
+* ExpressJS + ES6+ (Backend Server Orented Function)
 * CSS Modules
 
 ## Development
@@ -33,6 +33,10 @@ The current focus is building the core UI and application structure before conne
 
 * `main` → Stable version
 * `ui-dev` → UI development and experimentation
+* `backend-dev` → Backend development and API testing
+* `admin-dev` → Admin feature development
+* `mongodb-architecture-v2` → MongoDB Version
+
 
 ## Vision
 
