@@ -12,6 +12,11 @@ const LessonSchema = new mongoose.Schema(
     headline: { type: String, required: true },
     simpleIntro: { type: String, required: true },
     deepExplanation: { type: String, required: true },
+    diagram: {
+      title: String,
+      mermaidCode: String,
+      caption: String,
+    },
     sections: [
       {
         heading: String,

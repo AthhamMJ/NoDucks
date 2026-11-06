@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Sparkles, AlertTriangle, LoaderCircle } from 'lucide-react';
 import styles from './LessonView.module.css';
+import { MermaidDiagram } from './MermaidDiagram';
 
 export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading }) => {
   const [activeTerm, setActiveTerm] = useState(null);
@@ -54,6 +55,11 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
 
         <p className={styles.bodyText}>{lesson.deepExplanation}</p>
       </section>
+
+      {/* Visual Conceptual Diagram */}
+      {lesson.diagram?.mermaidCode && (
+        <MermaidDiagram diagram={lesson.diagram} />
+      )}
 
       {/* Analogy spotlight */}
       <section className={styles.analogyBox}>

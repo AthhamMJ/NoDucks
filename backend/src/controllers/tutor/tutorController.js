@@ -56,7 +56,8 @@ export const generateLesson = async (req, res, next) => {
 
     const systemInstruction = `You are an elite academic tutor engine.
 Connect the topic "${topic}" to the student's interest "${interest}".
-Maintain strict scientific accuracy, delineate where the analogy ends, and avoid walls of text.`;
+Maintain strict scientific accuracy, delineate where the analogy ends, and avoid walls of text.
+Maintain clean progression. For the diagram, produce a valid, syntactically correct Mermaid.js flowchart (using graph TD or graph LR) showing the progression/mechanism of the concept. Do not include markdown code block syntax (like \`\`\`mermaid) in mermaidCode. Keep node labels clear and wrap any text containing punctuation or spaces in quotes.`;
 
     const userPrompt = `Create a structured lesson on "${topic}" using analogies from "${interest}".`;
 
@@ -69,6 +70,28 @@ Maintain strict scientific accuracy, delineate where the analogy ends, and avoid
           headline: { type: Type.STRING },
           simpleIntro: { type: Type.STRING },
           deepExplanation: { type: Type.STRING },
+          diagram: {
+            type: Type.OBJECT,
+            description:
+              "A visual conceptual diagram showing the mechanism and progression of the academic concept",
+            properties: {
+              title: {
+                type: Type.STRING,
+                description: "Short title of what the diagram illustrates",
+              },
+              mermaidCode: {
+                type: Type.STRING,
+                description:
+                  "Valid Mermaid.js graph TD or graph LR flowchart code showing the concept flow",
+              },
+              caption: {
+                type: Type.STRING,
+                description:
+                  "1-sentence caption explaining what the student should observe in the diagram",
+              },
+            },
+            required: ["title", "mermaidCode", "caption"],
+          },
           sections: {
             type: Type.ARRAY,
             items: {
@@ -145,6 +168,7 @@ Maintain strict scientific accuracy, delineate where the analogy ends, and avoid
           "headline",
           "simpleIntro",
           "deepExplanation",
+          "diagram",
           "sections",
           "analogyBridge",
           "corePrinciples",
@@ -158,6 +182,12 @@ Maintain strict scientific accuracy, delineate where the analogy ends, and avoid
     await recordUsage(req.user._id, "lesson", usage);
 
     const parsedData = JSON.parse(rawJson);
+    if (parsedData?.diagram?.mermaidCode) {
+      parsedData.diagram.mermaidCode = parsedData.diagram.mermaidCode
+        .replace(/^```(?:mermaid)?\s*/i, '')
+        .replace(/\s*```$/i, '')
+        .trim();
+    }
 
     // Save to Mongo if user is logged in
     const userId = req.user?._id || req.user;
@@ -291,6 +321,7 @@ correctAnswerIndex must be 0, 1, 2, or 3.`;
             },
           },
         },
+        
         required: ["questions"],
       },
     });
