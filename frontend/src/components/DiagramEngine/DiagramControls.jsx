@@ -6,6 +6,8 @@ import {
   SkipForward,
   RotateCcw,
   Maximize2,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import styles from './DiagramControls.module.css';
 
@@ -20,6 +22,13 @@ export const DiagramControls = ({
   onRestart,
   onSpeedChange,
   onFitView,
+  // Voice Narration Props
+  isNarrationSupported,
+  isNarrationEnabled,
+  onToggleNarration,
+  voices = [],
+  selectedVoice,
+  onSelectVoice,
 }) => {
   const speeds = [0.5, 1, 1.5, 2];
   const progressPercent =
@@ -105,6 +114,44 @@ export const DiagramControls = ({
         ))}
       </div>
 
+      {/* Voice Narration Audio Toggle */}
+      {isNarrationSupported && (
+        <>
+          <div className={styles.divider} aria-hidden="true" />
+          <div className={styles.narrationControls}>
+            <button
+              type="button"
+              className={`${styles.iconBtn} ${isNarrationEnabled ? styles.voiceActive : ''}`}
+              onClick={onToggleNarration}
+              title={isNarrationEnabled ? 'Mute voice narration' : 'Enable voice narration'}
+              aria-label={isNarrationEnabled ? 'Mute voice narration' : 'Enable voice narration'}
+              aria-pressed={isNarrationEnabled}
+            >
+              {isNarrationEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            </button>
+
+            {isNarrationEnabled && voices.length > 1 && (
+              <select
+                className={styles.voiceSelect}
+                value={selectedVoice?.name || ''}
+                onChange={(e) => {
+                  const v = voices.find((item) => item.name === e.target.value);
+                  if (v && onSelectVoice) onSelectVoice(v);
+                }}
+                aria-label="Select voice"
+                title="Select narration voice"
+              >
+                {voices.slice(0, 8).map((v) => (
+                  <option key={v.name} value={v.name}>
+                    {v.name.replace(/Google|Microsoft|Desktop|Natural/g, '').trim().slice(0, 15)}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        </>
+      )}
+
       {onFitView && (
         <>
           <div className={styles.divider} aria-hidden="true" />
@@ -122,4 +169,3 @@ export const DiagramControls = ({
     </div>
   );
 };
-

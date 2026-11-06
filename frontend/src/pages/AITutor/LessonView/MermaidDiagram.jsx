@@ -225,6 +225,7 @@ export const MermaidDiagram = ({ diagram }) => {
           <AnimatedDiagram
             mermaidCode={cleanCode}
             caption={diagram.caption}
+            title={diagram.title}
             theme={theme}
           />
         ) : viewMode === 'code' ? (
