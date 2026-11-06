@@ -10,8 +10,8 @@ Instead of focusing only on memorizing theories and answers, NoDucks helps stude
 
 * React + Vite (Serverless Frontend functions)
 * JavaScript (Base language)
-* ExpressJS + ES6+ (Backend Server Orented Function)
-* CSS Modules
+* ExpressJS + ES6+ (Backend Server Oriented Function)
+* CSS Modules (Standard CSS)
 
 ## Development
 
