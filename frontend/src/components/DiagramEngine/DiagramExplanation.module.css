@@ -1,0 +1,72 @@
+.explanationBox {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.topMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+.connections {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.connPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.conceptTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.captionLine {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.captionLine strong {
+  color: var(--text-primary);
+}
+
