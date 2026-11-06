@@ -8,7 +8,7 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   user-select: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.25s ease;
 }
 
 [data-theme="dark"] .nodeCard {
@@ -93,6 +93,8 @@
 
 /* Active Highlight */
 .active {
+  transform: scale(1.04);
+  opacity: 1 !important;
   border-color: var(--accent);
   background: var(--surface);
   box-shadow: 0 0 0 2px var(--accent-soft), 0 8px 24px rgba(99, 102, 241, 0.16);
@@ -123,6 +125,7 @@
 
 /* Pending State */
 .pending {
+  opacity: 0.55;
   filter: grayscale(0.2);
 }
 
