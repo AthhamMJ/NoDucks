@@ -112,11 +112,18 @@ function AnimatedDiagramInner({ mermaidCode, caption, theme = 'dark' }) {
 
   // Initial fit view with auto zoom bounds
   useEffect(() => {
+    if (!parsedData.nodes.length) return;
     const timer = setTimeout(() => {
-      fitView({ padding: 0.25, duration: 400 });
-    }, 150);
-    return () => clearTimeout(timer);
-  }, [mermaidCode, fitView]);
+      fitView({ padding: 0.2, duration: 250 });
+    }, 100);
+    const backupTimer = setTimeout(() => {
+      fitView({ padding: 0.2, duration: 200 });
+    }, 450);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(backupTimer);
+    };
+  }, [mermaidCode, parsedData.nodes.length, fitView]);
 
   // Animation player step interval
   useEffect(() => {
@@ -209,6 +216,8 @@ function AnimatedDiagramInner({ mermaidCode, caption, theme = 'dark' }) {
           nodesDraggable={true}
           nodesConnectable={false}
           elementsSelectable={true}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
           minZoom={0.2}
           maxZoom={1.8}
           proOptions={{ hideAttribution: true }}

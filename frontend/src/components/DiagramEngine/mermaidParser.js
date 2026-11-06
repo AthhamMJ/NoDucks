@@ -15,10 +15,12 @@ export function parseMermaidFlowchart(mermaidCode) {
     .replace(/\s*```$/i, '')
     .trim();
 
+  // Normalize semicolons and split lines
   const lines = clean
+    .replace(/;/g, '\n')
     .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith('%%'));
+    .map((l) => l.replace(/%%.*$/, '').trim())
+    .filter((l) => l);
 
   // Detect orientation: TD / TB / LR / RL
   let isHorizontal = false;
@@ -32,7 +34,11 @@ export function parseMermaidFlowchart(mermaidCode) {
 
   // Helper to register node
   const getOrCreateNode = (id, rawLabel = '') => {
-    const cleanId = id.trim().replace(/['"]/g, '');
+    let cleanId = id.trim().replace(/['"]/g, '');
+    if (!cleanId) return null;
+
+    // Remove any accidental trailing arrow parts
+    cleanId = cleanId.replace(/--.*$/, '').trim();
     if (!cleanId) return null;
 
     let label = rawLabel.trim();
@@ -78,6 +84,12 @@ export function parseMermaidFlowchart(mermaidCode) {
       return getOrCreateNode(id, label);
     }
 
+    // Handle token with inline arrow text: A -- text
+    const textArrowMatch = trimmed.match(/^([a-zA-Z0-9_-]+)\s*--.*$/);
+    if (textArrowMatch) {
+      return getOrCreateNode(textArrowMatch[1], textArrowMatch[1]);
+    }
+
     // Plain ID
     const plainId = trimmed.replace(/[^a-zA-Z0-9_-]/g, '');
     if (plainId) {
@@ -91,9 +103,9 @@ export function parseMermaidFlowchart(mermaidCode) {
       return;
     }
 
-    // Check if line contains edge(s)
+    // Check if line contains edge(s): -->, ==>, -.->, or -- text -->
     if (line.includes('-->') || line.includes('==>') || line.includes('-.->')) {
-      // Split on multiple chained connections: A --> B --> C
+      // Split on multiple chained connections
       const parts = line.split(/(?:-->|==>|-\.->)/g);
 
       for (let i = 0; i < parts.length - 1; i++) {
@@ -106,6 +118,13 @@ export function parseMermaidFlowchart(mermaidCode) {
         if (pipeMatch) {
           edgeLabel = pipeMatch[1].trim();
           rightToken = pipeMatch[2].trim();
+        }
+
+        // Extract -- text --> label from left token
+        const textLabelMatch = leftToken.match(/^(.*?)\s*--\s*["']?(.*?)["']?\s*$/);
+        if (textLabelMatch) {
+          leftToken = textLabelMatch[1].trim();
+          edgeLabel = textLabelMatch[2].trim();
         }
 
         const sourceNode = parseEndpoint(leftToken);
