@@ -2,7 +2,12 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.15rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
 }
 
 .header {
@@ -47,15 +52,52 @@
 .controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.modeGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: var(--surface-2);
+  padding: 0.2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.modeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: calc(var(--radius-md) - 2px);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modeBtn:hover {
+  color: var(--text-primary);
+}
+
+.modeActive {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.45rem 0.8rem;
-  border-radius: var(--radius-md, 10px);
+  padding: 0.38rem 0.75rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--surface-2, rgba(0, 0, 0, 0.04));
   color: var(--text-secondary);
@@ -79,10 +121,22 @@
   color: var(--accent, #0071e3);
 }
 
+.diagramArea {
+  width: 100%;
+}
+
 .diagramContainer {
   position: relative;
   width: 100%;
-  min-height: 180px;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1rem;
+  overflow-x: auto;
 }
 
 .diagramSvg {
@@ -92,11 +146,26 @@
   align-items: center;
 }
 
-.diagramSvg :global(svg) {
+.diagramSvg svg {
   max-width: 100%;
   height: auto;
-  display: block;
-  margin: 0 auto;
+}
+
+.codeContainer {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  overflow-x: auto;
+}
+
+.codeBlock {
+  margin: 0;
+  font-family: 'SF Mono', Monaco, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-primary);
 }
 
 .loadingPlaceholder {
@@ -108,27 +177,30 @@
 }
 
 .spinner {
-  animation: spin 0.9s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
   to {
     transform: rotate(360deg);
   }
 }
 
 .errorState {
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  width: 100%;
 }
 
 .errorBanner {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 0.9rem;
+  padding: 0.6rem 0.85rem;
   background: var(--danger-soft);
   color: var(--danger);
   border-radius: var(--radius-md);
@@ -136,34 +208,16 @@
   font-weight: 500;
 }
 
-.codeBlock {
-  width: 100%;
-  margin: 0;
-  padding: 1rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.82rem;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-x: auto;
-}
-
 .captionBox {
   position: relative;
   z-index: 1;
   display: flex;
   align-items: flex-start;
-  gap: 0.55rem;
-  padding: 0.9rem 1.1rem;
-  border-radius: 12px;
-  background: var(--accent-soft, rgba(0, 113, 227, 0.08));
-  color: var(--text-primary);
-  font-size: 0.88rem;
-  line-height: 1.5;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
 
 .captionIcon {
@@ -174,11 +228,13 @@
 
 .captionText {
   margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
 }
 
 .captionText strong {
-  color: var(--accent, #0071e3);
-  font-weight: 600;
+  color: var(--text-primary);
 }
 
 @media (max-width: 640px) {

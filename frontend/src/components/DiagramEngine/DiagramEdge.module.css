@@ -1,0 +1,44 @@
+.edgeLine {
+  stroke: var(--border);
+  stroke-width: 1.75px;
+  stroke-dasharray: 4 4;
+  transition: stroke 0.25s ease, stroke-width 0.25s ease;
+}
+
+.edgeLine.active {
+  stroke: var(--accent);
+  stroke-width: 2.5px;
+  stroke-dasharray: none;
+  filter: drop-shadow(0 0 4px var(--accent-soft));
+}
+
+.edgeLine.completed {
+  stroke: rgba(16, 185, 129, 0.55);
+  stroke-width: 2px;
+  stroke-dasharray: none;
+}
+
+.particle {
+  filter: drop-shadow(0 0 6px var(--accent));
+}
+
+.edgeLabel {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  user-select: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.activeLabel {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface);
+  font-weight: 600;
+}
+

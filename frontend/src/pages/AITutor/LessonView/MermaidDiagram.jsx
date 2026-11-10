@@ -1,6 +1,17 @@
 import React, { useEffect, useState, useId, useMemo, useRef } from 'react';
 import mermaid from 'mermaid';
-import { Workflow, Code, Copy, Check, AlertCircle, Eye, LoaderCircle } from 'lucide-react';
+import {
+  Workflow,
+  Code,
+  Copy,
+  Check,
+  AlertCircle,
+  Eye,
+  LoaderCircle,
+  Play,
+  Layers,
+} from 'lucide-react';
+import { AnimatedDiagram } from '../../../components/DiagramEngine/AnimatedDiagram';
 import '../../../styles/AiTutor.css';
 import styles from './MermaidDiagram.module.css';
 
@@ -8,7 +19,7 @@ export const MermaidDiagram = ({ diagram }) => {
   const [svgContent, setSvgContent] = useState('');
   const [isRendering, setIsRendering] = useState(true);
   const [renderError, setRenderError] = useState(null);
-  const [showCode, setShowCode] = useState(false);
+  const [viewMode, setViewMode] = useState('interactive'); // 'interactive' | 'static' | 'code'
   const [copied, setCopied] = useState(false);
   const [isInView, setIsInView] = useState(() => typeof IntersectionObserver === 'undefined');
   const viewportRef = useRef(null);
@@ -68,6 +79,7 @@ export const MermaidDiagram = ({ diagram }) => {
       .trim();
   }, [rawCode]);
 
+  // Mermaid static SVG rendering fallback
   useEffect(() => {
     let isCancelled = false;
     const safeId = `mermaid_${reactId.replace(/[^a-zA-Z0-9_-]/g, '_')}_${Date.now()}`;
@@ -131,7 +143,6 @@ export const MermaidDiagram = ({ diagram }) => {
           setRenderError(err?.message || 'Could not parse diagram syntax.');
         }
       } finally {
-        // Clean up temporary DOM nodes created by mermaid
         const tempNode = document.getElementById(safeId);
         if (tempNode) tempNode.remove();
         const errNode = document.getElementById(`d${safeId}`);
@@ -167,26 +178,52 @@ export const MermaidDiagram = ({ diagram }) => {
       {/* Ambient subtle background radial glow */}
       <div className="tutor-diagram-glow" aria-hidden="true" />
 
+      {/* Top Header */}
       <div className={styles.header}>
         <div className={styles.titleArea}>
           <span className={styles.badge}>
             <Workflow size={13} aria-hidden="true" />
-            Visual Concept Flow
+            Interactive Concept Map
           </span>
           <h2 className={styles.title}>{diagram.title || 'Mechanism Progression'}</h2>
         </div>
 
         <div className={styles.controls}>
-          <button
-            type="button"
-            className={`${styles.btn} ${showCode ? styles.btnActive : ''}`}
-            onClick={() => setShowCode((prev) => !prev)}
-            aria-pressed={showCode}
-            title={showCode ? 'View Diagram' : 'View Mermaid Source'}
-          >
-            <Code size={14} aria-hidden="true" />
-            {showCode ? 'Show Diagram' : 'Mermaid Code'}
-          </button>
+          {/* Mode Switcher */}
+          <div className={styles.modeGroup}>
+            <button
+              type="button"
+              className={`${styles.modeBtn} ${viewMode === 'interactive' ? styles.modeActive : ''}`}
+              onClick={() => setViewMode('interactive')}
+              title="Interactive Animated View"
+              aria-pressed={viewMode === 'interactive'}
+            >
+              <Play size={13} aria-hidden="true" />
+              <span>Interactive</span>
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.modeBtn} ${viewMode === 'static' ? styles.modeActive : ''}`}
+              onClick={() => setViewMode('static')}
+              title="Static Diagram View"
+              aria-pressed={viewMode === 'static'}
+            >
+              <Layers size={13} aria-hidden="true" />
+              <span>Static</span>
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.modeBtn} ${viewMode === 'code' ? styles.modeActive : ''}`}
+              onClick={() => setViewMode('code')}
+              title="Mermaid Source Code"
+              aria-pressed={viewMode === 'code'}
+            >
+              <Code size={13} aria-hidden="true" />
+              <span>Code</span>
+            </button>
+          </div>
 
           <button
             type="button"
@@ -209,38 +246,52 @@ export const MermaidDiagram = ({ diagram }) => {
         </div>
       </div>
 
-      <div
-        ref={viewportRef}
-        className={`tutor-diagram-viewport ${isInView ? 'in-view' : ''} ${styles.diagramContainer}`}
-      >
-        {showCode ? (
-          <pre className={styles.codeBlock}>
-            <code>{cleanCode}</code>
-          </pre>
-        ) : renderError ? (
-          <div className={styles.errorState}>
-            <div className={styles.errorBanner} role="alert">
-              <AlertCircle size={15} aria-hidden="true" />
-              <span>Diagram preview unavailable. Showing code representation:</span>
-            </div>
+      {/* Main Diagram Area */}
+      <div className={styles.diagramArea}>
+        {viewMode === 'interactive' ? (
+          <AnimatedDiagram
+            mermaidCode={cleanCode}
+            caption={diagram.caption}
+            title={diagram.title}
+            theme={theme}
+          />
+        ) : viewMode === 'code' ? (
+          <div className={styles.codeContainer}>
             <pre className={styles.codeBlock}>
               <code>{cleanCode}</code>
             </pre>
           </div>
-        ) : isRendering && !svgContent ? (
-          <div className={styles.loadingPlaceholder}>
-            <LoaderCircle size={18} className={styles.spinner} aria-hidden="true" />
-            <span>Rendering visual diagram...</span>
-          </div>
         ) : (
           <div
-            className={styles.diagramSvg}
-            dangerouslySetInnerHTML={{ __html: svgContent }}
-          />
+            ref={viewportRef}
+            className={`tutor-diagram-viewport ${isInView ? 'in-view' : ''} ${styles.diagramContainer}`}
+          >
+            {renderError ? (
+              <div className={styles.errorState}>
+                <div className={styles.errorBanner} role="alert">
+                  <AlertCircle size={15} aria-hidden="true" />
+                  <span>Diagram preview unavailable. Showing code representation:</span>
+                </div>
+                <pre className={styles.codeBlock}>
+                  <code>{cleanCode}</code>
+                </pre>
+              </div>
+            ) : isRendering && !svgContent ? (
+              <div className={styles.loadingPlaceholder}>
+                <LoaderCircle size={18} className={styles.spinner} aria-hidden="true" />
+                <span>Rendering visual diagram...</span>
+              </div>
+            ) : (
+              <div
+                className={styles.diagramSvg}
+                dangerouslySetInnerHTML={{ __html: svgContent }}
+              />
+            )}
+          </div>
         )}
       </div>
 
-      {diagram.caption && (
+      {viewMode !== 'interactive' && diagram.caption && (
         <div className={styles.captionBox}>
           <Eye size={16} className={styles.captionIcon} aria-hidden="true" />
           <p className={styles.captionText}>
