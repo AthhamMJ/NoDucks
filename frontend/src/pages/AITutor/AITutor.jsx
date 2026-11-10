@@ -5,6 +5,7 @@ import { LessonView } from "./LessonView/LessonView";
 import { ConversationArea } from "./ConversationArea/ConversationArea";
 import { QuizModal } from "./QuizModal/QuizModal";
 import { HistoryPanel } from "./HistoryPanel/HistoryPanel";
+import QuotaModal from "../../components/QuotaModal/QuotaModal";
 import styles from "./AITutor.module.css";
 
 export default function AITutor() {
@@ -19,6 +20,8 @@ export default function AITutor() {
     isQuizLoading,
     lessons,
     usage,
+    quotaError,
+    dismissQuotaError,
     startLearning,
     openLesson,
     removeLesson,
@@ -79,6 +82,13 @@ export default function AITutor() {
           )}
         </main>
       </div>
+
+      {/* Quota exceeded popup — shown over everything when any AI action hits the limit */}
+      <QuotaModal
+        isOpen={!!quotaError}
+        message={quotaError}
+        onClose={dismissQuotaError}
+      />
     </div>
   );
 }

@@ -19,20 +19,29 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+
+    // Only sign out + redirect on genuine auth failures (401).
+    // 429 (quota exceeded), 403, 500, etc. should NOT sign the user out.
+    if (status === 401) {
       localStorage.removeItem("token");
+      if (
+        !window.location.pathname.startsWith("/login") &&
+        window.location.pathname !== "/"
+      ) {
+        window.location.href = "/";
+      }
     }
-    if (
-      !window.location.pathname.startsWith("/login") &&
-      window.location.pathname !== "/"
-    ) {
-      window.location.href = "/";
-    }
+
     const message =
       error.response?.data?.message ||
       error.message ||
       "An unexpected error occurred";
-    return Promise.reject(new Error(message));
+
+    // Attach status so callers can distinguish quota errors from auth errors
+    const enrichedError = new Error(message);
+    enrichedError.status = status;
+    return Promise.reject(enrichedError);
   },
 );
 
