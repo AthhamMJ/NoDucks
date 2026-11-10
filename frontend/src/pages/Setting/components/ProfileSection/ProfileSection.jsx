@@ -4,7 +4,7 @@ import SettingsCard from "../SettingsCard/SettingsCard";
 import styles from "./ProfileSection.module.css";
 
 function getInitials(name) {
-  if (!name || typeof name !== "String") return "?";
+  if (!name || typeof name !== "string") return "?";
   return name
     .split(" ")
     .filter(Boolean)

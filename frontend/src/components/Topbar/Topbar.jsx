@@ -1,12 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { Search, Sun, Moon, LogOut,  } from "lucide-react";
+import { Sparkles, Sun, Moon } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import FeatureUpdateBell from "../FeatureUpdateBell/FeatureUpdateBell";
 import ProfileMenu from "../ProfileMenu/ProfileMenu";
 import styles from "./Topbar.module.css";
 
 export default function TopBar({ theme, onToggleTheme }) {
-  const { user} = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const name =
     user?.user_metadata?.full_name?.trim() ||
@@ -27,18 +28,20 @@ export default function TopBar({ theme, onToggleTheme }) {
     <header className={styles.topbar}>
       <div className={styles.brand}>
         <strong>NoDucks</strong>
-        <span className={styles.badge}>upgrade</span>
-      </div>
-
-      <div className={styles.search}>
-        <span>
-          <Search size={18} strokeWidth={1.5} />
-        </span>
-        <input type="text" placeholder="Search tasks..." />
+        <div className={styles.center}>
+          <button
+            type="button"
+            className={styles.upgrade}
+            onClick={() => navigate("/pricing")}
+          >
+            <Sparkles size={16} strokeWidth={1.8} />
+            <span>Upgrade</span>
+          </button>
+        </div>
       </div>
 
       <div className={styles.right}>
-          <FeatureUpdateBell />
+        <FeatureUpdateBell />
 
         <button
           className={styles.theme}
@@ -52,7 +55,11 @@ export default function TopBar({ theme, onToggleTheme }) {
           )}
         </button>
 
-        <ProfileMenu name={name} email={user?.email ?? ""} initials={initials} />
+        <ProfileMenu
+          name={name}
+          email={user?.email ?? ""}
+          initials={initials}
+        />
       </div>
     </header>
   );

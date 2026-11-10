@@ -14,6 +14,8 @@ import Notes from './pages/Notes/Notes';
 import Admin from "./pages/Admin/Admin";
 import AITutor from "./pages/AITutor/AITutor";
 import Setting from "./pages/Setting/Setting";
+import Pricing from "./pages/Pricing/Pricing"
+
 function AppRoutes() {
   return (
     <Routes>
@@ -27,6 +29,7 @@ function AppRoutes() {
           <Route path="notes" element={<Notes />} />
             {/* <Route path="settings" element={<Settings />} /> */}
           <Route path="settings" element={<Setting />} />
+          <Route path="pricing" element={<Pricing />} />
         </Route>
       </Route>
 
