@@ -3,10 +3,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 export function useDiagramNarration({
   title,
   steps = [],
-  caption = '',
   currentStep = 0,
   isPlaying = false,
-  playId,
+  playId = 0,
   onStepComplete,
 }) {
   const [isSupported, setIsSupported] = useState(false);
@@ -18,10 +17,27 @@ export function useDiagramNarration({
   const [rate, setRate] = useState(1);
 
   const synthRef = useRef(null);
-  const currentUtteranceRef = useRef(null);
+  const activeUtteranceRef = useRef(null);
+
+  // Keep latest props/state in refs so callbacks and speech synthesis don't restart when unrelated values change
+  const stepsRef = useRef(steps);
+  const titleRef = useRef(title);
   const isPlayingRef = useRef(isPlaying);
   const isEnabledRef = useRef(isEnabled);
+  const selectedVoiceRef = useRef(selectedVoice);
+  const rateRef = useRef(rate);
   const onStepCompleteRef = useRef(onStepComplete);
+
+  const prevIsPlayingRef = useRef(isPlaying);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    stepsRef.current = steps;
+  }, [steps]);
+
+  useEffect(() => {
+    titleRef.current = title;
+  }, [title]);
 
   useEffect(() => {
     isPlayingRef.current = isPlaying;
@@ -30,6 +46,14 @@ export function useDiagramNarration({
   useEffect(() => {
     isEnabledRef.current = isEnabled;
   }, [isEnabled]);
+
+  useEffect(() => {
+    selectedVoiceRef.current = selectedVoice;
+  }, [selectedVoice]);
+
+  useEffect(() => {
+    rateRef.current = rate;
+  }, [rate]);
 
   useEffect(() => {
     onStepCompleteRef.current = onStepComplete;
@@ -44,14 +68,12 @@ export function useDiagramNarration({
       const updateVoices = () => {
         if (!synthRef.current) return;
         const allVoices = synthRef.current.getVoices() || [];
-        // Filter English voices or fallback to all
         const englishVoices = allVoices.filter((v) =>
           v.lang.toLowerCase().startsWith('en')
         );
         const available = englishVoices.length > 0 ? englishVoices : allVoices;
         setVoices(available);
 
-        // Auto-select clean natural voice if found
         if (available.length > 0) {
           const preferred =
             available.find(
@@ -78,108 +100,134 @@ export function useDiagramNarration({
     };
   }, []);
 
-  // Stop/cancel current speech
+  // Stop/cancel current speech and clear active utterance so onend/onerror are ignored
   const stopNarration = useCallback(() => {
+    activeUtteranceRef.current = null;
     if (synthRef.current) {
       synthRef.current.cancel();
     }
     setIsSpeaking(false);
-    currentUtteranceRef.current = null;
   }, []);
 
-  // Speak a specific text phrase
-  const speakText = useCallback(
-    (text) => {
-      if (!synthRef.current || !text || !isEnabledRef.current) return;
+  // Speak a text string
+  const speakText = useCallback((text) => {
+    if (!synthRef.current || !text || !isEnabledRef.current) return;
 
-      // Cancel any ongoing speech to avoid overlapping
-      synthRef.current.cancel();
+    // Invalidate any existing utterance before cancelling
+    activeUtteranceRef.current = null;
+    synthRef.current.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-      utterance.rate = rate;
-      utterance.pitch = 1.0;
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (selectedVoiceRef.current) {
+      utterance.voice = selectedVoiceRef.current;
+    }
+    utterance.rate = rateRef.current;
+    utterance.pitch = 1.0;
 
-      utterance.onstart = () => {
+    activeUtteranceRef.current = utterance;
+
+    utterance.onstart = () => {
+      if (activeUtteranceRef.current === utterance) {
         setIsSpeaking(true);
-      };
+      }
+    };
 
-      utterance.onend = () => {
-        setIsSpeaking(false);
-        currentUtteranceRef.current = null;
+    utterance.onend = () => {
+      if (activeUtteranceRef.current !== utterance) return; // Ignore cancelled utterances
+      activeUtteranceRef.current = null;
+      setIsSpeaking(false);
 
-        // If animation is in active play mode, trigger progression
-        if (isPlayingRef.current && onStepCompleteRef.current) {
-          onStepCompleteRef.current();
-        }
-      };
+      if (isPlayingRef.current && onStepCompleteRef.current) {
+        onStepCompleteRef.current();
+      }
+    };
 
-      utterance.onerror = (e) => {
-        setIsSpeaking(false);
-        currentUtteranceRef.current = null;
-        if (e.error !== 'interrupted' && e.error !== 'canceled') {
-          console.warn('Speech synthesis error:', e);
-          setNarrationFailed(true);
-        }
-      };
+    utterance.onerror = (e) => {
+      if (activeUtteranceRef.current !== utterance) return; // Ignore cancelled utterances
+      activeUtteranceRef.current = null;
+      setIsSpeaking(false);
+      if (e.error !== 'interrupted' && e.error !== 'canceled') {
+        console.warn('Speech synthesis error:', e);
+        setNarrationFailed(true);
+      }
+    };
 
-      currentUtteranceRef.current = utterance;
-      synthRef.current.speak(utterance);
-    },
-    [selectedVoice, rate]
-  );
+    synthRef.current.speak(utterance);
+  }, []);
 
-  // Trigger narration for current step when active
+  // Trigger narration only when currentStep, isEnabled, or playId changes
   useEffect(() => {
-    if (!isEnabled || !steps || steps.length === 0) {
+    if (!isEnabled || !stepsRef.current || stepsRef.current.length === 0) {
       stopNarration();
       return;
     }
 
-    const currentStepObj = steps[currentStep];
+    if (!isPlayingRef.current) {
+      stopNarration();
+      return;
+    }
+
+    const currentStepObj = stepsRef.current[currentStep];
     if (!currentStepObj) return;
 
-    // Compose concise educational speech prompt
-    let narrationPhrase = '';
-    if (currentStep === 0 && title) {
-      narrationPhrase = `${title}. Step 1: ${currentStepObj.label}.`;
-      if (caption) {
-        narrationPhrase += ` ${caption}`;
-      }
-    } else {
-      narrationPhrase = `Step ${currentStep + 1}: ${currentStepObj.label}.`;
+    // Compose narration phrase in order:
+    // 1. Title (step 1 only, i.e. currentStep === 0)
+    // 2. "Step N"
+    // 3. Step explanation (fallback to label if missing)
+    // 4. Step caption (if present)
+    const parts = [];
+    if (currentStep === 0 && titleRef.current) {
+      parts.push(titleRef.current);
     }
+    parts.push(`Step ${currentStep + 1}`);
+
+    const explanation = currentStepObj.explanation || currentStepObj.label;
+    if (explanation) {
+      parts.push(explanation);
+    }
+    if (currentStepObj.caption) {
+      parts.push(currentStepObj.caption);
+    }
+
+    const narrationPhrase = parts
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .join('. ');
 
     speakText(narrationPhrase);
 
     return () => {
+      activeUtteranceRef.current = null;
       if (synthRef.current) {
         synthRef.current.cancel();
       }
     };
-  }, [
-    currentStep,
-    isEnabled,
-    steps,
-    title,
-    caption,
-    speakText,
-    stopNarration,
-    playId, // exists only to re-trigger the effect on restart
-  ]);
+  }, [currentStep, isEnabled, playId, speakText, stopNarration]);
 
-  // Synchronize pause/resume with animation playback
+  // Pause and resume only when isPlaying state actually changes, not on initial render
   useEffect(() => {
-    if (!synthRef.current || !isEnabled) return;
-
-    if (!isPlaying && isSpeaking) {
-      synthRef.current.pause();
-    } else if (isPlaying && synthRef.current.paused) {
-      synthRef.current.resume();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
-  }, [isPlaying, isSpeaking, isEnabled]);
+
+    if (!synthRef.current || !isEnabledRef.current) return;
+
+    const prevPlaying = prevIsPlayingRef.current;
+    prevIsPlayingRef.current = isPlaying;
+
+    if (prevPlaying !== isPlaying) {
+      if (!isPlaying) {
+        if (synthRef.current.speaking) {
+          synthRef.current.pause();
+        }
+      } else {
+        if (synthRef.current.paused) {
+          synthRef.current.resume();
+        }
+      }
+    }
+  }, [isPlaying]);
 
   const toggleNarration = useCallback(() => {
     setIsEnabled((prev) => {
@@ -207,4 +255,3 @@ export function useDiagramNarration({
     stopNarration,
   };
 }
-

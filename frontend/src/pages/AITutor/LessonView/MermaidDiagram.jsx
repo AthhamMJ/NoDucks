@@ -267,6 +267,7 @@ export const MermaidDiagram = ({ diagram }) => {
             mermaidCode={cleanCode}
             caption={diagram.caption}
             title={diagram.title}
+            explanations={diagram.steps || diagram.explanations || []}
             theme={theme}
           />
         ) : viewMode === 'code' ? (

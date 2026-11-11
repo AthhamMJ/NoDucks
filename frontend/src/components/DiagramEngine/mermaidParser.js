@@ -4,7 +4,7 @@
  * and derives topological animation sequence steps.
  */
 
-export function parseMermaidFlowchart(mermaidCode) {
+export function parseMermaidFlowchart(mermaidCode, explanations = []) {
   if (!mermaidCode || typeof mermaidCode !== 'string') {
     return { nodes: [], edges: [], steps: [] };
   }
@@ -245,6 +245,23 @@ export function parseMermaidFlowchart(mermaidCode) {
     levelGroups.get(lvl).push(id);
   });
 
+  const explanationMap = new Map();
+  if (Array.isArray(explanations)) {
+    explanations.forEach((item) => {
+      if (item && item.nodeId) {
+        explanationMap.set(item.nodeId, item);
+      }
+    });
+  } else if (explanations && typeof explanations === 'object') {
+    Object.entries(explanations).forEach(([nodeId, val]) => {
+      if (typeof val === 'string') {
+        explanationMap.set(nodeId, { nodeId, explanation: val, caption: '' });
+      } else if (val && typeof val === 'object') {
+        explanationMap.set(nodeId, { nodeId, ...val });
+      }
+    });
+  }
+
   const gapX = isHorizontal ? 290 : 250;
   const gapY = isHorizontal ? 120 : 130;
 
@@ -257,6 +274,11 @@ export function parseMermaidFlowchart(mermaidCode) {
 
     nodeIds.forEach((id, idx) => {
       const nodeData = nodesMap.get(id);
+      const stepExp = explanationMap.get(id);
+      const label = nodeData?.label || id;
+      const explanation = stepExp?.explanation || label;
+      const stepCaption = stepExp?.caption || '';
+
       let posX = 0;
       let posY = 0;
 
@@ -274,7 +296,9 @@ export function parseMermaidFlowchart(mermaidCode) {
         position: { x: posX, y: posY },
         data: {
           id,
-          label: nodeData.label || id,
+          label,
+          explanation,
+          caption: stepCaption,
           stepIndex: topologicalOrder.indexOf(id) + 1,
           totalSteps: nodesMap.size,
           incoming: nodeData.incoming,
@@ -288,6 +312,11 @@ export function parseMermaidFlowchart(mermaidCode) {
   // Construct educational step sequence
   const steps = topologicalOrder.map((nodeId, idx) => {
     const node = nodesMap.get(nodeId);
+    const stepExp = explanationMap.get(nodeId);
+    const label = node?.label || nodeId;
+    const explanation = stepExp?.explanation || label;
+    const stepCaption = stepExp?.caption || '';
+
     const activeEdges = edges.filter(
       (e) => e.target === nodeId || (idx === 0 && e.source === nodeId)
     );
@@ -295,7 +324,9 @@ export function parseMermaidFlowchart(mermaidCode) {
     return {
       stepIndex: idx,
       nodeId,
-      label: node?.label || nodeId,
+      label,
+      explanation,
+      caption: stepCaption,
       activeEdgeIds: activeEdges.map((e) => e.id),
       incomingCount: node?.incoming?.length || 0,
       outgoingCount: node?.outgoing?.length || 0,

@@ -12,6 +12,13 @@ export const DiagramExplanation = ({
   if (!activeStep && !selectedNode) return null;
 
   const currentLabel = selectedNode ? selectedNode.label : activeStep?.label;
+  const currentExplanation = selectedNode
+    ? selectedNode.explanation || selectedNode.label
+    : activeStep?.explanation || activeStep?.label;
+  const currentStepCaption = selectedNode
+    ? selectedNode.caption
+    : activeStep?.caption;
+
   const stepNumber = selectedNode
     ? selectedNode.stepIndex
     : (activeStep?.stepIndex ?? 0) + 1;
@@ -26,9 +33,18 @@ export const DiagramExplanation = ({
 
   return (
     <div className={styles.explanationBox}>
+      {caption && (
+        <div className={styles.diagramCaption}>
+          <p className={styles.captionLine}>
+            <strong>Overview: </strong>
+            {caption}
+          </p>
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
         <motion.div
-          key={currentLabel || 'step'}
+          key={stepNumber}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
@@ -59,10 +75,14 @@ export const DiagramExplanation = ({
 
           <h3 className={styles.conceptTitle}>{currentLabel}</h3>
 
-          {caption && (
+          {currentExplanation && (
+            <p className={styles.stepExplanation}>{currentExplanation}</p>
+          )}
+
+          {currentStepCaption && (
             <p className={styles.captionLine}>
-              <strong>Educational Context: </strong>
-              {caption}
+              <strong>Note: </strong>
+              {currentStepCaption}
             </p>
           )}
         </motion.div>

@@ -34,14 +34,22 @@ const edgeTypes = {
   diagramEdge: DiagramEdge,
 };
 
-function AnimatedDiagramInner({ mermaidCode, caption, title, theme = "dark" }) {
+function AnimatedDiagramInner({
+  mermaidCode,
+  mermaid,
+  caption,
+  title,
+  explanations = [],
+  theme = "dark",
+}) {
+  const code = mermaidCode || mermaid;
   const { fitView } = useReactFlow();
   const nodesInitialized = useNodesInitialized();
 
-  // Parse mermaid flowchart into React Flow format
+  // Parse mermaid flowchart into React Flow format with step explanations
   const parsedData = useMemo(() => {
-    return parseMermaidFlowchart(mermaidCode);
-  }, [mermaidCode]);
+    return parseMermaidFlowchart(code, explanations);
+  }, [code, explanations]);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -53,10 +61,12 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = "dark" }) {
   const totalSteps = steps.length;
   const isHorizontal = parsedData.isHorizontal;
 
+  // Stop playback at the last step instead of wrapping to step 0
   const handleNextStep = useCallback(() => {
     setCurrentStep((prev) => {
       if (prev >= totalSteps - 1) {
-        return 0;
+        setIsPlaying(false);
+        return prev;
       }
       return prev + 1;
     });
@@ -75,7 +85,6 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = "dark" }) {
   } = useDiagramNarration({
     title,
     steps,
-    caption,
     currentStep,
     isPlaying,
     playId,
@@ -146,7 +155,7 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = "dark" }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(currentNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(currentEdges);
 
-  // Synchronize state when nodes/edges compute
+  // Synchronize state when nodes/edges compute, preserving dragged positions
   useEffect(() => {
     setNodes((prev) => {
       const positions = new Map(prev.map((n) => [n.id, n.position]));
@@ -170,8 +179,14 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = "dark" }) {
 
   // Animation player step interval (used when voice narration is disabled)
   useEffect(() => {
-    // If voice narration is active, speech onend handles the step pacing naturally
-    if (!isPlaying || totalSteps <= 1 || (isNarrationEnabled && !narrationFailed)) return;
+    if (
+      !isPlaying ||
+      currentStep >= totalSteps - 1 ||
+      totalSteps <= 1 ||
+      (isNarrationEnabled && !narrationFailed)
+    ) {
+      return;
+    }
 
     const intervalTime = Math.max(1200, 3200 / speed);
     const interval = setInterval(() => {
@@ -179,7 +194,15 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = "dark" }) {
     }, intervalTime);
 
     return () => clearInterval(interval);
-  }, [isPlaying, totalSteps, speed, isNarrationEnabled, narrationFailed, handleNextStep]);
+  }, [
+    isPlaying,
+    currentStep,
+    totalSteps,
+    speed,
+    isNarrationEnabled,
+    narrationFailed,
+    handleNextStep,
+  ]);
 
   const handlePlayToggle = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -295,16 +318,20 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = "dark" }) {
 
 export function AnimatedDiagram({
   mermaidCode,
+  mermaid,
   caption,
   title,
+  explanations = [],
   theme = "dark",
 }) {
   return (
     <ReactFlowProvider>
       <AnimatedDiagramInner
         mermaidCode={mermaidCode}
+        mermaid={mermaid}
         caption={caption}
         title={title}
+        explanations={explanations}
         theme={theme}
       />
     </ReactFlowProvider>
