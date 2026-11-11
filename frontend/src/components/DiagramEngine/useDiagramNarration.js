@@ -6,11 +6,13 @@ export function useDiagramNarration({
   caption = '',
   currentStep = 0,
   isPlaying = false,
+  playId,
   onStepComplete,
 }) {
   const [isSupported, setIsSupported] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [narrationFailed, setNarrationFailed] = useState(false);
   const [voices, setVoices] = useState([]);
   const [selectedVoice, setSelectedVoice] = useState(null);
   const [rate, setRate] = useState(1);
@@ -115,12 +117,12 @@ export function useDiagramNarration({
       };
 
       utterance.onerror = (e) => {
-        // 'interrupted' or 'canceled' are normal during quick step skipping
-        if (e.error !== 'interrupted' && e.error !== 'canceled') {
-          console.warn('Speech synthesis error:', e);
-        }
         setIsSpeaking(false);
         currentUtteranceRef.current = null;
+        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+          console.warn('Speech synthesis error:', e);
+          setNarrationFailed(true);
+        }
       };
 
       currentUtteranceRef.current = utterance;
@@ -157,7 +159,16 @@ export function useDiagramNarration({
         synthRef.current.cancel();
       }
     };
-  }, [currentStep, isEnabled, steps, title, caption, speakText, stopNarration]);
+  }, [
+    currentStep,
+    isEnabled,
+    steps,
+    title,
+    caption,
+    speakText,
+    stopNarration,
+    playId, // exists only to re-trigger the effect on restart
+  ]);
 
   // Synchronize pause/resume with animation playback
   useEffect(() => {
@@ -175,6 +186,8 @@ export function useDiagramNarration({
       const next = !prev;
       if (!next) {
         stopNarration();
+      } else {
+        setNarrationFailed(false);
       }
       return next;
     });
@@ -184,6 +197,7 @@ export function useDiagramNarration({
     isSupported,
     isEnabled,
     isSpeaking,
+    narrationFailed,
     voices,
     selectedVoice,
     rate,

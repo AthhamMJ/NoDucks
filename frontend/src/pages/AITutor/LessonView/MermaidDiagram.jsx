@@ -15,14 +15,24 @@ import { AnimatedDiagram } from '../../../components/DiagramEngine/AnimatedDiagr
 import '../../../styles/AiTutor.css';
 import styles from './MermaidDiagram.module.css';
 
+let renderQueue = Promise.resolve();
+const renderMermaid = (id, code, config) => {
+  const task = renderQueue.then(() => {
+    mermaid.initialize(config);
+    return mermaid.render(id, code);
+  });
+  renderQueue = task.catch(() => {});
+  return task;
+};
+
 export const MermaidDiagram = ({ diagram }) => {
   const [svgContent, setSvgContent] = useState('');
   const [isRendering, setIsRendering] = useState(true);
   const [renderError, setRenderError] = useState(null);
   const [viewMode, setViewMode] = useState('interactive'); // 'interactive' | 'static' | 'code'
   const [copied, setCopied] = useState(false);
-  const [isInView, setIsInView] = useState(() => typeof IntersectionObserver === 'undefined');
-  const viewportRef = useRef(null);
+  const [isInView, setIsInView] = useState(true);
+  const cardRef = useRef(null);
   const reactId = useId();
 
   const [theme, setTheme] = useState(() => {
@@ -51,7 +61,7 @@ export const MermaidDiagram = ({ diagram }) => {
 
   // Smooth IntersectionObserver trigger (activates once and stays settled)
   useEffect(() => {
-    const el = viewportRef.current;
+    const el = cardRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
 
     const observer = new IntersectionObserver(
@@ -63,12 +73,12 @@ export const MermaidDiagram = ({ diagram }) => {
           }
         });
       },
-      { threshold: 0.1, rootMargin: '0px 0px 60px 0px' }
+      { threshold: 0.05, rootMargin: '0px 0px 60px 0px' }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [svgContent]);
+  }, []);
 
   const rawCode = diagram?.mermaidCode;
   const cleanCode = useMemo(() => {
@@ -95,44 +105,44 @@ export const MermaidDiagram = ({ diagram }) => {
 
       const isDark = theme === 'dark';
 
-      try {
-        mermaid.initialize({
-          startOnLoad: false,
-          securityLevel: 'loose',
-          fontFamily: 'inherit',
-          theme: isDark ? 'dark' : 'neutral',
-          themeVariables: isDark
-            ? {
-                darkMode: true,
-                background: '#1b1b1f',
-                mainBkg: '#26262c',
-                nodeBorder: '#818cf8',
-                nodeTextColor: '#f5f5f7',
-                textColor: '#f5f5f7',
-                lineColor: '#818cf8',
-                primaryColor: '#26262c',
-                primaryTextColor: '#f5f5f7',
-                primaryBorderColor: '#818cf8',
-                secondaryColor: '#1b1b1f',
-                tertiaryColor: '#26262c',
-              }
-            : {
-                darkMode: false,
-                background: '#ffffff',
-                mainBkg: '#f4f4f8',
-                nodeBorder: '#0071e3',
-                nodeTextColor: '#1a1a1a',
-                textColor: '#1a1a1a',
-                lineColor: '#0071e3',
-                primaryColor: '#f4f4f8',
-                primaryTextColor: '#1a1a1a',
-                primaryBorderColor: '#0071e3',
-                secondaryColor: '#ffffff',
-                tertiaryColor: '#f4f4f8',
-              },
-        });
+      const config = {
+        startOnLoad: false,
+        securityLevel: 'strict',
+        fontFamily: 'inherit',
+        theme: isDark ? 'dark' : 'neutral',
+        themeVariables: isDark
+          ? {
+              darkMode: true,
+              background: '#1b1b1f',
+              mainBkg: '#26262c',
+              nodeBorder: '#818cf8',
+              nodeTextColor: '#f5f5f7',
+              textColor: '#f5f5f7',
+              lineColor: '#818cf8',
+              primaryColor: '#26262c',
+              primaryTextColor: '#f5f5f7',
+              primaryBorderColor: '#818cf8',
+              secondaryColor: '#1b1b1f',
+              tertiaryColor: '#26262c',
+            }
+          : {
+              darkMode: false,
+              background: '#ffffff',
+              mainBkg: '#f4f4f8',
+              nodeBorder: '#0071e3',
+              nodeTextColor: '#1a1a1a',
+              textColor: '#1a1a1a',
+              lineColor: '#0071e3',
+              primaryColor: '#f4f4f8',
+              primaryTextColor: '#1a1a1a',
+              primaryBorderColor: '#0071e3',
+              secondaryColor: '#ffffff',
+              tertiaryColor: '#f4f4f8',
+            },
+      };
 
-        const { svg } = await mermaid.render(safeId, cleanCode);
+      try {
+        const { svg } = await renderMermaid(safeId, cleanCode, config);
         if (!isCancelled) {
           setSvgContent(svg);
           setRenderError(null);
@@ -174,7 +184,11 @@ export const MermaidDiagram = ({ diagram }) => {
   if (!diagram || !diagram.mermaidCode) return null;
 
   return (
-    <section className={`tutor-diagram-card ${styles.card}`} aria-label="Conceptual Flowchart">
+    <section
+      ref={cardRef}
+      className={`tutor-diagram-card ${isInView ? 'in-view' : ''} ${styles.card}`}
+      aria-label="Conceptual Flowchart"
+    >
       {/* Ambient subtle background radial glow */}
       <div className="tutor-diagram-glow" aria-hidden="true" />
 
@@ -263,7 +277,6 @@ export const MermaidDiagram = ({ diagram }) => {
           </div>
         ) : (
           <div
-            ref={viewportRef}
             className={`tutor-diagram-viewport ${isInView ? 'in-view' : ''} ${styles.diagramContainer}`}
           >
             {renderError ? (

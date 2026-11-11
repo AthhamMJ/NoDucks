@@ -15,9 +15,25 @@ export function parseMermaidFlowchart(mermaidCode) {
     .replace(/\s*```$/i, '')
     .trim();
 
-  // Normalize semicolons and split lines
-  const lines = clean
-    .replace(/;/g, '\n')
+  // Stop splitting on semicolons inside brackets.
+  let bracketDepth = 0;
+  let normalized = '';
+  for (let i = 0; i < clean.length; i++) {
+    const char = clean[i];
+    if (char === '[' || char === '(' || char === '{') {
+      bracketDepth++;
+      normalized += char;
+    } else if (char === ']' || char === ')' || char === '}') {
+      if (bracketDepth > 0) bracketDepth--;
+      normalized += char;
+    } else if (char === ';' && bracketDepth === 0) {
+      normalized += '\n';
+    } else {
+      normalized += char;
+    }
+  }
+
+  const lines = normalized
     .split('\n')
     .map((l) => l.replace(/%%.*$/, '').trim())
     .filter((l) => l);
@@ -65,22 +81,26 @@ export function parseMermaidFlowchart(mermaidCode) {
     return nodesMap.get(cleanId);
   };
 
-  // Node extract regex matching: NodeId["Label text"] or NodeId("Label") or NodeId{"Label"}
-  const nodeDefRegex = /^([a-zA-Z0-9_-]+)\s*(\[|\(|\{|\(\()(["']?)(.*?)\3(\]|\)|\}|\)\))$/;
+  // Node extract regex matching: NodeId["Label text"] or NodeId("Label") or NodeId{"Label"} and extended shapes
+  const nodeDefRegex =
+    /^([a-zA-Z0-9_-]+)\s*(?:\[\/(.*?)\/\]|\[\\(.*?)\\\]|\[\/(.*?)\\\]|\[\\(.*?)\/\]|>(.*?)\]|\(\((.*?)\)\)|\((.*?)\)|\{\{(.*?)\}\}|\{(.*?)\}|\[(.*?)\])$/;
 
   const parseEndpoint = (token) => {
     const trimmed = token.trim();
     const match = trimmed.match(nodeDefRegex);
     if (match) {
-      const [, id, , , label] = match;
+      const id = match[1];
+      const label = match.slice(2).find((val) => val !== undefined) || id;
       return getOrCreateNode(id, label);
     }
 
     // Direct bracket match inside token if compound e.g. A[Label]
-    const bracketMatch = trimmed.match(/^([a-zA-Z0-9_-]+)(?:\[(.*?)\]|\((.*?)\)|\{(.*?)\})/);
+    const bracketMatch = trimmed.match(
+      /^([a-zA-Z0-9_-]+)\s*(?:\[\/(.*?)\/\]|\[\\(.*?)\\\]|\[\/(.*?)\\\]|\[\\(.*?)\/\]|>(.*?)\]|\(\((.*?)\)\)|\((.*?)\)|\{\{(.*?)\}\}|\{(.*?)\}|\[(.*?)\])/
+    );
     if (bracketMatch) {
       const id = bracketMatch[1];
-      const label = bracketMatch[2] || bracketMatch[3] || bracketMatch[4] || id;
+      const label = bracketMatch.slice(2).find((val) => val !== undefined) || id;
       return getOrCreateNode(id, label);
     }
 
@@ -147,7 +167,8 @@ export function parseMermaidFlowchart(mermaidCode) {
       // Standalone node definition
       const match = line.match(nodeDefRegex);
       if (match) {
-        const [, id, , , label] = match;
+        const id = match[1];
+        const label = match.slice(2).find((val) => val !== undefined) || id;
         getOrCreateNode(id, label);
       }
     }

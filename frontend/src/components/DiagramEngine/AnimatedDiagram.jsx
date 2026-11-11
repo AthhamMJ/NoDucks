@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import {
   ReactFlow,
   Background,
@@ -7,17 +13,18 @@ import {
   useEdgesState,
   ReactFlowProvider,
   useReactFlow,
+  useNodesInitialized,
   MarkerType,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
-import { parseMermaidFlowchart } from './mermaidParser';
-import { DiagramNode } from './DiagramNode';
-import { DiagramEdge } from './DiagramEdge';
-import { DiagramControls } from './DiagramControls';
-import { DiagramExplanation } from './DiagramExplanation';
-import { useDiagramNarration } from './useDiagramNarration';
-import styles from './AnimatedDiagram.module.css';
+import { parseMermaidFlowchart } from "./mermaidParser";
+import { DiagramNode } from "./DiagramNode";
+import { DiagramEdge } from "./DiagramEdge";
+import { DiagramControls } from "./DiagramControls";
+import { DiagramExplanation } from "./DiagramExplanation";
+import { useDiagramNarration } from "./useDiagramNarration";
+import styles from "./AnimatedDiagram.module.css";
 
 const nodeTypes = {
   diagramNode: DiagramNode,
@@ -27,8 +34,9 @@ const edgeTypes = {
   diagramEdge: DiagramEdge,
 };
 
-function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
+function AnimatedDiagramInner({ mermaidCode, caption, title, theme = "dark" }) {
   const { fitView } = useReactFlow();
+  const nodesInitialized = useNodesInitialized();
 
   // Parse mermaid flowchart into React Flow format
   const parsedData = useMemo(() => {
@@ -37,6 +45,7 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [playId, setPlayId] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [selectedNode, setSelectedNode] = useState(null);
 
@@ -57,6 +66,7 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
   const {
     isSupported: isNarrationSupported,
     isEnabled: isNarrationEnabled,
+    narrationFailed,
     voices,
     selectedVoice,
     toggleNarration,
@@ -68,6 +78,7 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
     caption,
     currentStep,
     isPlaying,
+    playId,
     onStepComplete: handleNextStep,
   });
 
@@ -95,10 +106,12 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
   }, [parsedData.nodes, steps, currentStep, activeNodeId, isHorizontal]);
 
   const currentEdges = useMemo(() => {
-    const isDark = theme === 'dark';
-    const activeEdgeColor = isDark ? '#818cf8' : '#6366f1';
-    const defaultColor = isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.12)';
-    const completedColor = '#10b981';
+    const isDark = theme === "dark";
+    const activeEdgeColor = isDark ? "#818cf8" : "#6366f1";
+    const defaultColor = isDark
+      ? "rgba(255, 255, 255, 0.16)"
+      : "rgba(0, 0, 0, 0.12)";
+    const completedColor = "#10b981";
 
     return parsedData.edges.map((edge) => {
       const sourceStepIdx = steps.findIndex((s) => s.nodeId === edge.source);
@@ -120,7 +133,11 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
           type: MarkerType.ArrowClosed,
           width: 14,
           height: 14,
-          color: isActive ? activeEdgeColor : isCompleted ? completedColor : defaultColor,
+          color: isActive
+            ? activeEdgeColor
+            : isCompleted
+              ? completedColor
+              : defaultColor,
         },
       };
     });
@@ -131,32 +148,30 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
 
   // Synchronize state when nodes/edges compute
   useEffect(() => {
-    setNodes(currentNodes);
+    setNodes((prev) => {
+      const positions = new Map(prev.map((n) => [n.id, n.position]));
+      return currentNodes.map((n) => ({
+        ...n,
+        position: positions.get(n.id) ?? n.position,
+      }));
+    });
   }, [currentNodes, setNodes]);
 
   useEffect(() => {
     setEdges(currentEdges);
   }, [currentEdges, setEdges]);
 
-  // Initial fit view with auto zoom bounds
+  // Initial fit view with auto zoom bounds once nodes are initialized
   useEffect(() => {
-    if (!parsedData.nodes.length) return;
-    const timer = setTimeout(() => {
-      fitView({ padding: 0.2, duration: 250 });
-    }, 100);
-    const backupTimer = setTimeout(() => {
-      fitView({ padding: 0.2, duration: 200 });
-    }, 450);
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(backupTimer);
-    };
-  }, [mermaidCode, parsedData.nodes.length, fitView]);
+    if (nodesInitialized && parsedData.nodes.length > 0) {
+      fitView({ padding: 0.25, duration: 300 });
+    }
+  }, [nodesInitialized, parsedData.nodes.length, fitView]);
 
   // Animation player step interval (used when voice narration is disabled)
   useEffect(() => {
     // If voice narration is active, speech onend handles the step pacing naturally
-    if (!isPlaying || totalSteps <= 1 || isNarrationEnabled) return;
+    if (!isPlaying || totalSteps <= 1 || (isNarrationEnabled && !narrationFailed)) return;
 
     const intervalTime = Math.max(1200, 3200 / speed);
     const interval = setInterval(() => {
@@ -164,7 +179,7 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
     }, intervalTime);
 
     return () => clearInterval(interval);
-  }, [isPlaying, totalSteps, speed, isNarrationEnabled, handleNextStep]);
+  }, [isPlaying, totalSteps, speed, isNarrationEnabled, narrationFailed, handleNextStep]);
 
   const handlePlayToggle = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -186,6 +201,7 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
     stopNarration();
     setCurrentStep(0);
     setIsPlaying(true);
+    setPlayId((p) => p + 1);
     fitView({ padding: 0.25, duration: 400 });
   }, [fitView, stopNarration]);
 
@@ -203,7 +219,7 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
         setCurrentStep(stepIdx);
       }
     },
-    [steps, stopNarration]
+    [steps, stopNarration],
   );
 
   const handleFitView = useCallback(() => {
@@ -256,7 +272,7 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
           proOptions={{ hideAttribution: true }}
         >
           <Background
-            color={theme === 'dark' ? '#27272a' : '#e4e4e7'}
+            color={theme === "dark" ? "#27272a" : "#e4e4e7"}
             gap={20}
             size={1.2}
           />
@@ -277,7 +293,12 @@ function AnimatedDiagramInner({ mermaidCode, caption, title, theme = 'dark' }) {
   );
 }
 
-export function AnimatedDiagram({ mermaidCode, caption, title, theme = 'dark' }) {
+export function AnimatedDiagram({
+  mermaidCode,
+  caption,
+  title,
+  theme = "dark",
+}) {
   return (
     <ReactFlowProvider>
       <AnimatedDiagramInner
@@ -289,4 +310,3 @@ export function AnimatedDiagram({ mermaidCode, caption, title, theme = 'dark' })
     </ReactFlowProvider>
   );
 }
-
