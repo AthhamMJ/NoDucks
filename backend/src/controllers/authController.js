@@ -139,7 +139,7 @@ export const updateMe = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user,
       { $set: updates },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
 
     if (!user) return res.status(404).json({ message: "User not found" });

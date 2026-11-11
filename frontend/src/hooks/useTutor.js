@@ -16,6 +16,11 @@ const toUiMessage = (m) => ({
   timestamp: m.createdAt ? new Date(m.createdAt).getTime() : Date.now(),
 });
 
+/** Returns true when an error is a quota / rate-limit error */
+const isQuotaError = (err) =>
+  err?.status === 429 ||
+  /quota|limit reached|used all/i.test(err?.message || "");
+
 export const useTutor = () => {
   const [lesson, setLesson] = useState(null);
   const [isLoadingLesson, setIsLoadingLesson] = useState(false);
@@ -23,6 +28,9 @@ export const useTutor = () => {
 
   const [chatMessages, setChatMessages] = useState([]);
   const [isChatLoading, setIsChatLoading] = useState(false);
+
+  // Quota modal state — set to error message string when quota is hit, null otherwise
+  const [quotaError, setQuotaError] = useState(null);
 
   const [quiz, setQuiz] = useState(null);
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
@@ -64,7 +72,11 @@ export const useTutor = () => {
       refreshLessons();
       refreshUsage();
     } catch (err) {
-      setLessonError(err.message);
+      if (isQuotaError(err)) {
+        setQuotaError(err.message);
+      } else {
+        setLessonError(err.message);
+      }
       refreshUsage();
     } finally {
       setIsLoadingLesson(false);
@@ -148,17 +160,21 @@ export const useTutor = () => {
       ]);
       refreshUsage();
     } catch (err) {
-      // Quota errors come back as readable messages, so show them directly
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          id: `err-${Date.now()}`,
-          role: "assistant",
-          content:
-            err.message || "Sorry, I had trouble answering that. Please try again.",
-          timestamp: Date.now(),
-        },
-      ]);
+      if (isQuotaError(err)) {
+        // Show quota popup — do NOT add error into the chat thread
+        setQuotaError(err.message);
+      } else {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            id: `err-${Date.now()}`,
+            role: "assistant",
+            content:
+              err.message || "Sorry, I had trouble answering that. Please try again.",
+            timestamp: Date.now(),
+          },
+        ]);
+      }
       refreshUsage();
     } finally {
       setIsChatLoading(false);
@@ -187,7 +203,11 @@ export const useTutor = () => {
       setIsQuizModalOpen(true);
       refreshUsage();
     } catch (err) {
-      alert(err.message || "Could not build the quiz. Please try again.");
+      if (isQuotaError(err)) {
+        setQuotaError(err.message);
+      } else {
+        alert(err.message || "Could not build the quiz. Please try again.");
+      }
       refreshUsage();
     } finally {
       setIsQuizLoading(false);
@@ -212,6 +232,8 @@ export const useTutor = () => {
     isQuizLoading,
     lessons,
     usage,
+    quotaError,
+    dismissQuotaError: () => setQuotaError(null),
     startLearning,
     openLesson,
     removeLesson,

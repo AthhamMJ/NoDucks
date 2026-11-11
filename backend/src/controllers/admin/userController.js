@@ -86,7 +86,7 @@ export const updateUser = async (req, res) => {
     }
 
     const user = await User.findByIdAndUpdate(id, allowed, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     })
 

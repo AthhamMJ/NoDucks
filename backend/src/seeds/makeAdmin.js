@@ -12,7 +12,7 @@ const email = 'testuser@noducks.com';
 const user = await User.findOneAndUpdate(
   { email },
   { role: 'admin' },
-  { new: true }
+  { returnDocument: "after" }
 ).select('name email role');
 
 if (user) {

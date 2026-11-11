@@ -6,14 +6,14 @@ export const getSettings = () =>
   AppSettings.findOneAndUpdate(
     { key: "global" },
     { $setOnInsert: { quotas: PLAN_QUOTAS } },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
   ).lean();
 
 export const updateQuotas = (quotas) =>
   AppSettings.findOneAndUpdate(
     { key: "global" },
     { $set: { quotas } },
-    { upsert: true, new: true, runValidators: true },
+    { upsert: true, returnDocument: "after", runValidators: true },
   ).lean();
 
 // For tutor controllers and quota checks to read the live limits
@@ -31,7 +31,7 @@ export const updateGeneral = (changes) =>
   AppSettings.findOneAndUpdate(
     { key: "global" },
     { $set: changes },
-    { upsert: true, new: true, runValidators: true },
+    { upsert: true, returnDocument: "after", runValidators: true },
   ).lean();
 
 export const getDefaultPlan = async () => {
