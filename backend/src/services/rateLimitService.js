@@ -16,7 +16,7 @@ export const consume = async (key, limit, windowMs) => {
   const doc = await RateLimit.findOneAndUpdate(
     { key, expiresAt: { $gt: now } },
     { $inc: { count: 1 } },
-    { new: true },
+    { returnDocument: "after" },
   );
   if (doc) return buildResult(doc, limit, now);
 
@@ -25,7 +25,7 @@ export const consume = async (key, limit, windowMs) => {
     const created = await RateLimit.findOneAndUpdate(
       { key, expiresAt: { $lte: now } },
       { $set: { count: 1, windowStart: now, expiresAt } },
-      { upsert: true, new: true },
+      { upsert: true, returnDocument: "after" },
     );
     return buildResult(created, limit, now);
   } catch (err) {
@@ -35,7 +35,7 @@ export const consume = async (key, limit, windowMs) => {
     const existing = await RateLimit.findOneAndUpdate(
       { key, expiresAt: { $gt: now } },
       { $inc: { count: 1 } },
-      { new: true },
+      { returnDocument: "after" },
     );
     return buildResult(existing, limit, now);
   }

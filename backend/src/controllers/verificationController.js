@@ -11,22 +11,28 @@ import { generateToken, toSafeUser } from "../utils/auth.js";
 // POST /auth/verify-otp { email, otp }
 export const verifyOtp = async (req, res) => {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
+    const email = String(req.body.email || "")
+      .toLowerCase()
+      .trim();
     const otp = String(req.body.otp || "").trim();
 
     if (!email || !otp) {
-      return res.status(400).json({ message: "Email and 6-digit OTP code are required." });
+      return res
+        .status(400)
+        .json({ message: "Email and 6-digit OTP code are required." });
     }
 
     const record = await consumeOtp(email, otp, "email_verification");
     if (!record) {
-      return res.status(400).json({ message: "Invalid or expired verification code." });
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired verification code." });
     }
 
     const user = await User.findOneAndUpdate(
       { email },
       { $set: { isVerified: true } },
-      { new: true }
+      { returnDocument: "after" },
     );
 
     if (!user) {
@@ -39,14 +45,18 @@ export const verifyOtp = async (req, res) => {
       user: toSafeUser(user),
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
 // POST /auth/resend-otp { email }
 export const resendOtp = async (req, res) => {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
+    const email = String(req.body.email || "")
+      .toLowerCase()
+      .trim();
     if (!email) {
       return res.status(400).json({ message: "Email is required." });
     }
@@ -54,16 +64,21 @@ export const resendOtp = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       // Don't leak registered status, respond with generic message
-      return res.json({ message: "If this email is registered, a code has been sent." });
+      return res.json({
+        message: "If this email is registered, a code has been sent.",
+      });
     }
 
     if (user.isVerified) {
-      return res.status(400).json({ message: "Account is already verified. Please sign in." });
+      return res
+        .status(400)
+        .json({ message: "Account is already verified. Please sign in." });
     }
 
     const result = await sendVerificationOtp(email, req.ip);
     if (!result.ok) {
-      if (result.retryAfterSec) res.set("Retry-After", String(result.retryAfterSec));
+      if (result.retryAfterSec)
+        res.set("Retry-After", String(result.retryAfterSec));
       return res.status(429).json({
         message: "Please wait before requesting another code.",
         retryAfterSec: result.retryAfterSec,
@@ -72,14 +87,18 @@ export const resendOtp = async (req, res) => {
 
     res.json({ message: "Verification code sent to your email." });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
 // POST /auth/forgot-password { email }
 export const forgotPassword = async (req, res) => {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
+    const email = String(req.body.email || "")
+      .toLowerCase()
+      .trim();
     if (!email) {
       return res.status(400).json({ message: "Email is required." });
     }
@@ -88,13 +107,15 @@ export const forgotPassword = async (req, res) => {
     // Always return safe generic confirmation to prevent user enumeration
     if (!user) {
       return res.json({
-        message: "If an account exists with this email, a reset code has been sent.",
+        message:
+          "If an account exists with this email, a reset code has been sent.",
       });
     }
 
     const result = await sendPasswordResetOtp(email, req.ip);
     if (!result.ok) {
-      if (result.retryAfterSec) res.set("Retry-After", String(result.retryAfterSec));
+      if (result.retryAfterSec)
+        res.set("Retry-After", String(result.retryAfterSec));
       return res.status(429).json({
         message: "Please wait before requesting another reset code.",
         retryAfterSec: result.retryAfterSec,
@@ -102,17 +123,22 @@ export const forgotPassword = async (req, res) => {
     }
 
     res.json({
-      message: "If an account exists with this email, a reset code has been sent.",
+      message:
+        "If an account exists with this email, a reset code has been sent.",
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
 // POST /auth/reset-password { email, otp, newPassword }
 export const resetPasswordWithOtp = async (req, res) => {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
+    const email = String(req.body.email || "")
+      .toLowerCase()
+      .trim();
     const otp = String(req.body.otp || "").trim();
     const newPassword = String(req.body.newPassword || "");
 
@@ -145,10 +171,13 @@ export const resetPasswordWithOtp = async (req, res) => {
     await user.save();
 
     res.json({
-      message: "Password reset successful. You can now sign in with your new password.",
+      message:
+        "Password reset successful. You can now sign in with your new password.",
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
@@ -162,13 +191,15 @@ export const verifyEmail = async (req, res) => {
 
     const record = await consumeVerificationToken(token);
     if (!record) {
-      return res.status(400).json({ message: "This link is invalid or has expired." });
+      return res
+        .status(400)
+        .json({ message: "This link is invalid or has expired." });
     }
 
     const user = await User.findOneAndUpdate(
       { email: record.email },
       { $set: { isVerified: true } },
-      { new: true }
+      { returnDocument: "after" },
     );
     if (!user) {
       return res.status(404).json({ message: "Account not found." });
@@ -180,19 +211,25 @@ export const verifyEmail = async (req, res) => {
       user: toSafeUser(user),
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
 // Legacy Link Resend (POST /auth/resend-verification)
 export const resendVerification = async (req, res) => {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
+    const email = String(req.body.email || "")
+      .toLowerCase()
+      .trim();
     if (!email) {
       return res.status(400).json({ message: "Email is required." });
     }
 
-    const genericResponse = { message: "If this email can receive a link, we sent one." };
+    const genericResponse = {
+      message: "If this email can receive a link, we sent one.",
+    };
 
     const user = await User.findOne({ email });
     if (!user || user.isVerified) {
@@ -201,7 +238,8 @@ export const resendVerification = async (req, res) => {
 
     const result = await sendVerificationLink(email, req.ip);
     if (!result.ok) {
-      if (result.retryAfterSec) res.set("Retry-After", String(result.retryAfterSec));
+      if (result.retryAfterSec)
+        res.set("Retry-After", String(result.retryAfterSec));
       return res.status(429).json({
         message: "Too many requests. Please wait before trying again.",
         retryAfterSec: result.retryAfterSec,
@@ -210,6 +248,8 @@ export const resendVerification = async (req, res) => {
 
     res.json(genericResponse);
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
