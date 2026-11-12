@@ -349,6 +349,94 @@
 
     cursor: pointer;
 }
+
+.authBackBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 140ms ease;
+}
+
+.authBackBtn:hover {
+    color: var(--text-primary);
+}
+
+.authOtpGroup {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.authOtpInput {
+    width: 44px;
+    height: 52px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    color: var(--text-primary);
+    font-family: monospace;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.authOtpInput:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.authResendText {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.authResendBtn {
+    margin-left: 6px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.authResendBtn:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+.authResendBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.authError {
+    color: var(--danger, #d92d20);
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.authMessage {
+    color: #10b981;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0;
+}
 .authCheckbox {
     display: flex;
     align-items: flex-start;
