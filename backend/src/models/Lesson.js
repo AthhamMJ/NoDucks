@@ -12,6 +12,16 @@ const LessonSchema = new mongoose.Schema(
     headline: { type: String, required: true },
     simpleIntro: { type: String, required: true },
     deepExplanation: { type: String, required: true },
+    domain: {
+      type: String,
+      enum: ["thermodynamics", "quantum", "fourier", "biology", "economics", "general"],
+      default: "general",
+    },
+    diagram: {
+      title: String,
+      mermaidCode: String,
+      caption: String,
+    },
     sections: [
       {
         heading: String,

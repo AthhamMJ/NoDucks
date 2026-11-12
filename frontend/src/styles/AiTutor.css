@@ -1,0 +1,292 @@
+.tutor-diagram-card {
+  position: relative;
+  background: var(--tutor-card-bg, #ffffff);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 113, 227, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 113, 227, 0.05);
+  padding: 32px;
+  margin: 32px 0;
+  overflow: hidden;
+
+  /* Bidirectional scroll transition: smooth reveal on scroll in, soft exit on scroll out */
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0px);
+  transition:
+    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+  will-change: opacity, transform, filter;
+}
+
+/* Activated when card scrolls into view */
+.tutor-diagram-card.in-view {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0px);
+}
+
+/* Ambient subtle background radial glow */
+.tutor-diagram-glow {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(0, 113, 227, 0.14) 0%, rgba(94, 92, 230, 0.05) 50%, transparent 70%);
+  filter: blur(36px);
+  pointer-events: none;
+  z-index: 0;
+  animation: auraFloat 8s ease-in-out infinite alternate;
+}
+
+@keyframes auraFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-30px, 20px) scale(1.15); }
+}
+
+/* SVG Display viewport */
+.tutor-diagram-viewport {
+  position: relative;
+  z-index: 1;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #fbfbfd 100%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+  opacity: 0.6;
+  transform: translateY(10px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Triggered smoothly when user scrolls to diagram */
+.tutor-diagram-viewport.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 1. Animated electrical signal flow on arrows/lines */
+.tutor-diagram-viewport.in-view svg .flowchart-link,
+.tutor-diagram-viewport.in-view svg path.path,
+.tutor-diagram-viewport.in-view svg .edgePaths path {
+  stroke: #0071e3 !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: 6, 6;
+  animation: electricalSignal 1.2s linear infinite;
+}
+
+@keyframes electricalSignal {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+/* Arrowhead markers styling to match electrical line flow */
+.tutor-diagram-viewport.in-view svg marker path,
+.tutor-diagram-viewport.in-view svg .marker {
+  fill: #0071e3 !important;
+  stroke: #0071e3 !important;
+}
+
+/* 2. Staggered Entrance for Nodes without CSS transform conflict */
+.tutor-diagram-viewport.in-view svg .node,
+.tutor-diagram-viewport.in-view svg .nodes .node {
+  animation: nodeFadeSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  cursor: pointer;
+}
+
+/* Stagger delay across the nodes */
+.tutor-diagram-viewport.in-view svg .node:nth-child(1) { animation-delay: 0.08s; }
+.tutor-diagram-viewport.in-view svg .node:nth-child(2) { animation-delay: 0.16s; }
+.tutor-diagram-viewport.in-view svg .node:nth-child(3) { animation-delay: 0.24s; }
+.tutor-diagram-viewport.in-view svg .node:nth-child(4) { animation-delay: 0.32s; }
+.tutor-diagram-viewport.in-view svg .node:nth-child(5) { animation-delay: 0.40s; }
+.tutor-diagram-viewport.in-view svg .node:nth-child(6) { animation-delay: 0.48s; }
+.tutor-diagram-viewport.in-view svg .node:nth-child(7) { animation-delay: 0.56s; }
+.tutor-diagram-viewport.in-view svg .node:nth-child(8) { animation-delay: 0.64s; }
+
+@keyframes nodeFadeSlide {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* 3. Interactive Smooth Hover Elevation on Nodes (NO transform to prevent jumping) */
+.tutor-diagram-viewport svg .node rect,
+.tutor-diagram-viewport svg .node polygon,
+.tutor-diagram-viewport svg .node circle,
+.tutor-diagram-viewport svg .node path {
+  transition: fill 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              stroke 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              stroke-width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tutor-diagram-viewport svg .node:hover rect,
+.tutor-diagram-viewport svg .node:hover polygon,
+.tutor-diagram-viewport svg .node:hover circle,
+.tutor-diagram-viewport svg .node:hover path {
+  fill: #f0f7ff !important;
+  stroke: #0071e3 !important;
+  stroke-width: 2.5px !important;
+  filter: drop-shadow(0 4px 14px rgba(0, 113, 227, 0.3));
+}
+
+.tutor-diagram-viewport svg .node text {
+  transition: fill 0.25s ease;
+}
+
+.tutor-diagram-viewport svg .node:hover text {
+  fill: #0071e3 !important;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Motion Intuition Jitter / Lottie Viewport
+   ========================================================================== */
+
+.motion-intuition-container {
+  position: relative;
+  z-index: 1;
+  margin-top: 24px;
+  border-radius: 16px;
+  background: var(--motion-bg, #fbfbfd);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+  opacity: 0.85;
+  transform: translateY(12px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+}
+
+.tutor-diagram-card.in-view .motion-intuition-container {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.motion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.motion-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(0, 113, 227, 0.08);
+  color: var(--accent, #0071e3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.motion-viewport {
+  width: 100%;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.motion-caption {
+  margin-top: 14px;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-secondary, #6b6b6b);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.motion-caption-icon {
+  color: var(--accent, #0071e3);
+}
+
+/* ==========================================================================
+   Dark Mode Adaptation for Apple / Linear Aesthetic
+   ========================================================================== */
+
+[data-theme="dark"] .tutor-diagram-card {
+  --tutor-card-bg: var(--surface, #1b1b1f);
+  border-color: rgba(129, 140, 248, 0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(129, 140, 248, 0.08);
+}
+
+[data-theme="dark"] .tutor-diagram-glow {
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.2) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 70%);
+}
+
+[data-theme="dark"] .tutor-diagram-viewport {
+  background: radial-gradient(circle at 50% 50%, #1f1f26 0%, #17171c 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .tutor-diagram-viewport.in-view svg .flowchart-link,
+[data-theme="dark"] .tutor-diagram-viewport.in-view svg path.path,
+[data-theme="dark"] .tutor-diagram-viewport.in-view svg .edgePaths path {
+  stroke: #818cf8 !important;
+}
+
+[data-theme="dark"] .tutor-diagram-viewport.in-view svg marker path,
+[data-theme="dark"] .tutor-diagram-viewport.in-view svg .marker {
+  fill: #818cf8 !important;
+  stroke: #818cf8 !important;
+}
+
+[data-theme="dark"] .tutor-diagram-viewport svg .node:hover rect,
+[data-theme="dark"] .tutor-diagram-viewport svg .node:hover polygon,
+[data-theme="dark"] .tutor-diagram-viewport svg .node:hover circle,
+[data-theme="dark"] .tutor-diagram-viewport svg .node:hover path {
+  fill: #262638 !important;
+  stroke: #818cf8 !important;
+  filter: drop-shadow(0 4px 14px rgba(129, 140, 248, 0.45));
+}
+
+[data-theme="dark"] .tutor-diagram-viewport svg .node:hover text {
+  fill: #c7d2fe !important;
+}
+
+[data-theme="dark"] .motion-intuition-container {
+  --motion-bg: #16161b;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .motion-badge {
+  background: rgba(129, 140, 248, 0.15);
+  color: #818cf8;
+}
+
+[data-theme="dark"] .motion-caption {
+  color: #a1a1aa;
+}
+
+[data-theme="dark"] .motion-caption-icon {
+  color: #818cf8;
+}
