@@ -1,7 +1,18 @@
 import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 import Lesson from "../../models/Lesson.js";
 import Chat from "../../models/Chat.js";
+import FormulaCache from "../../models/FormulaCache.js";
 import { recordUsage } from "../../services/aiUsageService.js";
+
+/** Normalize a string into a stable cache key slug */
+function slugify(str) {
+  return (str || "")
+    .toLowerCase()
+    .trim()
+    .replace(/['']/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -57,7 +68,8 @@ export const generateLesson = async (req, res, next) => {
     const systemInstruction = `You are an elite academic tutor engine.
 Connect the topic "${topic}" to the student's interest "${interest}".
 Maintain strict scientific accuracy, delineate where the analogy ends, and avoid walls of text.
-Maintain clean progression. For the diagram, produce a valid, syntactically correct Mermaid.js flowchart (using graph TD or graph LR) showing the progression/mechanism of the concept. Do not include markdown code block syntax (like \`\`\`mermaid) in mermaidCode. Keep node labels clear and wrap any text containing punctuation or spaces in quotes.`;
+Maintain clean progression. For the diagram, produce a valid, syntactically correct Mermaid.js flowchart (using graph TD or graph LR) showing the progression/mechanism of the concept. Do not include markdown code block syntax (like \`\`\`mermaid) in mermaidCode. Keep node labels clear and wrap any text containing punctuation or spaces in quotes.
+For each corePrinciple, write formulaOrLaw as a valid LaTeX math expression suitable for KaTeX rendering (e.g. "F = ma", "E = mc^{2}", "\\\\frac{dQ}{dT}"). Do not wrap it in dollar signs or \\\\( \\\\) delimiters.`;
 
     const userPrompt = `Create a structured lesson on "${topic}" using analogies from "${interest}".`;
 
@@ -136,7 +148,14 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
               type: Type.OBJECT,
               properties: {
                 name: { type: Type.STRING },
-                formulaOrLaw: { type: Type.STRING },
+                formulaOrLaw: {
+                  type: Type.STRING,
+                  description: "Valid LaTeX math expression for KaTeX rendering (no dollar-sign wrappers)",
+                },
+                latexFormula: {
+                  type: Type.STRING,
+                  description: "Same formula as formulaOrLaw, as a valid LaTeX math expression",
+                },
                 explanation: { type: Type.STRING },
               },
               required: ["name", "explanation"],
@@ -189,6 +208,43 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
         .trim();
     }
 
+    // Cache formulas for cross-user reuse
+    if (Array.isArray(parsedData.corePrinciples)) {
+      const topicSlug = slugify(topic);
+      for (const principle of parsedData.corePrinciples) {
+        const latex = principle.latexFormula || principle.formulaOrLaw;
+        if (!latex || !principle.name) continue;
+
+        const key = `${topicSlug}:${slugify(principle.name)}`;
+        try {
+          const cached = await FormulaCache.findOneAndUpdate(
+            { key },
+            { $inc: { hitCount: 1 } },
+            { new: true }
+          );
+          if (cached) {
+            // Use cached formula and explanation
+            principle.latexFormula = cached.latex;
+            principle.explanation = cached.explanation || principle.explanation;
+          } else {
+            // Store new formula in cache
+            await FormulaCache.create({
+              key,
+              topic,
+              name: principle.name,
+              latex,
+              explanation: principle.explanation || "",
+              domain: parsedData.domain || "general",
+            }).catch(() => {});
+            principle.latexFormula = latex;
+          }
+        } catch {
+          // Cache miss is non-fatal; keep AI-generated value
+          principle.latexFormula = latex;
+        }
+      }
+    }
+
     // Save to Mongo if user is logged in
     const userId = req.user?._id || req.user;
     let savedLesson = null;
@@ -208,6 +264,25 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
     });
   } catch (err) {
     if (req.user) await recordError(req.user._id).catch(() => {});
+    next(err);
+  }
+};
+
+// 1b. Lookup cached formulas by topic
+export const getFormulas = async (req, res, next) => {
+  try {
+    const { topic } = req.query;
+    if (!topic) {
+      return res.status(400).json({ error: "topic query param is required." });
+    }
+    const topicSlug = slugify(topic);
+    const formulas = await FormulaCache.find({
+      key: { $regex: `^${topicSlug}:` },
+    })
+      .select("name latex explanation hitCount")
+      .lean();
+    res.status(200).json({ formulas });
+  } catch (err) {
     next(err);
   }
 };

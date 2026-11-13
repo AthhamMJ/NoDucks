@@ -7,7 +7,7 @@ const LessonSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    topic: { type: String, required: true },
+    topic: { type: String, required: true, index: true },
     interest: { type: String, required: true },
     headline: { type: String, required: true },
     simpleIntro: { type: String, required: true },
@@ -41,10 +41,12 @@ const LessonSchema = new mongoose.Schema(
       ],
       scientificBoundary: String,
     },
+
     corePrinciples: [
       {
         name: String,
         formulaOrLaw: String,
+        latexFormula: String,
         explanation: String,
       },
     ],
@@ -69,7 +71,9 @@ const LessonSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
+
+LessonSchema.index({ topicKey: 1, interest: 1 })
 
 export default mongoose.model('Lesson', LessonSchema);

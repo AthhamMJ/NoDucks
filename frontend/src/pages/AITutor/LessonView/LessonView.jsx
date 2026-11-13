@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Sparkles, AlertTriangle, LoaderCircle } from 'lucide-react';
 import styles from './LessonView.module.css';
 import { MermaidDiagram } from './MermaidDiagram';
+import { FormulaDisplay } from '../../../components/FormulaDisplay/FormulaDisplay';
 
 export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading }) => {
   const [activeTerm, setActiveTerm] = useState(null);
@@ -85,6 +86,26 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
           {lesson.analogyBridge.scientificBoundary}
         </div>
       </section>
+
+      {/* Core Principles & Formulas */}
+      {lesson.corePrinciples?.length > 0 && (
+        <section className={styles.card}>
+          <span className={styles.badge}>Core Principles</span>
+          <div className={styles.principlesGrid}>
+            {lesson.corePrinciples.map((p, idx) => (
+              <div key={idx} className={styles.principleCard}>
+                <h3 className={styles.principleName}>{p.name}</h3>
+                {(p.latexFormula || p.formulaOrLaw) && (
+                  <FormulaDisplay latex={p.latexFormula || p.formulaOrLaw} />
+                )}
+                {p.explanation && (
+                  <p className={styles.principleExplanation}>{p.explanation}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Progressive sections */}
       {lesson.sections.map((sec, idx) => (

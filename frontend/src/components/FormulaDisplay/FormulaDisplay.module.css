@@ -1,0 +1,10 @@
+.formula {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  overflow-x: auto;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
