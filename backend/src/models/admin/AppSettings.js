@@ -15,11 +15,13 @@ const appSettingsSchema = new mongoose.Schema(
         lesson: quotaField(PLAN_QUOTAS.free.lesson),
         chat: quotaField(PLAN_QUOTAS.free.chat),
         quiz: quotaField(PLAN_QUOTAS.free.quiz),
+        image: quotaField(PLAN_QUOTAS.free.image),
       },
       student: {
         lesson: quotaField(PLAN_QUOTAS.student.lesson),
         chat: quotaField(PLAN_QUOTAS.student.chat),
         quiz: quotaField(PLAN_QUOTAS.student.quiz),
+        image: quotaField(PLAN_QUOTAS.student.image),
       },
     },
     maintenanceMode: {

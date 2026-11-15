@@ -9,12 +9,15 @@ import {
   HardDrive,
   LoaderCircle,
   CircleAlert,
+  Image as ImageIcon,
+  Repeat,
 } from "lucide-react";
-import { fetchAdminOverview } from "../../../../services/adminService";
+import { fetchAdminOverview, fetchVisualStats } from "../../../../services/adminService";
 import styles from "../../Admin.module.css";
 
 export default function Overview() {
   const [stats, setStats] = useState(null);
+  const [visualStats, setVisualStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -25,8 +28,14 @@ export default function Overview() {
       try {
         setLoading(true);
         setError("");
-        const data = await fetchAdminOverview();
-        if (!cancelled) setStats(data.stats);
+        const [overviewData, visualData] = await Promise.all([
+          fetchAdminOverview(),
+          fetchVisualStats().catch(() => null),
+        ]);
+        if (!cancelled) {
+          setStats(overviewData.stats);
+          if (visualData) setVisualStats(visualData);
+        }
       } catch (err) {
         if (!cancelled) setError(err.message || "Failed to load overview");
       } finally {
@@ -59,6 +68,16 @@ export default function Overview() {
       label: "AI Errors (this month)",
       value: stats?.aiErrorsThisMonth,
       icon: TriangleAlert,
+    },
+    {
+      label: "Visual Assets (Ready)",
+      value: visualStats?.counts ? `${visualStats.counts.ready} / ${visualStats.counts.total}` : "—",
+      icon: ImageIcon,
+    },
+    {
+      label: "Visual Reuse Rate",
+      value: visualStats ? `${visualStats.reuseRate}% (${visualStats.totalReuses} reuses)` : "—",
+      icon: Repeat,
     },
     { label: "Sessions", icon: Users, pending: true },
     { label: "Storage", icon: HardDrive, pending: true },

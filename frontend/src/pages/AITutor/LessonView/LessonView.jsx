@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Sparkles, AlertTriangle, LoaderCircle } from 'lucide-react';
 import styles from './LessonView.module.css';
 import { MermaidDiagram } from './MermaidDiagram';
+import { VisualExplanation } from './VisualExplanation/VisualExplanation';
 
 export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading }) => {
   const [activeTerm, setActiveTerm] = useState(null);
@@ -55,6 +56,14 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
 
         <p className={styles.bodyText}>{lesson.deepExplanation}</p>
       </section>
+
+      {/* Visual Explanation (Comic-style illustrations) */}
+      {lesson.visuals && lesson.visuals.length > 0 && (
+        <VisualExplanation
+          lessonId={lesson._id}
+          initialVisuals={lesson.visuals}
+        />
+      )}
 
       {/* Visual Conceptual Diagram */}
       {lesson.diagram?.mermaidCode && (

@@ -29,6 +29,11 @@ export const tutorService = {
     return res.data.lesson;
   },
 
+  getLessonVisuals: async (id) => {
+    const res = await api.get(`/api/lessons/${id}/visuals`);
+    return res.data.visuals;
+  },
+
   getLessonChat: async (id) => {
     const res = await api.get(`/api/lessons/${id}/chat`);
     return res.data.messages;

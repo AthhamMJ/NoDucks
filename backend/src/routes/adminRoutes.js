@@ -14,10 +14,12 @@ import {
   createUpdate,
   deleteUpdate,
 } from "../controllers/admin/featureUpdateController.js";
+import { getVisualStats } from "../controllers/admin/visualAdminController.js";
 
 const router = express.Router();
 
 router.get("/overview", protect, adminOnly, getOverview);
+router.get("/visuals", protect, adminOnly, getVisualStats);
 router.get("/users", protect, adminOnly, getUsers);
 router.patch("/users/:id", protect, adminOnly, updateUser);
 router.get("/settings", protect, adminOnly, getAdminSettings);

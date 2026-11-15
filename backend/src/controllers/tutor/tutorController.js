@@ -1,7 +1,9 @@
 import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 import Lesson from "../../models/Lesson.js";
 import Chat from "../../models/Chat.js";
-import { recordUsage } from "../../services/aiUsageService.js";
+import { recordUsage, checkQuotaAvailable } from "../../services/aiUsageService.js";
+import { matchOrEnqueueVisualAsset } from "../../services/visualMatchService.js";
+import { enqueueGeneration } from "../../services/visualGenerationJob.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -191,6 +193,69 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
 
     // Save to Mongo if user is logged in
     const userId = req.user?._id || req.user;
+
+    // Visual explanation matching and background generation
+    let visuals = [];
+    try {
+      const matchResult = await matchOrEnqueueVisualAsset({
+        conceptId: topic,
+        topic,
+        subject: parsedData.domain || "general",
+        interest,
+        learningLevel: req.user?.learningLevel || "intermediate",
+      });
+
+      if (matchResult.isReused) {
+        // Reuse costs zero AI quota units!
+        visuals.push({
+          assetId: matchResult.asset._id,
+          status: "ready",
+          url: matchResult.asset.cloudinary?.url || "",
+          caption: matchResult.asset.caption,
+          altText: matchResult.asset.altText,
+        });
+      } else if (matchResult.needsGeneration) {
+        // Check image quota
+        const quotaCheck = await checkQuotaAvailable(userId, "image");
+        if (!quotaCheck.available) {
+          // Quota exhausted: return text lesson with message that visual is unavailable this period
+          visuals.push({
+            assetId: matchResult.asset._id,
+            status: "failed",
+            url: "",
+            caption: "Visual explanation unavailable this period due to quota limits.",
+            altText: "Visual explanation unavailable.",
+          });
+        } else {
+          // Deduct quota for new image generation
+          if (userId) {
+            await recordUsage(userId, "image");
+          }
+          // Enqueue non-blocking background generation
+          enqueueGeneration(matchResult.asset._id);
+          visuals.push({
+            assetId: matchResult.asset._id,
+            status: "pending",
+            url: "",
+            caption: matchResult.asset.caption,
+            altText: matchResult.asset.altText,
+          });
+        }
+      } else {
+        // Already generating in background by another worker
+        visuals.push({
+          assetId: matchResult.asset._id,
+          status: "pending",
+          url: "",
+          caption: matchResult.asset.caption,
+          altText: matchResult.asset.altText,
+        });
+      }
+    } catch (visErr) {
+      console.warn("Visual asset matching/enqueue failed:", visErr.message);
+      // Non-blocking: visual failure must never fail the lesson
+    }
+
     let savedLesson = null;
     if (userId) {
       savedLesson = await Lesson.create({
@@ -198,13 +263,14 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
         topic,
         interest,
         ...parsedData,
+        visuals,
       });
     }
 
     res.status(200).json({
       lesson: savedLesson
         ? savedLesson
-        : { id: `temp-${Date.now()}`, topic, interest, ...parsedData },
+        : { id: `temp-${Date.now()}`, topic, interest, ...parsedData, visuals },
     });
   } catch (err) {
     if (req.user) await recordError(req.user._id).catch(() => {});

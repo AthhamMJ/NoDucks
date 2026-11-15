@@ -68,6 +68,22 @@ const LessonSchema = new mongoose.Schema(
         completedAt: { type: Date, default: Date.now },
       },
     ],
+    visuals: [
+      {
+        assetId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "VisualAsset",
+        },
+        status: {
+          type: String,
+          enum: ["pending", "ready", "failed"],
+          default: "pending",
+        },
+        url: { type: String, default: "" },
+        caption: { type: String, default: "" },
+        altText: { type: String, default: "" },
+      },
+    ],
   },
   { timestamps: true }
 );

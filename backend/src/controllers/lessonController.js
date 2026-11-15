@@ -1,8 +1,53 @@
 import mongoose from "mongoose";
 import Lesson from "../models/Lesson.js";
 import Chat from "../models/Chat.js";
+import VisualAsset from "../models/VisualAsset.js";
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
+
+// Get visuals for a specific lesson with real-time status
+export const getLessonVisuals = async (req, res, next) => {
+  try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid lesson id." });
+    }
+    const lesson = await Lesson.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    })
+      .select("visuals")
+      .lean();
+
+    if (!lesson) return res.status(404).json({ message: "Lesson not found." });
+
+    const updatedVisuals = await Promise.all(
+      (lesson.visuals || []).map(async (v) => {
+        if (!v.assetId) return v;
+        const asset = await VisualAsset.findById(v.assetId).lean();
+        if (!asset) return v;
+        return {
+          assetId: v.assetId,
+          status: asset.status,
+          url: asset.cloudinary?.url || v.url || "",
+          caption: asset.caption || v.caption,
+          altText: asset.altText || v.altText,
+        };
+      })
+    );
+
+    const allReady =
+      updatedVisuals.length > 0 &&
+      updatedVisuals.every((v) => v.status === "ready");
+
+    if (allReady) {
+      res.set("Cache-Control", "public, max-age=86400");
+    }
+
+    res.json({ visuals: updatedVisuals });
+  } catch (error) {
+    next(error);
+  }
+};
 
 //List for the history panel
 export const listLessons = async (req, res, next) => {
