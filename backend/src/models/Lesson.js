@@ -76,7 +76,7 @@ const LessonSchema = new mongoose.Schema(
         },
         status: {
           type: String,
-          enum: ["pending", "ready", "failed"],
+          enum: ["pending", "ready", "failed", "caption-only"],
           default: "pending",
         },
         url: { type: String, default: "" },

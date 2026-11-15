@@ -3,6 +3,7 @@ import { buildVisualPrompt } from "../prompts/visual/v1.js";
 import { sanitizePromptEntities, screenImageContent } from "./visualSafetyService.js";
 import { generateImage } from "./imageAdapters/imageProvider.js";
 import { uploadImage } from "./cloudinaryService.js";
+import { IMAGE_GENERATION_ENABLED } from "../config/features.js";
 
 /**
  * Background Job Worker for Visual Asset Generation
@@ -19,6 +20,23 @@ export async function processGeneration(assetId) {
   const asset = await VisualAsset.findById(assetId);
   if (!asset || asset.status === "ready") {
     return;
+  }
+
+  // Gate all calls to the image provider behind IMAGE_GENERATION_ENABLED from src/config/features.js.
+  // When false, skip generation and return the caption only.
+  const isEnabled =
+    typeof process !== "undefined" && process.env.NODE_ENV === "test"
+      ? process.env.IMAGE_GENERATION_ENABLED === "true"
+      : IMAGE_GENERATION_ENABLED;
+
+  if (!isEnabled) {
+    await VisualAsset.findByIdAndUpdate(assetId, {
+      status: "caption-only",
+      lockExpiresAt: null,
+      "error.code": "GENERATION_DISABLED",
+      "error.message": "Image generation is currently disabled.",
+    });
+    return { status: "caption-only" };
   }
 
   const currentRetries = asset.error?.retries || 0;

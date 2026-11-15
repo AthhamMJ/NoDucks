@@ -72,6 +72,8 @@ describe("Visual Prompt Template v1", () => {
 
 describe("Visual Generation Job Worker", () => {
   test("completes generation, updates status to ready, and sets Cloudinary URL", async () => {
+    process.env.NODE_ENV = "test";
+    process.env.IMAGE_GENERATION_ENABLED = "true";
     const originalFindById = VisualAsset.findById;
     const originalFindByIdAndUpdate = VisualAsset.findByIdAndUpdate;
 
@@ -108,6 +110,39 @@ describe("Visual Generation Job Worker", () => {
     } finally {
       VisualAsset.findById = originalFindById;
       VisualAsset.findByIdAndUpdate = originalFindByIdAndUpdate;
+    }
+  });
+
+  test("skips provider call and returns caption-only when IMAGE_GENERATION_ENABLED is false", async () => {
+    const originalFindById = VisualAsset.findById;
+    const originalFindByIdAndUpdate = VisualAsset.findByIdAndUpdate;
+
+    try {
+      const mockAsset = {
+        _id: "job_asset_disabled",
+        assetKey: "disabled_key",
+        topic: "Gravity",
+        status: "generating",
+        caption: "Gravity in the workshop",
+      };
+
+      VisualAsset.findById = async () => mockAsset;
+      let updatedStatus = null;
+      VisualAsset.findByIdAndUpdate = async (id, update) => {
+        updatedStatus = update.status;
+        return { ...mockAsset, ...update };
+      };
+
+      // Ensure IMAGE_GENERATION_ENABLED is false
+      process.env.IMAGE_GENERATION_ENABLED = "false";
+      const result = await processGeneration("job_asset_disabled");
+
+      assert.deepEqual(result, { status: "caption-only" });
+      assert.equal(updatedStatus, "caption-only");
+    } finally {
+      VisualAsset.findById = originalFindById;
+      VisualAsset.findByIdAndUpdate = originalFindByIdAndUpdate;
+      process.env.IMAGE_GENERATION_ENABLED = "true";
     }
   });
 });

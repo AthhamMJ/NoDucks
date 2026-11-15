@@ -72,7 +72,8 @@ export const VisualExplanation = ({ lessonId, initialVisuals = [] }) => {
       {visuals.map((visual, idx) => {
         const isReady = visual.status === "ready" && visual.url;
         const isPending = visual.status === "pending";
-        const isFailed = visual.status === "failed" || (!isReady && !isPending);
+        const isCaptionOnly = visual.status === "caption-only";
+        const isFailed = visual.status === "failed" || isCaptionOnly || (!isReady && !isPending);
 
         return (
           <div key={visual.assetId || idx} className={styles.panelBlock}>
@@ -98,14 +99,16 @@ export const VisualExplanation = ({ lessonId, initialVisuals = [] }) => {
               </div>
             )}
 
-            {/* 3. Failed State: No broken image graphic, caption fallback */}
+            {/* 3. Caption-only / Failed Fallback State: No broken image graphic, caption fallback */}
             {isFailed && (
               <div className={styles.failedBox} role="note">
                 <Info size={18} className={styles.failedIcon} aria-hidden="true" />
                 <div className={styles.captionBox}>
                   <p className={styles.captionText}>{visual.caption}</p>
                   <span className={styles.subText}>
-                    Illustration unavailable — showing conceptual notes instead.
+                    {isCaptionOnly
+                      ? "Visual summary notes."
+                      : "Illustration unavailable — showing conceptual notes instead."}
                   </span>
                 </div>
               </div>

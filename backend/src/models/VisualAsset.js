@@ -72,7 +72,7 @@ const visualAssetSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["generating", "ready", "failed"],
+      enum: ["generating", "ready", "failed", "caption-only"],
       default: "generating",
       index: true,
     },
