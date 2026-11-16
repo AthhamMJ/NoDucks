@@ -2,14 +2,18 @@ import mongoose from "mongoose";
 
 const visualAssetSchema = new mongoose.Schema(
   {
+    kind: {
+      type: String,
+      enum: ["image", "video"],
+      default: "image",
+      index: true,
+    },
     assetKey: {
       type: String,
       required: true,
-      index: true,
     },
     variant: {
       type: Number,
-      required: true,
       default: 1,
       min: 1,
     },
@@ -26,13 +30,21 @@ const visualAssetSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    title: {
+      type: String,
+      default: "",
+    },
+    aliases: {
+      type: [String],
+      default: [],
+    },
     learningLevel: {
       type: String,
       default: "intermediate",
     },
     storyId: {
       type: String,
-      required: true,
+      default: "",
     },
     storyTitle: {
       type: String,
@@ -62,6 +74,18 @@ const visualAssetSchema = new mongoose.Schema(
       publicId: { type: String, default: "" },
       url: { type: String, default: "" },
     },
+    posterUrl: {
+      type: String,
+      default: "",
+    },
+    captionsUrl: {
+      type: String,
+      default: "",
+    },
+    durationSeconds: {
+      type: Number,
+      default: 0,
+    },
     caption: {
       type: String,
       default: "",
@@ -72,7 +96,7 @@ const visualAssetSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["generating", "ready", "failed", "caption-only"],
+      enum: ["generating", "ready", "failed", "caption-only", "draft"],
       default: "generating",
       index: true,
     },
@@ -89,19 +113,27 @@ const visualAssetSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    publishedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// 1. Unique compound index on assetKey + variant
+// 1. Compound unique indexes
 visualAssetSchema.index({ assetKey: 1, variant: 1 }, { unique: true });
+visualAssetSchema.index({ assetKey: 1, kind: 1 });
 
-// 2. Index on conceptId + storyId for fast candidate lookup
+// 2. Lookup indexes for images and videos
 visualAssetSchema.index({ conceptId: 1, storyId: 1 });
+visualAssetSchema.index({ conceptId: 1, kind: 1, status: 1 });
+visualAssetSchema.index({ aliases: 1, kind: 1, status: 1 });
 
-// 3. Generation lock: Unique partial index so only one worker generates a given assetKey at a time
+// 3. Generation lock: Unique partial index so only one worker generates a given image assetKey at a time
 visualAssetSchema.index(
   { assetKey: 1 },
   {
@@ -111,4 +143,3 @@ visualAssetSchema.index(
 );
 
 export default mongoose.model("VisualAsset", visualAssetSchema);
-

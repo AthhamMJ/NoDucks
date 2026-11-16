@@ -3,6 +3,7 @@ import { ArrowLeft, Sparkles, AlertTriangle, LoaderCircle } from 'lucide-react';
 import styles from './LessonView.module.css';
 import { MermaidDiagram } from './MermaidDiagram';
 import { VisualExplanation } from './VisualExplanation/VisualExplanation';
+import { VideoExplanation } from './VideoExplanation/VideoExplanation';
 
 export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading }) => {
   const [activeTerm, setActiveTerm] = useState(null);
@@ -151,6 +152,11 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
           <strong>Summary:</strong> {lesson.summary}
         </div>
       </section>
+
+      {/* Video Explanation (Manim video matched by topic) */}
+      {lesson.videos && lesson.videos.length > 0 && (
+        <VideoExplanation videos={lesson.videos} />
+      )}
     </div>
   );
 };

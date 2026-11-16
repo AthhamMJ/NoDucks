@@ -18,8 +18,9 @@ import UserControl from "./components/UserControl/UserControl";
 import AdminSettings from "./components/AdminSettings/AdminSettings";
 import Overview from "./components/Overview/Overview";
 import FeatureUpdates from "./components/FeatureUpdates/FeatureUpdates";
+import Videos from "./components/Videos/Videos";
 
-const TABS = ["Overview", "User Control", "Feature Updates", "Admin Settings"];
+const TABS = ["Overview", "Videos", "User Control", "Feature Updates", "Admin Settings"];
 
 export default function Admin() {
   const { user } = useAuth();
@@ -85,6 +86,7 @@ export default function Admin() {
       </div>
 
       {activeTab === "Overview" && <Overview />}
+      {activeTab === "Videos" && <Videos />}
       {error && (
             <div className={styles.error}>
               <CircleAlert size={16} strokeWidth={1.5} />

@@ -4,6 +4,7 @@ import Chat from "../../models/Chat.js";
 import { recordUsage, checkQuotaAvailable } from "../../services/aiUsageService.js";
 import { matchOrEnqueueVisualAsset } from "../../services/visualMatchService.js";
 import { enqueueGeneration } from "../../services/visualGenerationJob.js";
+import { findVideoForLesson } from "../../services/videoMatchService.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -257,6 +258,22 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
     }
 
     let savedLesson = null;
+    // Video matching (admin/server seeded published videos)
+    let videos = [];
+    try {
+      const matchedVideo = await findVideoForLesson({
+        conceptId: topic,
+        query: topic,
+        subject: parsedData.domain || "general",
+      });
+      if (matchedVideo) {
+        videos.push(matchedVideo);
+      }
+    } catch (vidErr) {
+      console.warn("Video lookup failed:", vidErr.message);
+      // Non-blocking: video lookup failure must never fail the lesson
+    }
+
     if (userId) {
       savedLesson = await Lesson.create({
         userId,
@@ -264,13 +281,14 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
         interest,
         ...parsedData,
         visuals,
+        videos,
       });
     }
 
     res.status(200).json({
       lesson: savedLesson
         ? savedLesson
-        : { id: `temp-${Date.now()}`, topic, interest, ...parsedData, visuals },
+        : { id: `temp-${Date.now()}`, topic, interest, ...parsedData, visuals, videos },
     });
   } catch (err) {
     if (req.user) await recordError(req.user._id).catch(() => {});

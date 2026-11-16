@@ -34,6 +34,13 @@ export const tutorService = {
     return res.data.visuals;
   },
 
+  searchVideos: async (query) => {
+    const res = await api.get("/api/search/videos", {
+      params: { q: query },
+    });
+    return res.data.videos || [];
+  },
+
   getLessonChat: async (id) => {
     const res = await api.get(`/api/lessons/${id}/chat`);
     return res.data.messages;

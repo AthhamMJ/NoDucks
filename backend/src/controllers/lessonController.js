@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Lesson from "../models/Lesson.js";
 import Chat from "../models/Chat.js";
 import VisualAsset from "../models/VisualAsset.js";
+import { findVideoForLesson } from "../services/videoMatchService.js";
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -76,6 +77,20 @@ export const getLesson = async (req, res, next) => {
     ).lean();
 
     if (!lesson) return res.status(404).json({ message: "Lesson not found." });
+
+    if (!lesson.videos || !lesson.videos.length) {
+      try {
+        const matched = await findVideoForLesson({
+          conceptId: lesson.topic,
+          query: lesson.topic,
+          subject: lesson.domain || "general",
+        });
+        lesson.videos = matched ? [matched] : [];
+      } catch (err) {
+        lesson.videos = [];
+      }
+    }
+
     res.json({ lesson });
   } catch (error) {
     next(error);

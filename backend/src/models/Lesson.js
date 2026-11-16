@@ -84,6 +84,24 @@ const LessonSchema = new mongoose.Schema(
         altText: { type: String, default: "" },
       },
     ],
+    videos: [
+      {
+        id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "VisualAsset",
+        },
+        title: { type: String, default: "" },
+        subject: { type: String, default: "general" },
+        durationSeconds: { type: Number, default: 0 },
+        cloudinary: {
+          url: { type: String, default: "" },
+        },
+        posterUrl: { type: String, default: "" },
+        captionsUrl: { type: String, default: "" },
+        altText: { type: String, default: "" },
+        caption: { type: String, default: "" },
+      },
+    ],
   },
   { timestamps: true }
 );

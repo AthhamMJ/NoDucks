@@ -9,6 +9,7 @@ import noteRoutes from "./routes/noteRoutes.js";
 import tutorRoutes from "./routes/tutorRoutes.js";
 import lessonRoutes from "./routes/lessonRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
 import { maintenanceMode } from "./middleware/maintenanceMode.js";
 import updateRoutes from "./routes/updateRoutes.js"
 
@@ -43,6 +44,7 @@ app.use("/api/updates", updateRoutes)
 app.use("/api/subjects", subjectRoutes);
 app.use("/api/tutor", tutorRoutes);
 app.use("/api/lessons", lessonRoutes);
+app.use("/api/search", searchRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes/", noteRoutes);
 

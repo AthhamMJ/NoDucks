@@ -15,11 +15,20 @@ import {
   deleteUpdate,
 } from "../controllers/admin/featureUpdateController.js";
 import { getVisualStats } from "../controllers/admin/visualAdminController.js";
+import {
+  uploadMiddleware,
+  uploadVideoAdmin,
+  publishVideoAdmin,
+  listAdminVideos,
+} from "../controllers/admin/videoAdminController.js";
 
 const router = express.Router();
 
 router.get("/overview", protect, adminOnly, getOverview);
 router.get("/visuals", protect, adminOnly, getVisualStats);
+router.get("/videos", protect, adminOnly, listAdminVideos);
+router.post("/videos", protect, adminOnly, uploadMiddleware, uploadVideoAdmin);
+router.post("/videos/:id/publish", protect, adminOnly, publishVideoAdmin);
 router.get("/users", protect, adminOnly, getUsers);
 router.patch("/users/:id", protect, adminOnly, updateUser);
 router.get("/settings", protect, adminOnly, getAdminSettings);

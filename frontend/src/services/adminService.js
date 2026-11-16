@@ -9,6 +9,16 @@ export async function fetchVisualStats() {
   const { data } = await api.get("/api/admin/visuals");
   return data;
 }
+
+export async function fetchAdminVideos() {
+  const { data } = await api.get("/api/admin/videos");
+  return data.videos || [];
+}
+
+export async function publishAdminVideo(id) {
+  const { data } = await api.post(`/api/admin/videos/${id}/publish`);
+  return data;
+}
 export async function fetchAdminUsers(page = 1, limit = 20) {
   const { data } = await api.get("/api/admin/users", {
     params: { page, limit },

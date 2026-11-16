@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, LoaderCircle } from 'lucide-react';
 import styles from './StartingScreen.module.css';
+import { VideoSearch } from './VideoSearch/VideoSearch';
 
 const PRESETS = [
   { topic: "Newton's Third Law", interest: 'Formula 1 Racing', tag: 'Physics' },
@@ -165,6 +166,9 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
           ))}
         </div>
       </section>
+
+      {/* Topic Video Search */}
+      <VideoSearch onSelectTopic={(t) => setTopic(t)} />
     </div>
   );
 };

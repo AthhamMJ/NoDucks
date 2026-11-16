@@ -61,3 +61,23 @@ export function buildAssetKey({
   return crypto.createHash("sha256").update(canonicalJson).digest("hex");
 }
 
+/**
+ * Computes a deterministic SHA-256 assetKey for videos.
+ */
+export function buildVideoAssetKey({ conceptId, title = "", subject = "general" }) {
+  const normalized = {
+    conceptId: normalizeToken(conceptId),
+    kind: "video",
+    subject: normalizeToken(subject, "general"),
+    title: normalizeToken(title),
+  };
+
+  const canonicalObj = {};
+  for (const key of Object.keys(normalized).sort()) {
+    canonicalObj[key] = normalized[key];
+  }
+
+  const canonicalJson = JSON.stringify(canonicalObj);
+  return crypto.createHash("sha256").update(canonicalJson).digest("hex");
+}
+
