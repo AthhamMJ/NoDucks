@@ -24,6 +24,12 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
           <span className={styles.topicName}>{lesson.topic}</span>
           <span className={styles.separator} aria-hidden="true">•</span>
           <span className={styles.analogyLabel}>Analogy: {lesson.interest}</span>
+          {lesson.age && (
+            <>
+              <span className={styles.separator} aria-hidden="true">•</span>
+              <span className={styles.analogyLabel}>Age: {lesson.age}</span>
+            </>
+          )}
         </div>
 
         <button

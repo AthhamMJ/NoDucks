@@ -85,6 +85,7 @@ export const HistoryPanel = ({
               <span className={styles.itemTopic}>{l.topic}</span>
               <span className={styles.itemMeta}>
                 {l.interest}
+                {l.age ? ` · Age ${l.age}` : ""}
                 {l.createdAt ? ` · ${formatDate(l.createdAt)}` : ""}
               </span>
             </button>

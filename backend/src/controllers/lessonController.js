@@ -54,7 +54,7 @@ export const getLessonVisuals = async (req, res, next) => {
 export const listLessons = async (req, res, next) => {
   try {
     const lessons = await Lesson.find({ userId: req.user._id })
-      .select("topic interest createdAt")
+      .select("topic interest age createdAt")
       .sort({ _id: -1 })
       .lean();
     res.json({ lessons });

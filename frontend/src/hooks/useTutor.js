@@ -4,7 +4,7 @@ import { tutorService } from "../services/tutorService";
 const welcomeMessage = (lesson) => ({
   id: `welcome-${lesson._id}`,
   role: "assistant",
-  content: `Hello! I've personalized this lesson on **${lesson.topic}** using analogies from **${lesson.interest}**.\n\nRead through the theory, check where the analogy ends, and test your understanding when ready!`,
+  content: `Hello! I've personalized this lesson on **${lesson.topic}**${lesson.age ? ` (age **${lesson.age}**)` : ""} using analogies from **${lesson.interest}**.\n\nRead through the theory, check where the analogy ends, and test your understanding when ready!`,
   timestamp: Date.now(),
 });
 
@@ -60,13 +60,13 @@ export const useTutor = () => {
     refreshUsage();
   }, [refreshLessons, refreshUsage]);
 
-  const startLearning = async (topic, interest) => {
+  const startLearning = async (topic, interest, subject, age) => {
     setIsLoadingLesson(true);
     setLessonError(null);
     setQuiz(null);
 
     try {
-      const data = await tutorService.generateLesson(topic, interest);
+      const data = await tutorService.generateLesson(topic, interest, subject, age);
       setLesson(data);
       setChatMessages([welcomeMessage(data)]);
       refreshLessons();
@@ -141,6 +141,7 @@ export const useTutor = () => {
         lessonId: lesson._id,
         topic: lesson.topic,
         interest: lesson.interest,
+        age: lesson.age,
         lessonContext: `${lesson.headline}. ${lesson.simpleIntro} ${lesson.summary}`,
         history: chatMessages
           .slice(-6)
@@ -193,6 +194,7 @@ export const useTutor = () => {
       const data = await tutorService.generateQuiz({
         topic: lesson.topic,
         interest: lesson.interest,
+        age: lesson.age,
         lessonHeadline: lesson.headline,
         lessonSummary: lesson.summary,
         sectionsSummary: (lesson.sections || [])

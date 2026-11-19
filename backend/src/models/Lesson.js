@@ -9,6 +9,7 @@ const LessonSchema = new mongoose.Schema(
     },
     topic: { type: String, required: true },
     interest: { type: String, required: true },
+    age: { type: String, default: "13-17" },
     headline: { type: String, required: true },
     simpleIntro: { type: String, required: true },
     deepExplanation: { type: String, required: true },

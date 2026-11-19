@@ -1,45 +1,70 @@
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, LoaderCircle } from 'lucide-react';
 import styles from './StartingScreen.module.css';
-import { VideoSearch } from './VideoSearch/VideoSearch';
 
-const PRESETS = [
-  { topic: "Newton's Third Law", interest: 'Formula 1 Racing', tag: 'Physics' },
-  { topic: 'Black hole', interest: 'Intrestellar', tag: 'Physics' },
-  { topic: 'Entropy & 2nd Law', interest: 'Coffee Brewing & Baking', tag: 'Chemistry' },
-  { topic: 'Central Dogma of Biology', interest: 'Software Compilers', tag: 'Biology' },
-  { topic: 'Nash Equilibrium', interest: 'Competitive Esports', tag: 'Game Theory' },
-  { topic: 'Marginal Utility', interest: 'RPG Item Trading', tag: 'Economics' },
+const SUBJECT_TOPICS = {
+  Physics: [
+    "Newton's first law",
+    "Newton's second law",
+    "Newton's third law",
+    "Velocity and speed",
+    "Distance and displacement",
+    "Gravitational force",
+    "Acceleration",
+    "Friction",
+  ],
+  Maths: [
+    "Number direction",
+  ],
+};
+
+const DISABLED_SUBJECTS = ['Chemistry', 'Programming', 'History'];
+const INTEREST_OPTIONS = ['Movies', 'Sports', 'Games'];
+const AGE_OPTIONS = [
+  { value: '5-8', label: '5–8 years (Kids / ELI5)' },
+  { value: '9-12', label: '9–12 years (Middle School)' },
+  { value: '13-17', label: '13–17 years (High School)' },
+  { value: '18+', label: '18+ years (College / Adult)' },
 ];
 
-const TOPIC_SUGGESTIONS = ['Quantum Superposition', 'Entropy', 'Fourier Transform'];
-const INTEREST_SUGGESTIONS = ['Formula 1', 'Gaming', 'Music Production'];
-
 export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
+  const [subject, setSubject] = useState('');
   const [topic, setTopic] = useState('');
   const [interest, setInterest] = useState('');
+  const [age, setAge] = useState('');
   const [validationError, setValidationError] = useState('');
 
   const displayError = validationError || error;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!topic.trim()) {
-      setValidationError('Please enter an academic concept.');
-      return;
-    }
-    if (!interest.trim()) {
-      setValidationError('Please specify your personal interest.');
-      return;
-    }
+  const handleSubjectChange = (e) => {
+    const newSubject = e.target.value;
+    setSubject(newSubject);
+    setTopic('');
     setValidationError('');
-    onStartLearning(topic.trim(), interest.trim());
   };
 
-  const applyPreset = (preset) => {
-    setTopic(preset.topic);
-    setInterest(preset.interest);
+  const availableTopics = subject && SUBJECT_TOPICS[subject] ? SUBJECT_TOPICS[subject] : [];
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!subject) {
+      setValidationError('Please select a subject.');
+      return;
+    }
+    if (!topic) {
+      setValidationError('Please select a topic.');
+      return;
+    }
+    if (!interest) {
+      setValidationError('Please select an interest.');
+      return;
+    }
+    if (!age) {
+      setValidationError('Please select an age.');
+      return;
+    }
     setValidationError('');
+    onStartLearning(topic, interest, subject, age);
   };
 
   return (
@@ -47,16 +72,11 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
       <header className={styles.hero}>
         <span className={styles.heroTag}>
           <Sparkles size={14} aria-hidden="true" />
-          Personalized AI Learning
+          AI Coaching
         </span>
-        <h1 className={styles.heroTitle}>
-          Understand deeply.
-          <br />
-          Not just memorized.
-        </h1>
+        <h1 className={styles.heroTitle}>Personalized AI Learning</h1>
         <p className={styles.heroText}>
-          Enter an intimidating academic concept and something you love. The AI tutor builds a
-          scientifically accurate bridge connecting the two.
+          Select your subject, topic, personal interest, and age to generate your tailored lesson.
         </p>
       </header>
 
@@ -64,61 +84,96 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGrid}>
             <div className={styles.field}>
-              <label htmlFor="tutor-topic" className={styles.label}>
-                1. Academic Concept
+              <label htmlFor="tutor-subject" className={styles.label}>
+                1. Subject
               </label>
-              <input
-                id="tutor-topic"
-                className={styles.input}
-                type="text"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                placeholder="e.g. Quantum Superposition, Central Dogma..."
+              <select
+                id="tutor-subject"
+                className={styles.select}
+                value={subject}
+                onChange={handleSubjectChange}
                 disabled={isLoading}
-              />
-              <div className={styles.suggestions}>
-                <span className={styles.suggestionsLabel}>Try:</span>
-                {TOPIC_SUGGESTIONS.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className={styles.chip}
-                    onClick={() => setTopic(item)}
-                    disabled={isLoading}
-                  >
-                    {item}
-                  </button>
+              >
+                <option value="">Select a subject...</option>
+                <option value="Physics">Physics</option>
+                <option value="Maths">Maths</option>
+                {DISABLED_SUBJECTS.map((s) => (
+                  <option key={s} value={s} disabled>
+                    {s} (Disabled)
+                  </option>
                 ))}
-              </div>
+              </select>
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="tutor-topic" className={styles.label}>
+                2. Topic
+              </label>
+              <select
+                id="tutor-topic"
+                className={styles.select}
+                value={topic}
+                onChange={(e) => {
+                  setTopic(e.target.value);
+                  setValidationError('');
+                }}
+                disabled={isLoading || !subject || availableTopics.length === 0}
+              >
+                <option value="">
+                  {!subject ? 'Select a subject first' : 'Select a topic...'}
+                </option>
+                {availableTopics.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className={styles.field}>
               <label htmlFor="tutor-interest" className={styles.label}>
-                2. Your Interest
+                3. Interest
               </label>
-              <input
+              <select
                 id="tutor-interest"
-                className={styles.input}
-                type="text"
+                className={styles.select}
                 value={interest}
-                onChange={(e) => setInterest(e.target.value)}
-                placeholder="e.g. Formula 1, Music Production, Cooking..."
+                onChange={(e) => {
+                  setInterest(e.target.value);
+                  setValidationError('');
+                }}
                 disabled={isLoading}
-              />
-              <div className={styles.suggestions}>
-                <span className={styles.suggestionsLabel}>Try:</span>
-                {INTEREST_SUGGESTIONS.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className={styles.chip}
-                    onClick={() => setInterest(item)}
-                    disabled={isLoading}
-                  >
+              >
+                <option value="">Select an interest...</option>
+                {INTEREST_OPTIONS.map((item) => (
+                  <option key={item} value={item}>
                     {item}
-                  </button>
+                  </option>
                 ))}
-              </div>
+              </select>
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="tutor-age" className={styles.label}>
+                4. Age
+              </label>
+              <select
+                id="tutor-age"
+                className={styles.select}
+                value={age}
+                onChange={(e) => {
+                  setAge(e.target.value);
+                  setValidationError('');
+                }}
+                disabled={isLoading}
+              >
+                <option value="">Select age...</option>
+                {AGE_OPTIONS.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -129,7 +184,11 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
           )}
 
           <div className={styles.actions}>
-            <button type="submit" className={styles.primaryButton} disabled={isLoading}>
+            <button
+              type="submit"
+              className={styles.primaryButton}
+              disabled={isLoading || !subject || !topic || !interest || !age}
+            >
               {isLoading ? (
                 <>
                   <LoaderCircle size={16} className={styles.spinner} aria-hidden="true" />
@@ -145,30 +204,6 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
           </div>
         </form>
       </section>
-
-      <section className={styles.presetSection}>
-        <h2 className={styles.label}>Or Pick a Curated Concept Pairing</h2>
-        <div className={styles.presetGrid}>
-          {PRESETS.map((preset) => (
-            <button
-              key={preset.topic}
-              type="button"
-              className={styles.presetCard}
-              onClick={() => applyPreset(preset)}
-              disabled={isLoading}
-            >
-              <span className={styles.badge}>{preset.tag}</span>
-              <span className={styles.presetTopic}>{preset.topic}</span>
-              <span className={styles.presetInterest}>
-                via <strong>{preset.interest}</strong>
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Topic Video Search */}
-      <VideoSearch onSelectTopic={(t) => setTopic(t)} />
     </div>
   );
 };

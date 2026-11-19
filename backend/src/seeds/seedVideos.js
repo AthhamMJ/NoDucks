@@ -8,48 +8,25 @@ await connectDB();
 
 export const sampleVideos = [
   {
-    title: "Newton's Second Law of Motion",
-    conceptId: "Newton's Second Law",
-    subject: "physics",
-    aliases: [
-      "Newton's second law",
-      "newtons second law",
-      "NEWTON’S SECOND LAW",
-      "f = ma",
-      "force equals mass times acceleration",
-      "newtons law",
-    ],
-    durationSeconds: 45,
-    cloudinary: {
-      publicId: "visuals/newton_s_second_law",
-      url: "https://res.cloudinary.com/gwobhyvb/video/upload/v1794821432/newton_s_second_law.mp4",
-    },
-    posterUrl: "https://res.cloudinary.com/gwobhyvb/video/upload/so_0/newton_s_second_law.jpg",
-    captionsUrl: "",
-    caption: "A Manim visual demonstration showing how net force accelerates mass according to F = ma.",
-    altText: "Animated physics simulation showing vector forces and acceleration on varying masses.",
-    status: "ready",
-  },
-  {
-    title: "Gravity and Free Fall",
-    conceptId: "Gravity",
+    title: "Gravitational Force",
+    conceptId: "Gravitational force",
     subject: "physics",
     aliases: [
       "gravity",
-      "free fall",
       "gravitational force",
+      "free fall",
       "gravitational acceleration",
       "gravitation",
     ],
-    durationSeconds: 38,
+    durationSeconds: 45,
     cloudinary: {
-      publicId: "visuals/newton_s_second_law",
-      url: "https://res.cloudinary.com/gwobhyvb/video/upload/v1794821432/newton_s_second_law.mp4",
+      publicId: "visuals/gravitational_force",
+      url: "Source_URL_HERE",
     },
-    posterUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
-    captionsUrl: "data:text/vtt;charset=utf-8,WEBVTT%0A%0A00:00:00.000%20--%3E%2000:00:05.000%0AUnderstanding%20gravitational%20acceleration%20and%20curved%20spacetime.",
-    caption: "Geometric visualization of gravitational pull and acceleration.",
-    altText: "Animated visualization of orbital trajectories and free fall mechanics.",
+    posterUrl: "",
+    captionsUrl: "",
+    caption: "Visual demonstration of mutual attraction and gravitational acceleration.",
+    altText: "Orbital trajectories and gravitational pull simulation.",
     status: "ready",
   },
 ];
@@ -81,7 +58,7 @@ for (const v of sampleVideos) {
       altText: v.altText,
       status: v.status,
     },
-    { upsert: true, returnDocument: 'after' }
+    { upsert: true, returnDocument: "after" },
   );
 
   console.log(`✅ Seeded ready video: ${v.title}`);

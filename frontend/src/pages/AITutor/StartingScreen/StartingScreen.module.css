@@ -30,17 +30,17 @@
 
 .heroTitle {
   margin: 0;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(2rem, 5vw, 2.75rem);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
 .heroText {
   margin: 0;
-  max-width: 36rem;
+  max-width: 34rem;
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
 }
 
@@ -49,18 +49,18 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: 1.5rem;
+  padding: 1.75rem;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .formGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.25rem;
 }
 
@@ -80,9 +80,9 @@
   letter-spacing: 0.04em;
 }
 
-.input {
+.select {
   width: 100%;
-  padding: 0.7rem 0.9rem;
+  padding: 0.75rem 0.9rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--surface-2);
@@ -90,47 +90,29 @@
   font: inherit;
   font-size: 0.95rem;
   box-sizing: border-box;
-}
-
-.input::placeholder {
-  color: var(--text-secondary);
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.input:disabled {
-  opacity: 0.6;
-}
-
-.suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.suggestionsLabel {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.chip {
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text-primary);
-  font: inherit;
-  font-size: 0.75rem;
   cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.chip:hover:not(:disabled) {
+.select:focus {
   border-color: var(--accent);
-  color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.select option {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.select option:disabled {
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
 .error {
@@ -151,18 +133,25 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.7rem 1.25rem;
+  padding: 0.75rem 1.4rem;
   border: none;
   border-radius: var(--radius-md);
   background: var(--accent);
   color: #fff;
   font: inherit;
   font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
 }
 
 .primaryButton:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -176,69 +165,13 @@
   }
 }
 
-.presetSection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+@media (max-width: 900px) {
+  .formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.presetGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: 0.9rem;
-}
-
-.presetCard {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 1rem;
-  text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font: inherit;
-  cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease;
-}
-
-.presetCard:hover:not(:disabled) {
-  border-color: var(--accent);
-  transform: translateY(-1px);
-}
-
-.presetCard:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.badge {
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.presetTopic {
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.presetInterest {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.presetInterest strong {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-@media (max-width: 640px) {
+@media (max-width: 600px) {
   .formGrid {
     grid-template-columns: 1fr;
   }

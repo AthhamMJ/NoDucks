@@ -1,10 +1,12 @@
 import api from "./api";
 
 export const tutorService = {
-  generateLesson: async (topic, interest) => {
+  generateLesson: async (topic, interest, subject, age) => {
     const res = await api.post("/api/tutor/generate-lesson", {
       topic,
       interest,
+      subject,
+      age,
     });
     return res.data.lesson;
   },

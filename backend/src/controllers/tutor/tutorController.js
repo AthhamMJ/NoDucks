@@ -12,6 +12,18 @@ const ai = new GoogleGenAI({
 });
 
 // Helper for fallback and fast latency
+function deriveLearningLevelFromAge(age) {
+  if (!age) return "intermediate";
+  const str = String(age).toLowerCase();
+  if (/5|6|7|8|9|10|11|12|child|elementary|eli5|kid/i.test(str)) {
+    return "beginner";
+  }
+  if (/18|19|20|21|adult|college|university|advanced/i.test(str)) {
+    return "advanced";
+  }
+  return "intermediate";
+}
+
 async function callGemini(contents, config = {}) {
   const models = [
     "gemini-3.1-flash-lite",
@@ -50,19 +62,25 @@ async function callGemini(contents, config = {}) {
 // 1. Generate Structured Lesson
 export const generateLesson = async (req, res, next) => {
   try {
-    const { topic, interest } = req.body;
+    const { topic, interest, subject, age } = req.body;
     if (!topic || !interest) {
       return res
         .status(400)
         .json({ error: "Topic and interest are required." });
     }
 
+    const targetAge = age || "13-17";
+
     const systemInstruction = `You are an elite academic tutor engine.
 Connect the topic "${topic}" to the student's interest "${interest}".
+Target Student Age: ${targetAge}.
+Adapt your explanation, vocabulary, tone, cognitive complexity, and analogies specifically for a student of age ${targetAge}.
+- If the student is young (e.g. 5-8 or 9-12 years old), explain like they are that age: use friendly, intuitive language, relatable day-to-day metaphors, short sentences, and explain fundamental concepts gently without overwhelming jargon.
+- If the student is older (e.g. 13-17 or 18+), provide greater scientific rigor, appropriate terminology, and deeper analytical depth while keeping analogies engaging.
 Maintain strict scientific accuracy, delineate where the analogy ends, and avoid walls of text.
 Maintain clean progression. For the diagram, produce a valid, syntactically correct Mermaid.js flowchart (using graph TD or graph LR) showing the progression/mechanism of the concept. Do not include markdown code block syntax (like \`\`\`mermaid) in mermaidCode. Keep node labels clear and wrap any text containing punctuation or spaces in quotes.`;
 
-    const userPrompt = `Create a structured lesson on "${topic}" using analogies from "${interest}".`;
+    const userPrompt = `Create a structured lesson on "${topic}" tailored for an age ${targetAge} learner using analogies from "${interest}".`;
 
     const { text: rawJson, usage } = await callGemini(userPrompt, {
       systemInstruction,
@@ -198,12 +216,14 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
     // Visual explanation matching and background generation
     let visuals = [];
     try {
+      const computedLevel =
+        req.user?.learningLevel || deriveLearningLevelFromAge(targetAge);
       const matchResult = await matchOrEnqueueVisualAsset({
         conceptId: topic,
         topic,
-        subject: parsedData.domain || "general",
+        subject: subject || parsedData.domain || "general",
         interest,
-        learningLevel: req.user?.learningLevel || "intermediate",
+        learningLevel: computedLevel,
       });
 
       if (matchResult.isReused) {
@@ -264,7 +284,7 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
       const matchedVideo = await findVideoForLesson({
         conceptId: topic,
         query: topic,
-        subject: parsedData.domain || "general",
+        subject: subject || parsedData.domain || "general",
       });
       if (matchedVideo) {
         videos.push(matchedVideo);
@@ -279,6 +299,7 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
         userId,
         topic,
         interest,
+        age: targetAge,
         ...parsedData,
         visuals,
         videos,
@@ -288,7 +309,7 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
     res.status(200).json({
       lesson: savedLesson
         ? savedLesson
-        : { id: `temp-${Date.now()}`, topic, interest, ...parsedData, visuals, videos },
+        : { id: `temp-${Date.now()}`, topic, interest, age: targetAge, ...parsedData, visuals, videos },
     });
   } catch (err) {
     if (req.user) await recordError(req.user._id).catch(() => {});
@@ -299,18 +320,22 @@ Maintain clean progression. For the diagram, produce a valid, syntactically corr
 // 2. Chat Follow-up
 export const chatFollowUp = async (req, res, next) => {
   try {
-    const { lessonId, topic, interest, lessonContext, history, message, mode } = req.body;
+    const { lessonId, topic, interest, lessonContext, history, message, mode, age } = req.body;
 
     if (!lessonId || !message) {
       return res
         .status(400)
         .json({ error: "lessonId and message are required." });
     }
-    //Students only can chat on lessons they own
-    const owns = await Lesson.exists({ _id: lessonId, userId: req.user._id });
-    if (!owns) {
+    // Students only can chat on lessons they own
+    const existingLesson = await Lesson.findOne({ _id: lessonId, userId: req.user._id })
+      .select("age")
+      .lean();
+    if (!existingLesson) {
       return res.status(404).json({ error: "Lesson not found" });
     }
+
+    const studentAge = age || existingLesson.age || "13-17";
 
     let modeInstruction =
       "Answer directly and concisely in 2-3 short paragraphs.";
@@ -323,6 +348,8 @@ export const chatFollowUp = async (req, res, next) => {
       modeInstruction = "Provide another concrete real-world scenario.";
 
     const systemInstruction = `You are the student's personal academic AI tutor for "${topic}" (analogy: "${interest}").
+Target Student Age: ${studentAge}.
+Keep explanations, vocabulary, tone, and cognitive depth suitable and easily understandable for an age ${studentAge} student.
 Lesson Summary: ${lessonContext}
 Instruction: ${modeInstruction}`;
 
@@ -369,14 +396,16 @@ Instruction: ${modeInstruction}`;
 // 3. Quiz Generation
 export const generateQuiz = async (req, res, next) => {
   try {
-    const { topic, interest, lessonHeadline, lessonSummary, sectionsSummary } =
+    const { topic, interest, lessonHeadline, lessonSummary, sectionsSummary, age } =
       req.body;
 
+    const targetAge = age || "13-17";
     const systemInstruction = `Generate 3 to 4 multiple-choice questions testing genuine conceptual understanding of "${topic}".
+Target Student Age: ${targetAge}. Calibrate question wording, difficulty, and scenarios appropriately for an age ${targetAge} learner.
 Exactly 4 options per question.
 correctAnswerIndex must be 0, 1, 2, or 3.`;
 
-    const userPrompt = `Topic: "${topic}", Interest: "${interest}", Summary: "${lessonSummary}"`;
+    const userPrompt = `Topic: "${topic}", Interest: "${interest}", Target Age: "${targetAge}", Summary: "${lessonSummary}"`;
 
     const { text: rawJson, usage } = await callGemini(userPrompt, {
       systemInstruction,
