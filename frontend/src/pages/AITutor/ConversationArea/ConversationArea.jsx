@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { HelpCircle, Lightbulb, Wand2, Send, LoaderCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import styles from './ConversationArea.module.css';
 
 export const ConversationArea = ({ messages, onSendMessage, isLoading, topic, interest }) => {
@@ -74,7 +75,13 @@ export const ConversationArea = ({ messages, onSendMessage, isLoading, topic, in
             key={m.id}
             className={`${styles.message} ${m.role === 'user' ? styles.user : styles.assistant}`}
           >
-            {m.content}
+            {m.role === 'user' ? (
+              <div className={styles.userText}>{m.content}</div>
+            ) : (
+              <div className={styles.markdownBody}>
+                <ReactMarkdown>{m.content}</ReactMarkdown>
+              </div>
+            )}
           </div>
         ))}
 
