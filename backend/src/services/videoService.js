@@ -34,3 +34,21 @@ export async function createVideoJob({ topic, ageBand, interest, requestId }) {
 export async function getVideoJob(jobId) {
   return callService(`/jobs/${encodeURIComponent(jobId)}`);
 }
+
+export async function streamVideo(jobId) {
+  if (!BASE_URL || !TOKEN) {
+    throw new Error('VIDEO_SERVICE_URL or VIDEO_SERVICE_TOKEN is not set');
+  }
+  const res = await fetch(`${BASE_URL}/drafts/served/${encodeURIComponent(jobId)}`, {
+    headers: { 'X-Service-Token': TOKEN },
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    const err = new Error(data?.detail?.message || `service returned ${res.status}`);
+    err.category = data?.detail?.category || 'API';
+    err.code = data?.detail?.code || `HTTP_${res.status}`;
+    err.status = res.status;
+    throw err;
+  }
+  return res;
+}

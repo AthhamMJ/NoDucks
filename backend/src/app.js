@@ -13,6 +13,7 @@ import searchRoutes from "./routes/searchRoutes.js";
 import { maintenanceMode } from "./middleware/maintenanceMode.js";
 import updateRoutes from "./routes/updateRoutes.js"
 import videoTestRoutes from './routes/videoTest.js';
+import videoRoutes from './routes/videoRoutes.js'
 
 const app = express();
 
@@ -49,7 +50,7 @@ app.use("/api/search", searchRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes/", noteRoutes);
 app.use('/api/dev/video', videoTestRoutes);
-
+app.use('/api/videos', videoRoutes);
 
 // Protected Route
 app.get("/api/protected-test", protect, (req, res) => {
