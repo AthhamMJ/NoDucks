@@ -7,7 +7,7 @@ const connectDB = async () => {
     console.log(`MongoDB Atlas Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`DataBase Connection Failed: ${error.message}`);
-    process.exit(1); // I Think this makes Exit if any failure
+    console.warn("Continuing server startup for local routes without DB...");
   }
 };
 

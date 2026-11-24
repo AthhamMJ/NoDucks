@@ -11,7 +11,7 @@ const SUBJECT_TOPICS = {
     "Distance and displacement",
     "Gravitational force",
     "Acceleration",
-    "Friction",
+    "frictional force",
   ],
   Maths: [
     "Number direction",
@@ -19,11 +19,13 @@ const SUBJECT_TOPICS = {
 };
 
 const DISABLED_SUBJECTS = ['Chemistry', 'Programming', 'History'];
-const INTEREST_OPTIONS = ['Movies', 'Sports', 'Games'];
+const INTEREST_OPTIONS = ['Movies', 'Sports', 'Games', 'car'];
 const AGE_OPTIONS = [
   { value: '5-8', label: '5–8 years (Kids / ELI5)' },
   { value: '9-12', label: '9–12 years (Middle School)' },
-  { value: '13-17', label: '13–17 years (High School)' },
+  { value: '13-15', label: '13–17 years (High School)' },
+  { value: '14-16', label: '14–16 years (High School)' },
+  { value: '16-17', label: '16–17 years (High School)' },
   { value: '18+', label: '18+ years (College / Adult)' },
 ];
 

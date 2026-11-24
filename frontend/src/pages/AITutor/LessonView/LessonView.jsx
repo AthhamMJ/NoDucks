@@ -4,6 +4,7 @@ import styles from './LessonView.module.css';
 import { MermaidDiagram } from './MermaidDiagram';
 import { VisualExplanation } from './VisualExplanation/VisualExplanation';
 import { VideoExplanation } from './VideoExplanation/VideoExplanation';
+import LocalVideoLesson from '../../Lesson/LocalVideoLesson';
 
 export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading }) => {
   const [activeTerm, setActiveTerm] = useState(null);
@@ -163,6 +164,9 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
       {lesson.videos && lesson.videos.length > 0 && (
         <VideoExplanation videos={lesson.videos} />
       )}
+
+      {/* Local Video Lesson Preview (experimental flag) */}
+      {import.meta.env.VITE_LOCAL_VIDEO_LESSON === 'true' && <LocalVideoLesson lesson={lesson} />}
     </div>
   );
 };
