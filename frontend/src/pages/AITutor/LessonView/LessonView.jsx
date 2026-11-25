@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Sparkles, AlertTriangle, LoaderCircle } from 'lucide-react';
-import styles from './LessonView.module.css';
-import { MermaidDiagram } from './MermaidDiagram';
-import { VisualExplanation } from './VisualExplanation/VisualExplanation';
-import { VideoExplanation } from './VideoExplanation/VideoExplanation';
-import LocalVideoLesson from '../../Lesson/LocalVideoLesson';
+import React, { useState } from "react";
+import { ArrowLeft, Sparkles, AlertTriangle, LoaderCircle } from "lucide-react";
+import styles from "./LessonView.module.css";
+import { MermaidDiagram } from "./MermaidDiagram";
+import { VisualExplanation } from "./VisualExplanation/VisualExplanation";
+import { VideoExplanation } from "./VideoExplanation/VideoExplanation";
+import LocalVideoLesson from "../../Lesson/LocalVideoLesson";
 
-export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading }) => {
+export const LessonView = ({
+  lesson,
+  onOpenQuiz,
+  onChangeTopic,
+  isQuizLoading,
+}) => {
   const [activeTerm, setActiveTerm] = useState(null);
 
   const activeDefinition = activeTerm
@@ -18,16 +23,26 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
       {/* Top action bar */}
       <div className={styles.actionBar}>
         <div className={styles.topicInfo}>
-          <button type="button" className={styles.secondaryButton} onClick={onChangeTopic}>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={onChangeTopic}
+          >
             <ArrowLeft size={16} aria-hidden="true" />
             New Topic
           </button>
           <span className={styles.topicName}>{lesson.topic}</span>
-          <span className={styles.separator} aria-hidden="true">•</span>
-          <span className={styles.analogyLabel}>Analogy: {lesson.interest}</span>
+          <span className={styles.separator} aria-hidden="true">
+            •
+          </span>
+          <span className={styles.analogyLabel}>
+            Analogy: {lesson.interest}
+          </span>
           {lesson.age && (
             <>
-              <span className={styles.separator} aria-hidden="true">•</span>
+              <span className={styles.separator} aria-hidden="true">
+                •
+              </span>
               <span className={styles.analogyLabel}>Age: {lesson.age}</span>
             </>
           )}
@@ -41,7 +56,11 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
         >
           {isQuizLoading ? (
             <>
-              <LoaderCircle size={16} className={styles.spinner} aria-hidden="true" />
+              <LoaderCircle
+                size={16}
+                className={styles.spinner}
+                aria-hidden="true"
+              />
               Building Quiz...
             </>
           ) : (
@@ -80,15 +99,23 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
 
       {/* Analogy spotlight */}
       <section className={styles.analogyBox}>
-        <span className={styles.analogyBadge}>Analogy Bridge ({lesson.interest})</span>
+        <span className={styles.analogyBadge}>
+          Analogy Bridge ({lesson.interest})
+        </span>
         <h2 className={styles.analogyTitle}>{lesson.analogyBridge.title}</h2>
-        <p className={styles.analogyText}>{lesson.analogyBridge.analogyExplanation}</p>
+        <p className={styles.analogyText}>
+          {lesson.analogyBridge.analogyExplanation}
+        </p>
 
         <div className={styles.mappingGrid}>
           {lesson.analogyBridge?.mappings?.map((m, idx) => (
             <div key={idx} className={styles.mappingCard}>
-              <strong className={styles.mappingTheory}>Theory: {m.conceptAspect}</strong>
-              <span className={styles.mappingAnalogy}>↔ Analogy: {m.analogyCounterpart}</span>
+              <strong className={styles.mappingTheory}>
+                Theory: {m.conceptAspect}
+              </strong>
+              <span className={styles.mappingAnalogy}>
+                ↔ Analogy: {m.analogyCounterpart}
+              </span>
             </div>
           ))}
         </div>
@@ -98,7 +125,7 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
           <strong className={styles.boundaryLabel}>
             <AlertTriangle size={16} aria-hidden="true" />
             Where the Analogy Ends:
-          </strong>{' '}
+          </strong>{" "}
           {lesson.analogyBridge.scientificBoundary}
         </div>
       </section>
@@ -138,7 +165,7 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
               <button
                 key={idx}
                 type="button"
-                className={`${styles.chip} ${isActive ? styles.chipActive : ''}`}
+                className={`${styles.chip} ${isActive ? styles.chipActive : ""}`}
                 aria-pressed={isActive}
                 onClick={() => setActiveTerm(isActive ? null : t.term)}
               >
@@ -166,7 +193,9 @@ export const LessonView = ({ lesson, onOpenQuiz, onChangeTopic, isQuizLoading })
       )}
 
       {/* Local Video Lesson Preview (experimental flag) */}
-      {import.meta.env.VITE_LOCAL_VIDEO_LESSON === 'true' && <LocalVideoLesson lesson={lesson} />}
+      {import.meta.env.VITE_LOCAL_VIDEO_LESSON === "true" && (
+        <LocalVideoLesson key={lesson?._id || lesson?.id} lesson={lesson} />
+      )}
     </div>
   );
 };

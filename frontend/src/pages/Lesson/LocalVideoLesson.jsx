@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { LoaderCircle, Video, AlertCircle, RefreshCw } from 'lucide-react';
-import api from '../../services/api';
-import styles from './LocalVideoLesson.module.css';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { LoaderCircle, Video, AlertCircle, RefreshCw } from "lucide-react";
+import api from "../../services/api";
+import styles from "./LocalVideoLesson.module.css";
 
-const JOB_ID_KEY = 'noducks_local_video_job_id';
-const LEGACY_JOB_ID_KEY = 'local_video_job_id';
-const JOB_START_KEY = 'noducks_local_video_job_start';
+const JOB_ID_KEY = "noducks_local_video_job_id";
+const LEGACY_JOB_ID_KEY = "local_video_job_id";
+const JOB_START_KEY = "noducks_local_video_job_start";
 
 export function LocalVideoLesson({ lesson }) {
   // If feature flag is off, do not render
-  if (import.meta.env.VITE_LOCAL_VIDEO_LESSON !== 'true') {
+  if (import.meta.env.VITE_LOCAL_VIDEO_LESSON !== "true") {
     return null;
   }
 
@@ -17,14 +17,14 @@ export function LocalVideoLesson({ lesson }) {
 }
 
 function LocalVideoLessonInner({ lesson }) {
-  const [topic, setTopic] = useState(lesson?.topic || '');
-  const [ageBand, setAgeBand] = useState(lesson?.age || '14-16');
-  const [interest, setInterest] = useState(lesson?.interest || '');
+  const [topic, setTopic] = useState(lesson?.topic || "");
+  const [ageBand, setAgeBand] = useState(lesson?.age || "14-16");
+  const [interest, setInterest] = useState(lesson?.interest || "");
 
   // States: idle, submitting, preparing, playing, failed
-  const [status, setStatus] = useState('idle');
-  const [validationError, setValidationError] = useState('');
-  const [progressStage, setProgressStage] = useState('queued');
+  const [status, setStatus] = useState("idle");
+  const [validationError, setValidationError] = useState("");
+  const [progressStage, setProgressStage] = useState("queued");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [errorDetails, setErrorDetails] = useState(null);
   const [videoUrl, setVideoUrl] = useState(null);
@@ -77,25 +77,28 @@ function LocalVideoLessonInner({ lesson }) {
       clearTimers();
       clearStoredJob();
       try {
-        const response = await api.get(`/api/videos/${encodeURIComponent(jobId)}`, {
-          responseType: 'blob',
-        });
+        const response = await api.get(
+          `/api/videos/${encodeURIComponent(jobId)}`,
+          {
+            responseType: "blob",
+          },
+        );
         const newUrl = URL.createObjectURL(response.data);
         cleanupObjectUrl();
         objectUrlRef.current = newUrl;
         setVideoUrl(newUrl);
-        setStatus('playing');
+        setStatus("playing");
       } catch (err) {
         const errPayload = err.response?.data?.error;
         setErrorDetails({
-          category: errPayload?.category || 'API',
-          code: errPayload?.code || 'FETCH_FAILED',
+          category: errPayload?.category || "API",
+          code: errPayload?.code || "FETCH_FAILED",
           message: errPayload?.message || err.message,
         });
-        setStatus('failed');
+        setStatus("failed");
       }
     },
-    [clearTimers, clearStoredJob, cleanupObjectUrl]
+    [clearTimers, clearStoredJob, cleanupObjectUrl],
   );
 
   // Poll video status
@@ -103,7 +106,7 @@ function LocalVideoLessonInner({ lesson }) {
     (jobId, initialStartTime = Date.now()) => {
       clearTimers();
       activeJobIdRef.current = jobId;
-      setStatus('preparing');
+      setStatus("preparing");
 
       // Setup elapsed clock
       const calculateElapsed = () =>
@@ -116,7 +119,7 @@ function LocalVideoLessonInner({ lesson }) {
 
       const checkStatus = async () => {
         try {
-          const res = await api.get('/api/dev/video/status', {
+          const res = await api.get("/api/videos/status", {
             params: { job_id: jobId },
           });
           const data = res.data;
@@ -125,17 +128,17 @@ function LocalVideoLessonInner({ lesson }) {
             setProgressStage(data.stage);
           }
 
-          if (data.status === 'draft') {
+          if (data.status === "draft" || data.status === "approved") {
             await loadAndPlayVideo(jobId);
-          } else if (data.status === 'failed') {
+          } else if (data.status === "failed") {
             clearTimers();
             clearStoredJob();
             setErrorDetails({
-              category: data.error?.category || 'GENERATION',
-              code: data.error?.code || 'RENDER_FAILED',
+              category: data.error?.category || "GENERATION",
+              code: data.error?.code || "RENDER_FAILED",
               message: data.error?.message,
             });
-            setStatus('failed');
+            setStatus("failed");
           }
         } catch (err) {
           // If server returns error payload
@@ -144,11 +147,11 @@ function LocalVideoLessonInner({ lesson }) {
             clearTimers();
             clearStoredJob();
             setErrorDetails({
-              category: errData?.category || 'API',
-              code: errData?.code || 'API_UNREACHABLE',
+              category: errData?.category || "API",
+              code: errData?.code || "API_UNREACHABLE",
               message: errData?.message || err.message,
             });
-            setStatus('failed');
+            setStatus("failed");
           }
         }
       };
@@ -157,17 +160,19 @@ function LocalVideoLessonInner({ lesson }) {
       checkStatus();
       pollTimerRef.current = setInterval(checkStatus, 5000);
     },
-    [clearTimers, clearStoredJob, loadAndPlayVideo]
+    [clearTimers, clearStoredJob, loadAndPlayVideo],
   );
 
   // Resume polling on mount if a job ID is stored in sessionStorage
   useEffect(() => {
     try {
       const storedId =
-        sessionStorage.getItem(JOB_ID_KEY) || sessionStorage.getItem(LEGACY_JOB_ID_KEY);
+        sessionStorage.getItem(JOB_ID_KEY) ||
+        sessionStorage.getItem(LEGACY_JOB_ID_KEY);
       if (storedId) {
         const storedStart = parseInt(sessionStorage.getItem(JOB_START_KEY), 10);
-        const startTime = !isNaN(storedStart) && storedStart > 0 ? storedStart : Date.now();
+        const startTime =
+          !isNaN(storedStart) && storedStart > 0 ? storedStart : Date.now();
         startPolling(storedId, startTime);
       }
     } catch {
@@ -175,14 +180,37 @@ function LocalVideoLessonInner({ lesson }) {
     }
   }, [startPolling]);
 
+  useEffect(() => {
+    const t = topic.trim();
+    const a = ageBand.trim();
+    const i = interest.trim();
+    if (!t || !a || !i) return;
+    let cancelled = false;
+    api
+      .get("/api/videos/lookup", {
+        params: { topic: t, ageBand: a, interest: i },
+      })
+      .then((res) => {
+        if (cancelled) return;
+        const id = res.data?.cached_from || res.data?.job_id;
+        if (id) loadAndPlayVideo(id);
+      })
+      .catch(() => {
+        // 404 means nothing is cached yet; stay on the form, do not generate
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []); // run once on open
+
   // Client-side validation matching backend expectations
   const validateForm = () => {
     const trimmedTopic = topic.trim();
     if (!trimmedTopic || trimmedTopic.length < 3) {
-      return 'body.topic: String should have at least 3 characters';
+      return "body.topic: String should have at least 3 characters";
     }
     if (trimmedTopic.length > 80) {
-      return 'body.topic: String should have at most 80 characters';
+      return "body.topic: String should have at most 80 characters";
     }
 
     const trimmedAge = ageBand.trim();
@@ -193,10 +221,10 @@ function LocalVideoLessonInner({ lesson }) {
 
     const trimmedInterest = interest.trim();
     if (!trimmedInterest || trimmedInterest.length < 2) {
-      return 'body.interest: String should have at least 2 characters';
+      return "body.interest: String should have at least 2 characters";
     }
     if (trimmedInterest.length > 40) {
-      return 'body.interest: String should have at most 40 characters';
+      return "body.interest: String should have at most 40 characters";
     }
 
     return null;
@@ -204,7 +232,7 @@ function LocalVideoLessonInner({ lesson }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setValidationError('');
+    setValidationError("");
     setErrorDetails(null);
 
     const errorMsg = validateForm();
@@ -213,10 +241,10 @@ function LocalVideoLessonInner({ lesson }) {
       return;
     }
 
-    setStatus('submitting');
+    setStatus("submitting");
 
     try {
-      const response = await api.post('/api/dev/video/test', {
+      const response = await api.post("/api/videos/generate", {
         topic: topic.trim(),
         ageBand: ageBand.trim(),
         interest: interest.trim(),
@@ -224,20 +252,20 @@ function LocalVideoLessonInner({ lesson }) {
 
       const { created, status: initialStatus } = response.data || {};
       const jobStatus = created?.status || initialStatus?.status;
-      const jobId = created?.job_id || initialStatus?.job_id;
+      const jobId =
+        created?.cached_from || created?.job_id || initialStatus?.job_id;
 
       if (!jobId) {
-        throw new Error('No job ID returned by server');
+        throw new Error("No job ID returned by server");
       }
 
-      // If cached or already draft, play immediately
-      if (jobStatus === 'draft' || created?.cached_from) {
+      if (["draft", "approved"].includes(jobStatus) || created?.cached_from) {
         await loadAndPlayVideo(jobId);
         return;
       }
 
       // If queued, store in sessionStorage and poll every 5s
-      if (jobStatus === 'queued' || jobStatus === 'rendering') {
+      if (jobStatus === "queued" || jobStatus === "rendering") {
         const now = Date.now();
         try {
           sessionStorage.setItem(JOB_ID_KEY, jobId);
@@ -246,28 +274,28 @@ function LocalVideoLessonInner({ lesson }) {
         } catch {
           // ignore storage errors
         }
-        setProgressStage(initialStatus?.stage || 'queued');
+        setProgressStage(initialStatus?.stage || "queued");
         startPolling(jobId, now);
         return;
       }
 
       // If status is failed
-      if (jobStatus === 'failed') {
+      if (jobStatus === "failed") {
         setErrorDetails({
-          category: initialStatus?.error?.category || 'API',
-          code: initialStatus?.error?.code || 'GENERATION_FAILED',
+          category: initialStatus?.error?.category || "API",
+          code: initialStatus?.error?.code || "GENERATION_FAILED",
           message: initialStatus?.error?.message,
         });
-        setStatus('failed');
+        setStatus("failed");
       }
     } catch (err) {
       const errPayload = err.response?.data?.error;
       setErrorDetails({
-        category: errPayload?.category || 'API',
-        code: errPayload?.code || 'API_UNREACHABLE',
+        category: errPayload?.category || "API",
+        code: errPayload?.code || "API_UNREACHABLE",
         message: errPayload?.message || err.message,
       });
-      setStatus('failed');
+      setStatus("failed");
     }
   };
 
@@ -275,8 +303,8 @@ function LocalVideoLessonInner({ lesson }) {
     clearTimers();
     clearStoredJob();
     setErrorDetails(null);
-    setValidationError('');
-    setStatus('idle');
+    setValidationError("");
+    setStatus("idle");
   };
 
   const handleReset = () => {
@@ -285,8 +313,8 @@ function LocalVideoLessonInner({ lesson }) {
     cleanupObjectUrl();
     setVideoUrl(null);
     setErrorDetails(null);
-    setValidationError('');
-    setStatus('idle');
+    setValidationError("");
+    setStatus("idle");
   };
 
   const formatElapsed = (sec) => {
@@ -307,12 +335,13 @@ function LocalVideoLessonInner({ lesson }) {
           <span className={styles.badge}>Experimental</span>
         </div>
         <p className={styles.subtitle}>
-          Preview interactive Manim video animations generated on your local service.
+          Preview interactive Manim video animations generated on your local
+          service.
         </p>
       </div>
 
       {/* IDLE & SUBMITTING STATE: Form */}
-      {(status === 'idle' || status === 'submitting') && (
+      {(status === "idle" || status === "submitting") && (
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
           <div className={styles.fieldGrid}>
             <div className={styles.fieldGroup}>
@@ -327,9 +356,9 @@ function LocalVideoLessonInner({ lesson }) {
                 value={topic}
                 onChange={(e) => {
                   setTopic(e.target.value);
-                  setValidationError('');
+                  setValidationError("");
                 }}
-                disabled={status === 'submitting'}
+                disabled={status === "submitting"}
                 autoComplete="off"
               />
               <span className={styles.hint}>3–80 characters</span>
@@ -347,9 +376,9 @@ function LocalVideoLessonInner({ lesson }) {
                 value={ageBand}
                 onChange={(e) => {
                   setAgeBand(e.target.value);
-                  setValidationError('');
+                  setValidationError("");
                 }}
-                disabled={status === 'submitting'}
+                disabled={status === "submitting"}
                 autoComplete="off"
               />
               <span className={styles.hint}>Format like 14-16</span>
@@ -367,9 +396,9 @@ function LocalVideoLessonInner({ lesson }) {
                 value={interest}
                 onChange={(e) => {
                   setInterest(e.target.value);
-                  setValidationError('');
+                  setValidationError("");
                 }}
-                disabled={status === 'submitting'}
+                disabled={status === "submitting"}
                 autoComplete="off"
               />
               <span className={styles.hint}>2–40 characters</span>
@@ -387,11 +416,15 @@ function LocalVideoLessonInner({ lesson }) {
             <button
               type="submit"
               className={styles.primaryButton}
-              disabled={status === 'submitting'}
+              disabled={status === "submitting"}
             >
-              {status === 'submitting' ? (
+              {status === "submitting" ? (
                 <>
-                  <LoaderCircle className={styles.spinner} size={16} aria-hidden="true" />
+                  <LoaderCircle
+                    className={styles.spinner}
+                    size={16}
+                    aria-hidden="true"
+                  />
                   <span>Requesting video...</span>
                 </>
               ) : (
@@ -403,9 +436,13 @@ function LocalVideoLessonInner({ lesson }) {
       )}
 
       {/* PREPARING STATE */}
-      {status === 'preparing' && (
+      {status === "preparing" && (
         <div className={styles.preparingBox} role="status" aria-live="polite">
-          <LoaderCircle className={styles.largeSpinner} size={36} aria-hidden="true" />
+          <LoaderCircle
+            className={styles.largeSpinner}
+            size={36}
+            aria-hidden="true"
+          />
           <div className={styles.preparingContent}>
             <h3 className={styles.preparingTitle}>Preparing your video</h3>
             <p className={styles.progressMessage}>
@@ -419,7 +456,7 @@ function LocalVideoLessonInner({ lesson }) {
       )}
 
       {/* PLAYING STATE */}
-      {status === 'playing' && videoUrl && (
+      {status === "playing" && videoUrl && (
         <div className={styles.videoWrapper}>
           <video
             controls
@@ -444,16 +481,20 @@ function LocalVideoLessonInner({ lesson }) {
       )}
 
       {/* FAILED STATE */}
-      {status === 'failed' && (
+      {status === "failed" && (
         <div className={styles.failedBox} role="alert">
           <div className={styles.failedHeader}>
-            <AlertCircle className={styles.failedIcon} size={22} aria-hidden="true" />
+            <AlertCircle
+              className={styles.failedIcon}
+              size={22}
+              aria-hidden="true"
+            />
             <h3 className={styles.failedTitle}>Video Generation Failed</h3>
           </div>
           <p className={styles.errorCode}>
             {errorDetails?.category && errorDetails?.code
               ? `${errorDetails.category} ${errorDetails.code}`
-              : errorDetails?.code || 'GENERATION ERROR'}
+              : errorDetails?.code || "GENERATION ERROR"}
           </p>
           {errorDetails?.message && (
             <p className={styles.errorMessage}>{errorDetails.message}</p>

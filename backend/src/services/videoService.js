@@ -52,3 +52,8 @@ export async function streamVideo(jobId) {
   }
   return res;
 }
+
+export async function lookupVideo({ topic, ageBand, interest }) {
+  const qs = new URLSearchParams({ topic, age_band: ageBand, interest });
+  return callService(`/lessons/lookup?${qs.toString()}`);
+}
