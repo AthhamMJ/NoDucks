@@ -1,0 +1,1179 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "NoDucks API",
+    "version": "1.0.0",
+    "description": "OpenAPI documentation generated from the existing NoDucks API Guide. Request and response schemas are included only where the guide specifies them."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Authentication"
+    },
+    {
+      "name": "Subjects"
+    },
+    {
+      "name": "Tasks"
+    },
+    {
+      "name": "Notes"
+    },
+    {
+      "name": "Lessons"
+    },
+    {
+      "name": "Tutor"
+    },
+    {
+      "name": "Updates"
+    },
+    {
+      "name": "Admin"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Use the JWT returned by POST /api/auth/login."
+      }
+    },
+    "schemas": {
+      "Message": {
+        "type": "object",
+        "description": "Response structure is determined by the backend."
+      }
+    }
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Check server and database health",
+        "description": "Checks whether the server and database are reachable.",
+        "tags": [
+          "Health"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "Registers a user with name, email, and password.",
+        "tags": [
+          "Authentication"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Log in",
+        "description": "Authenticates a user and returns a JWT token.",
+        "tags": [
+          "Authentication"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "summary": "Get current user profile",
+        "description": "Returns the authenticated user's profile.",
+        "tags": [
+          "Authentication"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Update current user profile",
+        "description": "Updates the authenticated user's name and preferences.",
+        "tags": [
+          "Authentication"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete own account",
+        "description": "Deletes the authenticated user's own account.",
+        "tags": [
+          "Authentication"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/subjects": {
+      "get": {
+        "summary": "List user's subjects",
+        "description": "Returns the authenticated user's subjects.",
+        "tags": [
+          "Subjects"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a subject",
+        "description": "Creates a subject with a name and optional catalogId and color.",
+        "tags": [
+          "Subjects"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "catalogId": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subjects/catalog": {
+      "get": {
+        "summary": "List subject catalog suggestions",
+        "description": "Returns subject catalog suggestions.",
+        "tags": [
+          "Subjects"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/tasks": {
+      "get": {
+        "summary": "List user's tasks",
+        "description": "Returns the authenticated user's tasks.",
+        "tags": [
+          "Tasks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a task",
+        "description": "Creates a task. The guide identifies title, priority (low/medium/high), dueDate, and subject as task fields.",
+        "tags": [
+          "Tasks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ]
+                  },
+                  "dueDate": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/{id}": {
+      "patch": {
+        "summary": "Update a task",
+        "description": "Updates task fields.",
+        "tags": [
+          "Tasks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a task",
+        "description": "Deletes a task.",
+        "tags": [
+          "Tasks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/notes": {
+      "get": {
+        "summary": "List user's notes",
+        "description": "Returns the authenticated user's notes.",
+        "tags": [
+          "Notes"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a note",
+        "description": "Creates a note with title, description, and subject.",
+        "tags": [
+          "Notes"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notes/{id}": {
+      "patch": {
+        "summary": "Update a note",
+        "description": "Updates a note.",
+        "tags": [
+          "Notes"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a note",
+        "description": "Deletes a note.",
+        "tags": [
+          "Notes"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/lessons": {
+      "get": {
+        "summary": "List lesson history",
+        "description": "Returns the user's lesson history.",
+        "tags": [
+          "Lessons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/lessons/{id}": {
+      "get": {
+        "summary": "Get full lesson content",
+        "description": "Returns the full content of a lesson.",
+        "tags": [
+          "Lessons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a lesson",
+        "description": "Deletes a lesson and its chat history.",
+        "tags": [
+          "Lessons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/lessons/{id}/chat": {
+      "get": {
+        "summary": "Get lesson chat messages",
+        "description": "Returns chat messages for a lesson.",
+        "tags": [
+          "Lessons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/tutor/usage": {
+      "get": {
+        "summary": "Get AI usage statistics",
+        "description": "Returns current AI usage statistics. This endpoint does not consume quota.",
+        "tags": [
+          "Tutor"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/tutor/generate-lesson": {
+      "post": {
+        "summary": "Generate an AI lesson",
+        "description": "Generates an AI lesson using a topic and interest. Subject to lesson-generation quota.",
+        "tags": [
+          "Tutor"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "topic": {
+                    "type": "string"
+                  },
+                  "interest": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "topic"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tutor/chat": {
+      "post": {
+        "summary": "Send a follow-up tutor message",
+        "description": "Sends a follow-up chat message using lessonId and message. Subject to chat quota.",
+        "tags": [
+          "Tutor"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lessonId": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "lessonId",
+                  "message"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tutor/generate-quiz": {
+      "post": {
+        "summary": "Generate a quiz",
+        "description": "Generates a quiz for a lesson. Subject to quiz-generation quota.",
+        "tags": [
+          "Tutor"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lessonId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "lessonId"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/updates/latest": {
+      "get": {
+        "summary": "Get latest feature update",
+        "description": "Returns the latest feature update.",
+        "tags": [
+          "Updates"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/overview": {
+      "get": {
+        "summary": "Get admin dashboard overview",
+        "description": "Returns dashboard overview statistics. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "summary": "List all users",
+        "description": "Returns the user list. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/users/{id}": {
+      "patch": {
+        "summary": "Update a user",
+        "description": "Updates a user. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/settings": {
+      "get": {
+        "summary": "Get application settings",
+        "description": "Returns application settings. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/settings/quotas": {
+      "patch": {
+        "summary": "Update AI quotas",
+        "description": "Updates lesson, chat, and quiz quotas. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lessonQuota": {
+                    "type": "integer"
+                  },
+                  "chatQuota": {
+                    "type": "integer"
+                  },
+                  "quizQuota": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "lessonQuota",
+                  "chatQuota",
+                  "quizQuota"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/settings/general": {
+      "patch": {
+        "summary": "Update general settings",
+        "description": "Updates general application settings, such as maintenanceMode. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceMode": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/settings/admins": {
+      "get": {
+        "summary": "List admin users",
+        "description": "Lists users with admin privileges. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/updates": {
+      "get": {
+        "summary": "List feature updates",
+        "description": "Lists all feature updates. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a feature update",
+        "description": "Creates a feature update with title, description, and version. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "version"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/updates/{id}": {
+      "delete": {
+        "summary": "Delete a feature update",
+        "description": "Deletes a feature update. Requires a valid JWT and the admin role.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Exact response fields are defined by the backend."
+          },
+          "default": {
+            "description": "Error response. See backend error handling."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Resource ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
