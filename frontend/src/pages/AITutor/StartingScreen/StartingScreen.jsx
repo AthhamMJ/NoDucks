@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Sparkles, ArrowRight, LoaderCircle } from 'lucide-react';
-import styles from './StartingScreen.module.css';
+import React, { useState } from "react";
+import { Sparkles, ArrowRight, LoaderCircle } from "lucide-react";
+import styles from "./StartingScreen.module.css";
 
 const SUBJECT_TOPICS = {
   Physics: [
@@ -12,61 +12,91 @@ const SUBJECT_TOPICS = {
     "Gravitational force",
     "Acceleration",
     "frictional force",
+    "Inertia",
+    "Momentum",
+    "Conservation of momentum",
+    "Work and energy",
+    "Kinetic energy",
+    "Potential energy",
+    "Power",
+    "Pressure",
+    "Density",
+    "Projectile motion",
+    "Circular motion",
+    "Centripetal force",
+    "Simple harmonic motion",
+    "Waves and frequency",
+    "Sound",
+    "Light and reflection",
+    "Refraction",
+    "Electric charge",
+    "Electric current",
+    "Ohm's law",
+    "Magnetism",
+    "Heat and temperature",
   ],
-  Maths: [
-    "Number direction",
-  ],
+  Maths: ["Number direction"],
 };
 
-const DISABLED_SUBJECTS = ['Chemistry', 'Programming', 'History'];
-const INTEREST_OPTIONS = ['Movies', 'Sports', 'Games', 'car'];
+const DISABLED_SUBJECTS = ["Chemistry", "Programming", "History"];
+const INTEREST_OPTIONS = ["Movies", "Sports", "Games", "car"];
 const AGE_OPTIONS = [
-  { value: '5-8', label: '5–8 years (Kids / ELI5)' },
-  { value: '9-12', label: '9–12 years (Middle School)' },
-  { value: '13-15', label: '13–17 years (High School)' },
-  { value: '14-16', label: '14–16 years (High School)' },
-  { value: '16-17', label: '16–17 years (High School)' },
-  { value: '18+', label: '18+ years (College / Adult)' },
+  { value: "5-8", label: "5–8 years (Kids / ELI5)" },
+  { value: "9-12", label: "9–12 years (Middle School)" },
+  { value: "13-15", label: "13–17 years (High School)" },
+  { value: "14-16", label: "14–16 years (High School)" },
+  { value: "16-17", label: "16–17 years (High School)" },
+  { value: "18+", label: "18+ years (College / Adult)" },
 ];
 
 export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
-  const [subject, setSubject] = useState('');
-  const [topic, setTopic] = useState('');
-  const [interest, setInterest] = useState('');
-  const [age, setAge] = useState('');
-  const [validationError, setValidationError] = useState('');
+  const [subject, setSubject] = useState("");
+  const [topic, setTopic] = useState("");
+  const [interest, setInterest] = useState("");
+  const [age, setAge] = useState("");
+  const [validationError, setValidationError] = useState("");
 
   const displayError = validationError || error;
 
   const handleSubjectChange = (e) => {
     const newSubject = e.target.value;
     setSubject(newSubject);
-    setTopic('');
-    setValidationError('');
+    setTopic("");
+    setValidationError("");
   };
 
-  const availableTopics = subject && SUBJECT_TOPICS[subject] ? SUBJECT_TOPICS[subject] : [];
+  const availableTopics =
+    subject && SUBJECT_TOPICS[subject] ? SUBJECT_TOPICS[subject] : [];
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!subject) {
-      setValidationError('Please select a subject.');
+      setValidationError("Please select a subject.");
       return;
     }
     if (!topic) {
-      setValidationError('Please select a topic.');
+      setValidationError("Please select a topic.");
       return;
     }
     if (!interest) {
-      setValidationError('Please select an interest.');
+      setValidationError("Please select an interest.");
       return;
     }
     if (!age) {
-      setValidationError('Please select an age.');
+      setValidationError("Please select an age.");
       return;
     }
-    setValidationError('');
-    onStartLearning(topic, interest, subject, age);
+    const trimmedTopic = topic.trim();
+    if (!trimmedTopic || trimmedTopic.length < 3) {
+      setValidationError("Please enter a topic of at least 3 characters.");
+      return;
+    }
+    if (trimmedTopic.length > 80) {
+      setValidationError("Topic must be 80 characters or fewer.");
+      return;
+    }
+    setValidationError("");
+    onStartLearning(topic.trim(), interest, subject, age);
   };
 
   return (
@@ -78,7 +108,8 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
         </span>
         <h1 className={styles.heroTitle}>Personalized AI Learning</h1>
         <p className={styles.heroText}>
-          Select your subject, topic, personal interest, and age to generate your tailored lesson.
+          Select your subject, topic, personal interest, and age to generate
+          your tailored lesson.
         </p>
       </header>
 
@@ -111,25 +142,29 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
               <label htmlFor="tutor-topic" className={styles.label}>
                 2. Topic
               </label>
-              <select
+              <input
                 id="tutor-topic"
+                type="text"
                 className={styles.select}
+                list="tutor-topic-options"
                 value={topic}
+                placeholder={
+                  subject
+                    ? "Search or type a topic..."
+                    : "Select a subject first"
+                }
                 onChange={(e) => {
                   setTopic(e.target.value);
-                  setValidationError('');
+                  setValidationError("");
                 }}
-                disabled={isLoading || !subject || availableTopics.length === 0}
-              >
-                <option value="">
-                  {!subject ? 'Select a subject first' : 'Select a topic...'}
-                </option>
+                disabled={isLoading || !subject}
+                autoComplete="off"
+              />
+              <datalist id="tutor-topic-options">
                 {availableTopics.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
+                  <option key={item} value={item} />
                 ))}
-              </select>
+              </datalist>
             </div>
 
             <div className={styles.field}>
@@ -142,7 +177,7 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
                 value={interest}
                 onChange={(e) => {
                   setInterest(e.target.value);
-                  setValidationError('');
+                  setValidationError("");
                 }}
                 disabled={isLoading}
               >
@@ -165,7 +200,7 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
                 value={age}
                 onChange={(e) => {
                   setAge(e.target.value);
-                  setValidationError('');
+                  setValidationError("");
                 }}
                 disabled={isLoading}
               >
@@ -189,11 +224,17 @@ export const StartingScreen = ({ onStartLearning, isLoading, error }) => {
             <button
               type="submit"
               className={styles.primaryButton}
-              disabled={isLoading || !subject || !topic || !interest || !age}
+              disabled={
+                isLoading || !subject || !topic.trim() || !interest || !age
+              }
             >
               {isLoading ? (
                 <>
-                  <LoaderCircle size={16} className={styles.spinner} aria-hidden="true" />
+                  <LoaderCircle
+                    size={16}
+                    className={styles.spinner}
+                    aria-hidden="true"
+                  />
                   Synthesizing Lesson...
                 </>
               ) : (
